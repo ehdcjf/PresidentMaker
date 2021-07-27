@@ -10,8 +10,9 @@ const kakao = {
 
 const get_code = async (req, res) => {
   const { code } = req.query
-
   let token;
+  let user;
+
   try {
     token = await axios({
       method: 'POST',
@@ -31,7 +32,6 @@ const get_code = async (req, res) => {
     res.json(e.data);
   }
 
-  let user;
   try {
     user = await axios({
       method: 'GET',
@@ -43,6 +43,14 @@ const get_code = async (req, res) => {
   } catch (err) {
     res.json(err.data)
   }
+
+  const id = user.data.id;
+
+  /*
+    id를 통해 DB에서 조회.
+    있으면 - 
+  */
+
   res.json(user.data.id)
 }
 
