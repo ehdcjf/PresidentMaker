@@ -45,8 +45,8 @@ const Header = () => {
           </Link>
         </li>
         <li>
-          <Link href="/posts/post">
-            <a>글쓰기</a>
+          <Link href="/board/list">
+            <a>자유게시판</a>
           </Link>
         </li>
         <li>

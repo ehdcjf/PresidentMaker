@@ -14,11 +14,6 @@
     "static/development/_ssgManifest.js"
   ],
   "pages": {
-    "/": [
-      "static/chunks/webpack.js",
-      "static/chunks/main.js",
-      "static/chunks/pages/index.js"
-    ],
     "/_app": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
@@ -29,10 +24,25 @@
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
     ],
+    "/board/list": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/board/list.js"
+    ],
     "/kakao/callback": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
       "static/chunks/pages/kakao/callback.js"
+    ],
+    "/next/dist/pages/_error": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/next/dist/pages/_error.js"
+    ],
+    "/posts/[post]": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/posts/[post].js"
     ]
   },
   "ampFirstPages": []

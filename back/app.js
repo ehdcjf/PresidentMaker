@@ -5,6 +5,9 @@ const cors = require('cors')
 const PORT = 3002;
 const router = require('./routes');
 
+
+
+
 app.use(cors());
 app.use(express.static('public'));
 

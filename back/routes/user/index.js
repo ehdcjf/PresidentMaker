@@ -3,4 +3,12 @@ const userController = require('./user.controller');
 
 
 
-module.exports = router; 
+router.post('/', userController.createUser);
+router.get('/', userController.showUser);
+router.patch('/', userController.updateUser);
+router.delete('/', userController.deleteUser);
+
+
+
+module.exports = router;
+

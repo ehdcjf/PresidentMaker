@@ -7,7 +7,8 @@ const Join = () => {
       <Head>
         <title>Join</title>
       </Head>
-      <FormLayout>hello JOIN</FormLayout>
+      {/* <FormLayout>hello JOIN</FormLayout> */}
+      
     </>
   );
 };

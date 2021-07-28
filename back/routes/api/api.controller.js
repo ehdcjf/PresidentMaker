@@ -44,14 +44,21 @@ const get_code = async (req, res) => {
     res.json(err.data)
   }
 
-  const id = user.data.id;
-
   /*
     id를 통해 DB에서 조회.
-    있으면 - 
+    있으면 - 토큰 만들어서 넘기고. 
+    없으면 회원가입을 진행해야함.
   */
+  if(false){ 
 
-  res.json(user.data.id)
+  }else{ 
+    const data = { 
+      userid:user.data.id, 
+      isUser:false,
+    }
+    res.json(data)
+  }
+
 }
 
 module.exports = {
