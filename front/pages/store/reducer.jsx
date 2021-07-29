@@ -7,5 +7,16 @@ export const reducer = (state, action) => {
         ...state,
         IsLogin: false,
       };
+
+    case "GET_USERID_SUCCESS": 
+    // console.log(state); 
+    //   console.log(action.payload);  
+    return { 
+        ...state, 
+        join:{
+          ...state.join,
+          userid:action.payload,
+        }
+      }
   }
 };

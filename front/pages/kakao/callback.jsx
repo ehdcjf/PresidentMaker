@@ -22,7 +22,7 @@ const KakaoLogin = () => {
 
   return (
     <>
-      <span>카카오 로구인 즁입니돠</span>
+      <span>카카오 로그인 중입니다.</span>
     </>
   );
 };

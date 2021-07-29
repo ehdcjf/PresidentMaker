@@ -8,7 +8,17 @@ export const initialState = {
     searchType:null,
     searchValue:null,
     list:[], 
+  },
+  join:{
+    userid:null,
+  nickname:null,
+  homtowm:null,
+  residence:null,
+  gender:null,
+  age:null,
+  show:'00000'
   }
+
 };
 const Store = createContext(initialState); //store도 컴포넌트
 
