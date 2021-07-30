@@ -4,10 +4,10 @@ const boardController = require('./board.controller')
 
 
 router.get('/list',boardController.showList); 
-router.post('/article',boardController.createArticle);
-router.get('/article',boardController.showArticle);
-router.patch('/article',boardController.updateArticle);
-router.delete('/article',boardController.deleteArticle);
+router.post('/write',boardController.createArticle);
+router.get('/:id',boardController.showArticle);
+router.patch('/:id',boardController.updateArticle);
+router.delete('/:id',boardController.deleteArticle);
 
 
 

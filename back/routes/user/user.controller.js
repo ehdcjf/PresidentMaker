@@ -30,23 +30,25 @@ const createUser = (req,res) => {
 
 }
 
+
+//투표까지 만들고 하기. 
 const showUser = (req,res) => { 
-    const {targetid} = req.query;
-    const {userid} = req.headers;
+    const {targetidx} = req.query;
+    const {useridx} = req.headers;
     SQL((error, connection) => {
         if (error) {
             // console.log('connetion error', error);
             res.json(error);
             // throw error;
         }
-        let sql =`SELECT * FROM user WHERE userid = ${targetid}` 
+        let sql =`SELECT * FROM user WHERE id = ${targetidx}` 
 
         connection.query(sql, (error, results) => {
             if (error) {
                 console.log(error)
                 res.json(error); 
             } else {
-                clearInfo(results,userid)
+                clearInfo(results,useridx)
                 res.json(results);
             }
         });
@@ -55,13 +57,64 @@ const showUser = (req,res) => {
 }
 
 const updateUser = async (req,res) => {
-    
+    const {nickname,hometown,residence,gender,age} = req.body; 
+    //쿠키에서 idx 가져오기. 
+    const idx=1;
+    SQL((error, connection) => {
+        if (error) {
+            // console.log('connetion error', error);
+            res.json(error);
+            // throw error;
+        }
+        let reesult = {
+            
+        }
+        let sql = `UPDATE user SET nickname=${nickname},hometown=${hometown},residence=${residence},gender=${gender},age=${age} WHERE id=${idx}`
+
+        connection.query(sql, (error, results) => {
+            if (error) {
+                console.log(error)
+                res.json(error); 
+            } else {
+                const data = { 
+                    msg:"수정되었습니다."
+                }
+                res.json(data);
+            }
+        });
+    })
 
 }
 
 const deleteUser = async (req,res) => { 
+    const {idx} = req.query;
+
+
+    SQL((error, connection) => {
+        if (error) {
+            // console.log('connetion error', error);
+            res.json(error);
+            // throw error;
+        }
+        let sql =`UPDATE user SET status=1 WHERE id=${idx}`
+
+        connection.query(sql, (error, results) => {
+            if (error) {
+                console.log(error)
+                res.json(error); 
+            } else {
+                const data = { 
+                    msg:"탈퇴처리되었습니다."
+                }
+                res.json(data);
+            }
+        });
+    })
 
 }
+
+
+
 
 
 
@@ -72,21 +125,32 @@ module.exports = {
   deleteUser,
 }
 
-
-const clearInfo = (results,userid) => { 
+// id,userid,nickname,hometown,residence,gender,age,status,show 
+const clearInfo = (results,useridx) => { 
+    const target = results[0]; 
+    // const targetArr = Object.entries(target); 
+    let voteHistory; 
     
-    const result = results[0];
-    delete result.id; 
-    delete result.status;
+    // 투표이력도 가져와야함
 
-    const target = result.userid;
+    /*
+    투표이력 가져오는 함수
+    */
 
-    if(target===userid){ // 내정보 보기 
-        return result
-    }else{ // 다른 회원 정보보기 show 값으로 정보를 걸러줘야함. 
-        const temp = [...result];
-        console.log(temp)
-        return; 
+    if(target.id===useridx ||target.show&(1<<0)){
+        //투표이력 가져오는 쿼리.
+        console.log('투표이력가져오는 쿼리')
+
     }
 
+    delete target.id;
+    delete target.userid;
+    console.log(target.show);
+    for(let i = 0; i<5; i++){
+        if(target.show&(1<<i)){
+            console.log(targetArr[i+1])
+        }
+    }
+
+    return; 
 }
