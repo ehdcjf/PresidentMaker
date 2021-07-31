@@ -4,6 +4,9 @@ const bodyParser = require('body-parser');
 const cors = require('cors')
 const PORT = 3002;
 const router = require('./routes');
+const cookieParser = require('cookie-parser')
+const axios = require('axios');
+
 
 
 

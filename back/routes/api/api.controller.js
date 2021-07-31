@@ -40,21 +40,19 @@ const get_code = async (req, res) => {
         Authorization: `Bearer ${token.data.access_token}`
       }
     })
+
+
   } catch (err) {
     res.json(err.data)
   }
 
-  /*
-    id를 통해 DB에서 조회.
-    있으면 - 토큰 만들어서 넘기고. 
-    없으면 회원가입을 진행해야함.
-  */
-  if(false){ 
 
-  }else{ 
-    const data = { 
-      userid:user.data.id, 
-      isUser:false,
+  if (false) {
+
+  } else {
+    const data = {
+      userid: user.data.id,
+      isUser: false,
     }
     res.json(data)
   }
