@@ -1,14 +1,29 @@
 const SQL = require('../../config/dbconnection');
 
 
+
 const showList = (req, res) => {
 
-    const { page, rows, type, searchType, searchValue } = req.query;
-    // type 은 all 전체  hot 은 좋아요 25이상
-    // seachType  은  제목. 내용. 재목+ 내용. 글쓴이
-    //searchValue 는  어떤 문자열. 
+    const sql = showQuery(req.query);
+    console.log(sql);
 
-    // select * from member ORDERS LIMIT 10, 10;
+    SQL((error, connection) => {
+        if (error) {
+            // console.log('connetion error', error);
+            res.json(error);
+            // throw error;
+        }
+
+        connection.query(sql, (error, results) => {
+            if (error) {
+                console.log(error)
+                res.json(error);
+            } else {
+                console.log(results)
+                res.json(results);
+            }
+        });
+    })
 
 
 }
@@ -40,12 +55,11 @@ const createArticle = (req, res) => {
             }
         });
     })
-
-
-
-
-
 }
+
+
+
+//댓글도 불러오기.
 const showArticle = (req, res) => {
     const { id } = req.params;
 
@@ -136,4 +150,41 @@ module.exports = {
     createArticle,
     updateArticle,
     deleteArticle,
+}
+
+
+const showQuery = (obj) => {
+    let sql = `SELECT *
+                FROM (SELECT id, nickname FROM user) AS user 
+                INNER JOIN board
+                ON board.writer = user.id
+                `
+    const { page, rows, type, search, keyword } = obj;
+
+    let whereVerse = ` WHERE`
+
+
+    switch (search) {
+        case 'subject':
+            whereVerse += ` subject LIKE '%${keyword}%'`
+            break;
+        case 'content':
+            whereVerse += ` content LIKE '%${keyword}%'`
+            break;
+        case 'subject_content':
+            whereVerse += ` (content LIKE '%${keyword}%' or subject LIKE '%${keyword}%')`
+            break;
+        case 'writer':
+            whereVerse += ` (user.nickname LIKE '%${keyword}%')`
+            break;
+        default:
+            break;
+    }
+
+
+    if (type !== "all") {
+        whereVerse += `and like>24`
+    }
+
+    return sql + whereVerse + ` ORDER BY board.id DESC LIMIT ${(page - 1) * rows},${rows};`;
 }
