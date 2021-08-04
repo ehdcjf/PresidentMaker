@@ -1,10 +1,13 @@
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { kakaoCallback } from "../../components/api/kakaoCallback";
-import Store from "../store/context";
+// import Store from "../store/context";
 import Router from "next/router";
+import { UserLoginAction } from "../../reducers/user";
 
 const KakaoLogin = () => {
-  const { state, dispatch } = useContext(Store);
+  const dispatch = useDispatch();
+  const { loadding, IsLogin } = useSelector((state) => state.user);
 
   useEffect(async () => {
     const code = new URL(window.location.href).searchParams.get("code");
@@ -15,7 +18,7 @@ const KakaoLogin = () => {
     if (!result.isUser) {
       Router.push(`/user/join?id=${result.userid}`);
     } else {
-      //dispatch해주고?.,,
+      dispatch(UserLoginAction(result));
       Router.push(`/`);
     }
   }, []);

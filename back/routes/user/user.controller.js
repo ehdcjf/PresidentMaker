@@ -1,7 +1,9 @@
 const pool = require('../../config/dbconnection');
 
 
-const createUser = async (req, res) => {
+const createUser = async (req, res) => { // 회원가입 완료되면 쿠키만들어서 넘겨주기.
+    console.log(req.body);
+
     let connection;
     try {
         connection = await pool.getConnection(async conn => conn);
@@ -11,8 +13,12 @@ const createUser = async (req, res) => {
             const sql = `INSERT INTO USER (userid,nickname,hometown,residence,gender,age) 
                             values(?,?,?,?,?,?)`
             const [rows] = await connection.execute(sql, params)
-            console.log(rows);
-            res.json(rows);
+            const data = {
+                isUser: true,
+                userid: userid,
+                nickname: nickname,
+            }
+            res.json(data);
         } catch (error) {
             console.log('Query Error');
             console.log(error)

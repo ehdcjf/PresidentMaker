@@ -1,13 +1,9 @@
 import "../index.css";
 import Head from "next/head";
-import Store, { initialState } from "./store/context";
-import { useContext, useReducer } from "react";
-import { reducer } from "./store/reducer";
+import wrapper from "../store/configureStore";
+import { CookiesProvider } from "react-cookie";
 
 const App = ({ Component }) => {
-  const globalContext = useContext(Store);
-  const [state, dispatch] = useReducer(reducer, globalContext);
-  //globalContext 값이 state에 들어있고 dispatch가 reducer를 통해 state를 관리한다.
   return (
     <>
       <Head>
@@ -22,11 +18,10 @@ const App = ({ Component }) => {
           rel="stylesheet"
         />
       </Head>
-      <Store.Provider value={{ state, dispatch }}>
+      <CookiesProvider>
         <Component />
-      </Store.Provider>
+      </CookiesProvider>
     </>
   );
 };
-
-export default App;
+export default wrapper.withRedux(App);

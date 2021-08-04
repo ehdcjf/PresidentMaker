@@ -67,3 +67,24 @@ import Link from 'next/link'
 pages > \_document.jsx
 
 # babelrc
+
+
+
+
+
+# npm install next-redux-wrapper 
+# npm install redux
+# npm install react-redux
+# npm install redux-devtools-extension
+
+1. store > configureStore.js
+    context.jsx와 같은 의미
+    context.jsx 는 초기 상태값을 저장한 컴포넌트를 만드는 파일
+
+
+2. reducers > index.js
+
+
+
+
+# npm install redux-thunk

@@ -1,8 +1,7 @@
 import Link from "next/link";
 import NavToggle from "../NavToggle";
 import Styled from "styled-components";
-import { useContext } from "react";
-import Store from "../../pages/store/context";
+import { useSelector } from "react-redux";
 import { KAKAO_AUTH_URL } from "../api/OAuth";
 
 const HeaderContainer = Styled.div`
@@ -29,9 +28,37 @@ const Gnb = Styled.ul`
     }
 `;
 
+const LoginComponent = () => {
+  return (
+    <>
+      <li>
+        <Link href={KAKAO_AUTH_URL}>
+          <a>로그인/회원가입</a>
+        </Link>
+      </li>
+    </>
+  );
+};
+
+const LogoutComponent = () => {
+  return (
+    <>
+      <li>
+        <Link href="/user/logout">
+          <a>로그아웃</a>
+        </Link>
+      </li>
+      <li>
+        <Link href="/user/join">
+          <a>회원정보</a>
+        </Link>
+      </li>
+    </>
+  );
+};
+
 const Header = () => {
-  const globalStore = useContext(Store);
-  const { IsLogin } = globalStore.state;
+  const IsLogin = useSelector((state) => state.user.IsLogin);
   console.log(IsLogin);
 
   return (
@@ -45,43 +72,11 @@ const Header = () => {
           </Link>
         </li>
         <li>
-          <Link href="/board/list">
+          <Link href="/posts/post">
             <a>자유게시판</a>
           </Link>
         </li>
-        <li>
-          <Link href={KAKAO_AUTH_URL}>
-            <a>카카오 로그인</a>
-          </Link>
-        </li>
-
-        {IsLogin === false ? (
-          <>
-            <li>
-              <Link href="/user/login">
-                <a>로그인</a>
-              </Link>
-            </li>
-            <li>
-              <Link href="/user/join">
-                <a>회원가입</a>
-              </Link>
-            </li>
-          </>
-        ) : (
-          <>
-            <li>
-              <Link href="/user/login">
-                <a>로그아웃</a>
-              </Link>
-            </li>
-            <li>
-              <Link href="/user/join">
-                <a>회원정보</a>
-              </Link>
-            </li>
-          </>
-        )}
+        {IsLogin === false ? <LoginComponent /> : <LogoutComponent />}
       </Gnb>
       <NavToggle />
     </HeaderContainer>

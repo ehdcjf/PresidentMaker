@@ -53,13 +53,16 @@ const get_code = async (req, res) => {
   try {
     connection = await pool.getConnection(async conn => conn);
     try {
-      const sql = `SELECT idx,nickname FROM user WHERE userid=?`
+      const sql = `SELECT nickname FROM user WHERE userid=?`
       const params = [userid];
 
       const [result] = await connection.execute(sql, params)
-      const token = createToken(result[0].idx);
-      res.cookie('presidentMaker', token, { httpOnly: true, secure: true });
-      res.json(result[0].nickname);
+      const data = {
+        isUser: true,
+        userid: userid,
+        nickname: result[0].nickname,
+      }
+      res.json(data);
     } catch (error) {//가입되지 않은 경우
       console.log('Query Error');
       console.log(error)
@@ -102,8 +105,16 @@ const get_code = async (req, res) => {
 
 }
 
+const get_image = (req, res) => {
+  res.json(req.file.filename)
+}
+
+
+
+
 module.exports = {
-  get_code
+  get_code,
+  get_image
 }
 
 

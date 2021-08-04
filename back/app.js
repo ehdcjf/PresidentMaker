@@ -12,6 +12,8 @@ const axios = require('axios');
 
 
 app.use(cors());
+app.use('/uploads', express.static('uploads'));
+app.use(express.static('uploads/'));
 app.use(express.static('public'));
 
 app.use(bodyParser.json());
