@@ -1,4 +1,4 @@
-const mysql = require('mysql2');
+const mysql = require('mysql2/promise');
 
 const config = {
   host: 'localhost',
@@ -8,13 +8,13 @@ const config = {
 }
 const pool = mysql.createPool(config);
 
+// let getConnection = async (callback) => {
+//   await pool.getConnection(async (error, connection) => {
+//     await callback(error, connection);
+//     connection.release();
+//   })
+// }
 
-let getConnection = function (callback) {
-  pool.getConnection((error, connection) => {
-    callback(error, connection);
-    connection.release();
-  })
-}
+// const connection = pool.getConnection(async conn => conn);
 
-
-module.exports = getConnection;
+module.exports = pool;

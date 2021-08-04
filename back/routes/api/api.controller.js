@@ -1,5 +1,7 @@
 const axios = require('axios');
 const qs = require('qs');
+const pool = require('../../config/dbconnection');
+const createToken = require('../../jwt');
 
 const kakao = {
   clientID: `7c2d0d5ca1353c92a277225259c64d0c`,
@@ -40,25 +42,68 @@ const get_code = async (req, res) => {
         Authorization: `Bearer ${token.data.access_token}`
       }
     })
-
-
   } catch (err) {
     res.json(err.data)
   }
 
+  const userid = user.data.id;
 
-  if (false) {
 
-  } else {
-    const data = {
-      userid: user.data.id,
-      isUser: false,
+  let connection;
+  try {
+    connection = await pool.getConnection(async conn => conn);
+    try {
+      const sql = `SELECT idx,nickname FROM user WHERE userid=?`
+      const params = [userid];
+
+      const [result] = await connection.execute(sql, params)
+      const token = createToken(result[0].idx);
+      res.cookie('presidentMaker', token, { httpOnly: true, secure: true });
+      res.json(result[0].nickname);
+    } catch (error) {//가입되지 않은 경우
+      console.log('Query Error');
+      console.log(error)
+      const join = {
+        isUser: false,
+        userid: userid,
+      }
+      res.json(join)
     }
-    res.json(data)
+  } catch (error) {
+    console.log('DB Error')
+    console.log(error)
+    res.json(error)
+  } finally {
+    connection.release();
   }
+
+
+  //   connection.query(sql, (error, results) => {
+  //     if (error) {
+  //       res.json(error);
+  //     } else {
+  //       console.log(results)
+  //       if (results.length === 0) {
+  //         // 회원가입해야돼서. 
+  //         const data = {
+  //           userid: userid,
+  //         }
+  //         res.json(data)
+  //       } else { // 회원가입이 되어 있는 경우는 토큰을 보내줌. 
+
+  //         const token = createToken(userid);
+  //         console.log('토큰 전송')
+  //         res.cookie('presidentMaker', token, { httpOnly: true, secure: true });
+  //         res.json('xxx')
+  //       }
+  //     }
+  //   });
+  // })
 
 }
 
 module.exports = {
   get_code
 }
+
+

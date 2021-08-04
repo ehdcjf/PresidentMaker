@@ -1,146 +1,172 @@
-const SQL = require('../../config/dbconnection');
+const pool = require('../../config/dbconnection');
+const showHead = `SELECT *
+FROM (SELECT id, nickname FROM user) AS user 
+INNER JOIN board
+ON board.writer = user.id
+`
 
+const pageblockHead = `SELECT COUNT(id) AS count FROM board `
 
-
-const showList = (req, res) => {
-
-    const sql = showQuery(req.query);
-    console.log(sql);
-
-    SQL((error, connection) => {
-        if (error) {
-            // console.log('connetion error', error);
-            res.json(error);
-            // throw error;
-        }
-
-        connection.query(sql, (error, results) => {
-            if (error) {
-                console.log(error)
-                res.json(error);
-            } else {
-                console.log(results)
-                res.json(results);
-            }
-        });
-    })
-
-
-}
-
-
-
-
-const createArticle = (req, res) => {
+const createArticle = async (req, res) => {
     const { subject, content } = req.body;
     const writer = req.headers.id;
-
-    SQL((error, connection) => {
-        if (error) {
-            // console.log('connetion error', error);
-            res.json(error);
-            // throw error;
+    let connection;
+    try {
+        connection = await pool.getConnection(async conn => conn);
+        try {
+            const sql = `INSERT INTO board (subject,content,writer) values(?,?,?)`
+            const params = [subject, content, writer];
+            const [rows] = await connection.execute(sql, params)
+            console.log(rows);
+            res.json(rows);
+        } catch (error) {
+            console.log('Query Error');
+            console.log(error)
+            res.json(error)
         }
-        let sql = `INSERT INTO board (subject,content,writer) 
-                values('${subject}','${content}','${writer}')`
-        //let sql = `insert into gesipan (subject,id,content)
-        //       values('${body.subject}','${body.id}','${body.content}')`;
-        connection.query(sql, (error, results) => {
-            if (error) {
-                console.log(error)
-                res.json(error);
-            } else {
-                console.log(results)
-                res.json(results);
-            }
-        });
-    })
+    } catch (error) {
+        console.log('DB Error')
+        console.log(error)
+        res.json(error)
+    } finally {
+        connection.release();
+    }
 }
+
+
+
+const showList = async (req, res) => {
+    let count = 0;
+    const pageblockSql = searchVerse(pageblockHead, req.query);
+
+    let connection;
+    try {
+        connection = await pool.getConnection(async conn => conn);
+        try {
+            const params = [];
+            const [result] = await connection.execute(pageblockSql, params)
+            count = result[0].count
+            const { page, rows, pageblock } = makePageBlock(count, req.query);
+            const searchSql = searchVerse(showHead, req.query) + ` ORDER BY board.id DESC LIMIT ?,?;`
+            const pageParams = [(page - 1) * rows, rows]
+            const [results] = await connection.execute(searchSql, pageParams)
+            results.forEach(ele => {
+                if (ele.del === 1) {
+                    ele.subject = '삭제된 게시글입니다.'
+                    ele.content = '삭제된 게시글입니다.'
+                }
+            });
+
+            const data = {
+                type: true,
+                page: page,
+                pageblock: pageblock,
+                results: results,
+            }
+            res.json(data);
+        } catch (error) {
+            console.log('Query Error');
+            console.log(error)
+            res.json(error)
+        }
+    } catch (error) {
+        console.log('DB Error')
+        console.log(error)
+        res.json(error)
+    } finally {
+        connection.release();
+    }
+}
+
+
+
+
+
 
 
 
 //댓글도 불러오기.
-const showArticle = (req, res) => {
+const showArticle = async (req, res) => {
     const { id } = req.params;
 
-    SQL((error, connection) => {
-        if (error) {
-            // console.log('connetion error', error);
-            res.json(error);
-            // throw error;
+    let connection;
+    try {
+        connection = await pool.getConnection(async conn => conn);
+        try {
+            const sql = `SELECT * FROM board WHERE id=?`
+            const params = [id];
+            const [rows] = await connection.execute(sql, params)
+            console.log(rows);
+            res.json(rows);
+        } catch (error) {
+            console.log('Query Error');
+            console.log(error)
+            res.json(error)
         }
-        let sql = `SELECT * FROM board WHERE id=${id}`
-
-        connection.query(sql, (error, results) => {
-            if (error) {
-                console.log(error)
-                res.json(error);
-            } else {
-                console.log(results)
-                res.json(results);
-            }
-        });
-    });
+    } catch (error) {
+        console.log('DB Error')
+        console.log(error)
+        res.json(error)
+    } finally {
+        connection.release();
+    }
 };
 
 
 //트리거로 updatedAt 바꿔주기.
-const updateArticle = (req, res) => {
+const updateArticle = async (req, res) => {
     const { subject, content } = req.body;
     const { id } = req.params;
     const update = new Date();
 
-    SQL((error, connection) => {
-        if (error) {
-            // console.log('connetion error', error);
-            res.json(error);
-            // throw error;
+    let connection;
+    try {
+        connection = await pool.getConnection(async conn => conn);
+        try {
+            const sql = `UPDATE board SET subject=?,content=?,updatedAt=? WHERE id=?`
+            const params = [subject, content, update, id];
+            const [rows] = await connection.execute(sql, params)
+            console.log(rows);
+            res.json(rows);
+        } catch (error) {
+            console.log('Query Error');
+            console.log(error)
+            res.json(error)
         }
-        let reesult = {
-
-        }
-        let sql = `UPDATE board SET subject='${subject}',content='${content}' WHERE id=${id}`
-        console.log(sql);
-        connection.query(sql, (error, results) => {
-            if (error) {
-                console.log(error)
-                res.json(error);
-            } else {
-                const data = {
-                    msg: "수정되었습니다."
-                }
-                res.json(data);
-            }
-        });
-    })
-
-
-
+    } catch (error) {
+        console.log('DB Error')
+        console.log(error)
+        res.json(error)
+    } finally {
+        connection.release();
+    }
 }
-const deleteArticle = (req, res) => {
-    const idx = req.params.id;
 
 
-    SQL((error, connection) => {
-        if (error) {
-            // console.log('connetion error', error);
-            res.json(error);
-            // throw error;
+const deleteArticle = async (req, res) => {
+    const id = req.params.id;
+
+    let connection;
+    try {
+        connection = await pool.getConnection(async conn => conn);
+        try {
+            const sql = `UPDATE board SET del=1 WHERE id=?`
+            const params = [id];
+            const [rows] = await connection.execute(sql, params)
+            console.log(rows);
+            res.json(rows);
+        } catch (error) {
+            console.log('Query Error');
+            console.log(error)
+            res.json(error)
         }
-        let sql = `UPDATE board SET del=1 WHERE id=${idx}`
-
-        connection.query(sql, (error, results) => {
-            if (error) {
-                console.log(error)
-                res.json(error);
-            } else {
-                const data = {
-                    msg: "삭제되었습니다."
-                }
-                res.json(data);
-            }
-        });
-    })
+    } catch (error) {
+        console.log('DB Error')
+        console.log(error)
+        res.json(error)
+    } finally {
+        connection.release();
+    }
 }
 
 
@@ -153,29 +179,31 @@ module.exports = {
 }
 
 
-const showQuery = (obj) => {
-    let sql = `SELECT *
-                FROM (SELECT id, nickname FROM user) AS user 
-                INNER JOIN board
-                ON board.writer = user.id
-                `
-    const { page, rows, type, search, keyword } = obj;
 
-    let whereVerse = ` WHERE`
 
+
+
+
+
+
+const searchVerse = (sql, obj) => {
+    const { type, search, keyword } = obj;
+
+
+    let whereVerse = '';
 
     switch (search) {
         case 'subject':
-            whereVerse += ` subject LIKE '%${keyword}%'`
+            whereVerse = ` WHERE subject LIKE '%${keyword}%'`
             break;
         case 'content':
-            whereVerse += ` content LIKE '%${keyword}%'`
+            whereVerse += ` WHERE content LIKE '%${keyword}%'`
             break;
         case 'subject_content':
-            whereVerse += ` (content LIKE '%${keyword}%' or subject LIKE '%${keyword}%')`
+            whereVerse += ` WHERE (content LIKE '%${keyword}%' or subject LIKE '%${keyword}%')`
             break;
         case 'writer':
-            whereVerse += ` (user.nickname LIKE '%${keyword}%')`
+            whereVerse += ` WHERE (user.nickname LIKE '%${keyword}%')`
             break;
         default:
             break;
@@ -186,5 +214,41 @@ const showQuery = (obj) => {
         whereVerse += `and like>24`
     }
 
-    return sql + whereVerse + ` ORDER BY board.id DESC LIMIT ${(page - 1) * rows},${rows};`;
+
+    //searchSql: searchHead + whereVerse + ,
+
+    return sql + whereVerse;
+}
+
+const makePageBlock = (cnt, obj) => {
+    const { rows } = obj;
+    let { page } = obj;
+    console.log(cnt)
+    const totalPage = Math.ceil(cnt / rows);
+    if (page > totalPage) page = totalPage;
+
+    let block = 10;
+
+    while (page > block) {
+        block += 10;
+    }
+
+    const pageblock = [];
+    for (let i = block - 9; i <= block; i++) {
+        pageblock.push(i);
+        if (i === totalPage) break;
+    }
+    console.log(totalPage);
+    console.log(page);
+    console.log(rows);
+    console.log(pageblock);
+    return { page: page, rows: rows, pageblock: pageblock, }
+}
+
+
+
+
+
+const updateHit = () => {
+
 }

@@ -8,15 +8,17 @@ export const reducer = (state, action) => {
         IsLogin: false,
       };
 
-    case "GET_USERID_SUCCESS": 
-    // console.log(state); 
-    //   console.log(action.payload);  
-    return { 
-        ...state, 
-        join:{
-          ...state.join,
-          userid:action.payload,
-        }
-      }
+    case "GET_USERID_SUCCESS":
+      // console.log(state);
+      //   console.log(action.payload);
+      return {
+        ...state,
+        state: {
+          join: {
+            ...state.join,
+            userid: action.payload,
+          },
+        },
+      };
   }
 };
