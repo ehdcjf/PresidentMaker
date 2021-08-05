@@ -1,8 +1,13 @@
 {
   "/_app": "pages/_app.js",
+  "/_documents": "pages/_documents.js",
+  "/": "pages/index.html",
+  "/kakao/callback": "pages/kakao/callback.html",
+  "/posts/[post]": "pages/posts/[post].html",
+  "/user/join": "pages/user/join.html",
+  "/user/login": "pages/user/login.html",
+  "/user/logout": "pages/user/logout.html",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/next/dist/pages/_error": "pages/next/dist/pages/_error.js",
-  "/": "pages/index.js",
-  "/kakao/callback": "pages/kakao/callback.js"
+  "/404": "pages/404.html"
 }
