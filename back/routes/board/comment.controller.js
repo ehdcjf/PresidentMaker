@@ -1,9 +1,5 @@
 const pool = require('../../config/dbconnection');
 
-
-
-
-
 const createComment = async (req, res) => {
   const { content } = req.body;
   const { board_id, comment_id } = req.params;

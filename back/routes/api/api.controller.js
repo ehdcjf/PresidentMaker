@@ -65,6 +65,7 @@ const get_code = async (req, res) => {
       res.json(data);
     } catch (error) {//가입되지 않은 경우
       console.log('Query Error');
+      console.log('비회원. 회원가입진행')
       console.log(error)
       const join = {
         isUser: false,
