@@ -80,6 +80,8 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         IsLogin: false,
+        userid:null,
+        nickname:null,
       }
     default:
       return state

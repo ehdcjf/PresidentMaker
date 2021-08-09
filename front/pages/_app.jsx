@@ -1,5 +1,6 @@
 import "../index.css";
 import Head from "next/head";
+import "../style/style.css";
 import wrapper from "../store/configureStore";
 import { CookiesProvider } from "react-cookie";
 

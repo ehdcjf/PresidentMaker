@@ -70,7 +70,6 @@ const Join = () => {
       gender: sex,
       image: imageURI,
     };
-    console.log(data);
     const result = await joinRequest(data);
     await dispatch(UserLoginAction(result));
     Router.push("/");

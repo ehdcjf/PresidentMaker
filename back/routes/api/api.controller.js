@@ -15,6 +15,8 @@ const get_code = async (req, res) => {
   let token;
   let user;
 
+
+
   try {
     token = await axios({
       method: 'POST',
@@ -33,6 +35,8 @@ const get_code = async (req, res) => {
   } catch (e) {
     res.json(e.data);
   }
+
+
 
   try {
     user = await axios({
@@ -57,11 +61,13 @@ const get_code = async (req, res) => {
       const params = [userid];
 
       const [result] = await connection.execute(sql, params)
+      const access_token = createToken(userid)
       const data = {
         isUser: true,
-        userid: userid,
         nickname: result[0].nickname,
       }
+      res.cookie('AccessToken', access_token, { httpOnly: true, secure: true })
+      console.log('쿠키보냄');
       res.json(data);
     } catch (error) {//가입되지 않은 경우
       console.log('Query Error');

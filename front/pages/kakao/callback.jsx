@@ -13,7 +13,7 @@ const KakaoLogin = () => {
     const code = new URL(window.location.href).searchParams.get("code");
     const result = await kakaoCallback(dispatch, code);
 
-    console.log(result);
+    // console.log(result);
     //이 아래 부분을 kakaoCallback 함수에서 다 처리하고 싶은데 방법을 못찾음.
     if (!result.isUser) {
       Router.push(`/user/join?id=${result.userid}`);
