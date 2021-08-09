@@ -57,17 +57,16 @@ const get_code = async (req, res) => {
   try {
     connection = await pool.getConnection(async conn => conn);
     try {
-      const sql = `SELECT nickname FROM user WHERE userid=?`
+      const sql = `SELECT nickname,idx FROM user WHERE userid=?`
       const params = [userid];
 
       const [result] = await connection.execute(sql, params)
-      const access_token = createToken(userid)
+      const access_token = createToken(result[0].idx)
       const data = {
         isUser: true,
         nickname: result[0].nickname,
       }
       res.cookie('AccessToken', access_token, { httpOnly: true, secure: true })
-      console.log('쿠키보냄');
       res.json(data);
     } catch (error) {//가입되지 않은 경우
       console.log('Query Error');

@@ -1,15 +1,17 @@
 const pool = require('../../config/dbconnection');
+const jwtId = require('../../jwtId')
 const showHead = `SELECT *
-FROM (SELECT id, nickname FROM user) AS user 
-INNER JOIN board
-ON board.writer = user.id
+FROM (SELECT idx, nickname FROM user) AS user 
+INNER JOIN board AS board
+ON board.writer = user.idx
 `
 
 const pageblockHead = `SELECT COUNT(id) AS count FROM board `
 
 const createArticle = async (req, res) => {
     const { subject, content } = req.body;
-    const writer = req.headers.id;
+    const AccessToken = req.cookies.AccessToken;
+    const writer = jwtId(AccessToken)
     let connection;
     try {
         connection = await pool.getConnection(async conn => conn);
@@ -46,7 +48,7 @@ const showList = async (req, res) => {
             const params = [];
             const [result] = await connection.execute(pageblockSql, params)
             count = result[0].count
-            const { page, rows, pageblock } = makePageBlock(count, req.query);
+            const { page, rows, pageblock, totalPage } = makePageBlock(count, req.query);
             const searchSql = searchVerse(showHead, req.query) + ` ORDER BY board.id DESC LIMIT ?,?;`
             const pageParams = [(page - 1) * rows, rows]
             const [results] = await connection.execute(searchSql, pageParams)
@@ -58,16 +60,21 @@ const showList = async (req, res) => {
             });
 
             const data = {
-                type: true,
+                success: true,
                 page: page,
                 pageblock: pageblock,
+                totalPage: totalPage,
                 results: results,
             }
             res.json(data);
         } catch (error) {
             console.log('Query Error');
+            const data = {
+                success: false,
+                error: error,
+            }
             console.log(error)
-            res.json(error)
+            res.json(data)
         }
     } catch (error) {
         console.log('DB Error')
@@ -242,7 +249,7 @@ const makePageBlock = (cnt, obj) => {
     console.log(page);
     console.log(rows);
     console.log(pageblock);
-    return { page: page, rows: rows, pageblock: pageblock, }
+    return { page: page, rows: rows, pageblock: pageblock, totalPage: totalPage, }
 }
 
 
