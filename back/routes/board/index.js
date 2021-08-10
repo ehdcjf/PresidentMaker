@@ -9,7 +9,7 @@ router.get('/list', boardController.showList);
 router.post('/write', boardController.createArticle);
 router.get('/:id', boardController.showArticle);
 router.patch('/:id', boardController.updateArticle);
-router.delete('/:id', boardController.deleteArticle);
+router.delete('/:id/:useridx', boardController.deleteArticle);
 
 router.get('/comment/:master_id/:comment_id', commentController.showRyple)
 router.post('/comment/:board_id', commentController.createComment);

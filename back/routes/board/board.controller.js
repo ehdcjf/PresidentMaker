@@ -1,6 +1,6 @@
 const pool = require('../../config/dbconnection');
 const jwtId = require('../../jwtId')
-const showHead = `SELECT *
+const showHead = `SELECT board.subject,board.id,board.createdAt,board.updatedAt,board.hit,board.like,board.del
 FROM (SELECT idx, nickname FROM user) AS user 
 INNER JOIN board AS board
 ON board.writer = user.idx
@@ -55,7 +55,6 @@ const showList = async (req, res) => {
             results.forEach(ele => {
                 if (ele.del === 1) {
                     ele.subject = '삭제된 게시글입니다.'
-                    ele.content = '삭제된 게시글입니다.'
                 }
             });
 
@@ -95,16 +94,32 @@ const showList = async (req, res) => {
 //댓글도 불러오기.
 const showArticle = async (req, res) => {
     const { id } = req.params;
-
+    const AccessToken = req.cookies.AccessToken;
+    const writer = jwtId(AccessToken);
     let connection;
     try {
         connection = await pool.getConnection(async conn => conn);
         try {
-            const sql = `SELECT * FROM board WHERE id=?`
+            const sql = `SELECT user.idx AS useridx,user.nickname,board.id,board.subject,board.content,board.createdAt,board.updatedAt,board.hit,board.like,board.del
+            FROM (SELECT idx, nickname FROM user) AS user 
+            INNER JOIN board AS board
+            ON board.writer = user.idx 
+            WHERE id=?`
             const params = [id];
-            const [rows] = await connection.execute(sql, params)
-            console.log(rows);
-            res.json(rows);
+            const [result] = await connection.execute(sql, params)
+            if (result[0].del === 1) {
+                result[0].subject = '삭제된 게시글입니다.'
+                result[0].content = '삭제된 게시글입니다.'
+            }
+
+            if (result[0].useridx == writer) {
+                result[0].isWriter = true;
+            } else {
+                result[0].isWriter = false;
+            }
+
+            result[0].success = true;
+            res.json(result[0]);
         } catch (error) {
             console.log('Query Error');
             console.log(error)
@@ -151,30 +166,53 @@ const updateArticle = async (req, res) => {
 
 
 const deleteArticle = async (req, res) => {
-    const id = req.params.id;
+    const { id, useridx } = req.params;
+    const AccessToken = req.cookies.AccessToken;
+    const writer = jwtId(AccessToken);
 
-    let connection;
-    try {
-        connection = await pool.getConnection(async conn => conn);
+    if (useridx != writer) {//사용자 측에서 억지로 delete요청을 보냈을 때,
+        const data = {
+            success: false,
+        }
+        res.json(data)
+    } else {
+        let connection;
         try {
-            const sql = `UPDATE board SET del=1 WHERE id=?`
-            const params = [id];
-            const [rows] = await connection.execute(sql, params)
-            console.log(rows);
-            res.json(rows);
+            connection = await pool.getConnection(async conn => conn);
+            try {
+                const sql = `UPDATE board SET del=1 WHERE id=?`
+                const params = [id];
+                const [rows] = await connection.execute(sql, params)
+                //이부분 점검이 필요. 쿼리가 잘 실행 된건지 아닌지.
+                // if(rows.affectedRows===1)
+                const data = {
+                    success: true,
+                    id: id,
+                }
+                res.json(data);
+            } catch (error) {
+                console.log('Query Error');
+                console.log(error)
+                res.json(error)
+            }
         } catch (error) {
-            console.log('Query Error');
+            console.log('DB Error')
             console.log(error)
             res.json(error)
+        } finally {
+            connection.release();
         }
-    } catch (error) {
-        console.log('DB Error')
-        console.log(error)
-        res.json(error)
-    } finally {
-        connection.release();
+
     }
+
+
+
+
+
 }
+
+
+
 
 
 module.exports = {
@@ -196,7 +234,6 @@ module.exports = {
 const searchVerse = (sql, obj) => {
     const { type, search, keyword } = obj;
 
-
     let whereVerse = '';
 
     switch (search) {
@@ -215,40 +252,27 @@ const searchVerse = (sql, obj) => {
         default:
             break;
     }
-
-
     if (type !== "all") {
         whereVerse += `and like>24`
     }
-
-
     //searchSql: searchHead + whereVerse + ,
-
     return sql + whereVerse;
 }
 
 const makePageBlock = (cnt, obj) => {
     const { rows } = obj;
     let { page } = obj;
-    console.log(cnt)
     const totalPage = Math.ceil(cnt / rows);
     if (page > totalPage) page = totalPage;
-
     let block = 10;
-
     while (page > block) {
         block += 10;
     }
-
     const pageblock = [];
     for (let i = block - 9; i <= block; i++) {
         pageblock.push(i);
         if (i === totalPage) break;
     }
-    console.log(totalPage);
-    console.log(page);
-    console.log(rows);
-    console.log(pageblock);
     return { page: page, rows: rows, pageblock: pageblock, totalPage: totalPage, }
 }
 
