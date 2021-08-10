@@ -2,9 +2,22 @@ import { createWrapper } from "next-redux-wrapper"
 import { applyMiddleware, compose, createStore } from 'redux'
 import { composeWithDevTools } from "redux-devtools-extension"
 import reducer from "../reducers"
+import { persistStore } from 'redux-persist';
+
 import thunkMiddleware from "redux-thunk"
 // import createSaga from 'redux-saga'
 // import rootSaga from '../saga/index'
+
+const persistConfig = {
+  key: "root",
+  storage,
+  whitelist: ["article", "board", "user"]
+};
+
+
+
+
+
 
 const loggetrMiddelware = ({ dispatch, getState }) => (next) => (action) => {
   // console.log(action); 
@@ -12,6 +25,9 @@ const loggetrMiddelware = ({ dispatch, getState }) => (next) => (action) => {
   // console.log(getState);
   return next(action);
 }
+
+
+
 
 const configureStore = () => {
   // const sagaMiddleware = createSaga(); 

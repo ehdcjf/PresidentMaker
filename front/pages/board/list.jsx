@@ -28,7 +28,11 @@ const List = () => {
       return (
         <tr key={v.id}>
           <td>{v.id}</td>
-          <td>{v.subject}</td>
+          <td>
+            <Link href="/board/view/:[id]" as={`/board/view/${v.id}`}>
+              <a>{v.subject}</a>
+            </Link>
+          </td>
           <td>{v.nickname}</td>
           <td>{v.createdAt}</td>
           <td>{v.hit}</td>

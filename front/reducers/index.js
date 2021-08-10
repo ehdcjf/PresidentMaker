@@ -3,7 +3,10 @@ import { combineReducers } from "redux";
 import user from './user'
 import category from './category'
 import board from './board'
+import article from './article'
 
+import { persistReuder } from 'redux-persist'
+import storage from "redux-persist/lib/storage"
 
 const reducer = combineReducers({
   index: (state = {}, action) => {
@@ -17,7 +20,7 @@ const reducer = combineReducers({
         return state
     }
   },
-  user, board, category,
+  user, board, category, article
 })
 
 export default reducer

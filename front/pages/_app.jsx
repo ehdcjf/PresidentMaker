@@ -3,7 +3,7 @@ import Head from "next/head";
 import "../style/style.css";
 import wrapper from "../store/configureStore";
 import { CookiesProvider } from "react-cookie";
-
+import { PersistGate } from "redux-persist/integration/react";
 const App = ({ Component }) => {
   return (
     <>

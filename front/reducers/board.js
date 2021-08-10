@@ -15,13 +15,15 @@ const initialState = {
 const SHOW_LIST_REQUEST = 'SHOW_LIST_REQUEST'
 const SHOW_LIST_SUCCESS = 'SHOW_LIST_SUCCESS'
 const SHOW_LIST_ERROR = 'SHOW_LIST_ERROR'
+const DELETE_ARTICLE_REQUEST = 'DELETE_ARTICLE_REQUEST'
+const DELETE_ARTICLE_SUCCESS = 'DELETE_ARTICLE_SUCCESS'
+const DELETE_ARTICLE_ERROR = 'DELETE_ARTICLE_ERROR'
 
 export const ShowListAction = (data) => {
   return async (dispatch) => {
     dispatch(ShowListRequest());
     try {
       const result = data;
-      console.log(data);
       result.success === true
         ? dispatch(ShowListSuccess(result))
         : dispatch(ShowListError())
@@ -30,6 +32,24 @@ export const ShowListAction = (data) => {
     }
   }
 }
+
+export const DeleteArticleAction = (data) => {
+  console.log('xxxxxxxxxxxx')
+  console.log(data)
+  return async (dispatch) => {
+    dispatch(DeleteArticleRequest());
+    try {
+      const result = data;
+      result.success === true
+        ? dispatch(DeleteArticleSuccess(result))
+        : dispatch(DeleteArticleError())
+    } catch (e) {
+      dispatch(DeleteArticleError())
+    }
+  }
+}
+
+
 
 
 export const ShowListRequest = () => {
@@ -50,8 +70,27 @@ export const ShowListError = () => {
 }
 
 
+export const DeleteArticleRequest = () => {
+  return {
+    type: DELETE_ARTICLE_REQUEST,
+  }
+}
+export const DeleteArticleSuccess = (data) => {
+  return {
+    type: DELETE_ARTICLE_SUCCESS,
+    data: data,
+  }
+}
+export const DeleteArticleError = () => {
+  return {
+    type: DELETE_ARTICLE_ERROR,
+  }
+}
+
+
+
+
 const reducer = (state = initialState, action) => {
-  console.log(action)
   switch (action.type) {
 
     case SHOW_LIST_REQUEST:
@@ -61,7 +100,6 @@ const reducer = (state = initialState, action) => {
 
       }
     case SHOW_LIST_SUCCESS:
-      console.log(action.data)
       return {
         ...state,
         list: [...action.data.results],
@@ -71,6 +109,36 @@ const reducer = (state = initialState, action) => {
         loadding: false,
       }
     case SHOW_LIST_ERROR:
+      return {
+        ...state,
+        loadding: false,
+      }
+
+    case DELETE_ARTICLE_REQUEST:
+      return {
+        ...state,
+        loadding: true,
+      }
+    case DELETE_ARTICLE_SUCCESS:
+      const target = action.data.id;
+      console.log(state.list);
+      console.log(list)
+      const newList = [...state.list].map((v) => {
+        if (v.id == target) {
+          v.subject = "삭제된 게시글입니다."
+          v.del = 1
+          return v
+        }
+        return v;
+      })
+      console.log(newList);
+      return {
+        ...state,
+        list: [...newList],
+
+        loadding: false,
+      }
+    case DELETE_ARTICLE_ERROR:
       return {
         ...state,
         loadding: false,

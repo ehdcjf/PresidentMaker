@@ -18,7 +18,7 @@ const USER_JOIN_ERROR = 'USER_JOIN_ERROR'
 export const UserJoinAction = (data) => {
   return async (dispatch) => {
     // dispatch(UserJoinRequest());
-    console.log(data);
+
     // try {
     //   const response = await fetch('http://localhost:3000/api/login', {
     //     method: 'POST',
