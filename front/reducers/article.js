@@ -2,6 +2,7 @@
 const initialState = {
   loadding: true,
   isWriter: false,
+  isLike: false,
   id: null,
   subject: null,
   content: null,

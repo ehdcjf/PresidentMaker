@@ -4,12 +4,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { showArticle, deleteArticle } from "../../../components/api/Article";
 import { ShowArticleAction } from "../../../reducers/article";
 import { DeleteArticleAction } from "../../../reducers/board";
+
 import Link from "next/link";
 import Router from "next/router";
+import { FcLike, FcLikePlaceholder } from "react-icons/fc";
 
 const View = () => {
   const dispatch = useDispatch();
   const view = useSelector((state) => state.article);
+  console.log(view);
   const { type, page, search, keyword, rows } = useSelector(
     (state) => state.board
   );
@@ -42,7 +45,7 @@ const View = () => {
       const href = makeQuery();
       Router.push(href);
     } else {
-      confirm("당신에게는 이 글에 대한 삭제 권한이 없습니다.");
+      alert("당신에게는 이 글에 대한 삭제 권한이 없습니다.");
     }
   };
 
@@ -77,6 +80,32 @@ const View = () => {
     }
   };
 
+  const handleLike = async (v) => {
+    //비회원 확인 만들기.
+    const data = {
+      board_id: id,
+      isLike: v,
+    };
+    const result = await updateLike(data);
+    console.log(result);
+  };
+
+  const renderLike = () => {
+    if (view.isLike == false) {
+      return (
+        <>
+          <button
+            onClick={() => {
+              handleLike(true);
+            }}
+          >
+            <FcLikePlaceholder size="24" />
+          </button>
+        </>
+      );
+    }
+  };
+
   return (
     <div>
       <h2>{view.subject}</h2>
@@ -94,7 +123,7 @@ const View = () => {
       추천수: <span>{view.like}</span>
       <div dangerouslySetInnerHTML={{ __html: view.content }}></div>
       {renderArticleAction()}
-      {likeAction()}
+      {renderLike()}
       <button onClick={moveList}>게시판 목록</button>
     </div>
   );

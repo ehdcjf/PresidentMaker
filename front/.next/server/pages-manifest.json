@@ -2,6 +2,5 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/board/view/[id]": "pages/board/view/[id].js",
-  "/board/list": "pages/board/list.js"
+  "/board/view/[id]": "pages/board/view/[id].js"
 }

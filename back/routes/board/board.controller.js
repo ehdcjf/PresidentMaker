@@ -139,26 +139,48 @@ const showArticle = async (req, res) => {
             }
             //////=============================== hit update sql =====================================================///
 
-            const sql = `SELECT user.idx AS useridx,user.nickname,board.id,board.subject,board.content,board.createdAt,board.updatedAt,board.hit,board.like,board.del AS del
+            /////================================ like sql  start =======================================================///
+            //join 해서 가져오고 싶은데 비회원일경우에 조회하는 게 힘들 것 같음... 
+            let isLike = false;
+            if (writer !== undefined) {//회원일 경우 좋아요 눌렀는 지 확인해야함.
+                const likeSql = `SELECT id FROM blike WHERE board_id=? AND user_idx=?`
+                const likeParams = [id, writer]
+                const [like] = await connection.execute(likeSql, likeParams)
+                console.log(like);
+                if (like.length !== 0) {
+                    isLike = true;
+                }
+            }
+
+            /////================================ like sql end=======================================================///
+
+
+            const sql = `SELECT user.idx AS useridx, user.nickname,board.id,board.subject,board.content,board.createdAt,board.updatedAt,board.hit,board.like,board.del AS del
             FROM (SELECT idx, nickname FROM user) AS user 
             INNER JOIN board AS board
             ON board.writer = user.idx 
             WHERE id=?`
+
             const params = [id];
             const [result] = await connection.execute(sql, params)
-            if (result[0].del === 1) {
-                result[0].subject = '삭제된 게시글입니다.'
-                result[0].content = '삭제된 게시글입니다.'
+
+            let data = { ...result[0], isLike }
+
+            //삭제된 게시글은 제목과 내용을 가려줌.
+            if (data.del === 1) {
+                data.subject = '삭제된 게시글입니다.'
+                data.content = '삭제된 게시글입니다.'
             }
 
-            if (result[0].useridx == writer) {
-                result[0].isWriter = true;
+            //해당 글의 작성자면  isWriter 를 true 값을 부여하여 프론트에서 수정 삭제 버튼을 보여줄지 말지 정함.
+            if (data.useridx == writer) {
+                data.isWriter = true;
             } else {
-                result[0].isWriter = false;
+                data.isWriter = false;
             }
 
-            result[0].success = true;
-            res.json(result[0]);
+            data.success = true;
+            res.json(data);
         } catch (error) {
             console.log('Query Error');
             console.log(error)
