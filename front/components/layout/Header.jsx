@@ -1,7 +1,7 @@
 import Link from "next/link";
 import NavToggle from "../NavToggle";
 import Styled from "styled-components";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { KAKAO_AUTH_URL, KAKAO_LOGOUT_URL } from "../api/OAuth";
 
 const HeaderContainer = Styled.div`
@@ -40,7 +40,7 @@ const LoginComponent = () => {
   );
 };
 
-const LogoutComponent = () => {
+const LogoutComponent = (props) => {
   return (
     <>
       <li>
@@ -58,7 +58,8 @@ const LogoutComponent = () => {
 };
 
 const Header = () => {
-  const IsLogin = useSelector((state) => state.user.IsLogin);
+  const { IsLogin, nickname } = useSelector((state) => state.user);
+
   // console.log(IsLogin);
 
   return (
@@ -72,7 +73,7 @@ const Header = () => {
           </Link>
         </li>
         <li>
-          <Link href="/board/list?type=all&page=1">
+          <Link href="/board/list?type=all&rows=20&page=1">
             <a>자유게시판</a>
           </Link>
         </li>

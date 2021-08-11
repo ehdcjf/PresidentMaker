@@ -4,23 +4,42 @@ import { useDispatch, useSelector } from "react-redux";
 import { showList } from "../../components/api/showList";
 import { ShowListAction } from "../../reducers/board";
 import { Pageblock } from "../../components/pageblock";
+import Router from "next/router";
 
 const List = () => {
   const dispatch = useDispatch();
-  const { type, search, keyword, rows, page, pageblock, endpage, list } =
-    useSelector((state) => state.board);
-
-  let data = { type, search, keyword, rows, page };
+  const board = useSelector((state) => state.board);
 
   useEffect(async () => {
+    const queryStr = new URL(window.location.href).searchParams;
+    const data = {
+      type: queryStr.get("type"),
+      rows: queryStr.get("rows"),
+      page: queryStr.get("page"),
+      search: queryStr.get("search"),
+      keyword: queryStr.get("keyword"),
+    };
+
     const result = await showList(data);
     await dispatch(ShowListAction(result));
   }, []);
 
   const handlePage = async (num) => {
-    const updatePage = { ...data, page: num };
+    const updatePage = { ...board, page: num };
     const result = await showList(updatePage);
     await dispatch(ShowListAction(result));
+    Router.push(
+      {
+        pathname: `/board/list`,
+        query: {
+          type: board.type,
+          rows: board.rows,
+          page: num,
+        },
+      },
+      `/board/list?type=${board.type}&rows=${board.rows}&page=${num}`,
+      { shallow: true }
+    );
   };
 
   const renderList = (list) => {
@@ -46,7 +65,7 @@ const List = () => {
     <>
       <div>
         <div>
-          <Link href="/board/editor">
+          <Link href="/board/write">
             <a>글쓰기</a>
           </Link>
         </div>
@@ -62,12 +81,12 @@ const List = () => {
               <th>추천수</th>
             </tr>
           </thead>
-          <tbody>{renderList(list)}</tbody>
+          <tbody>{renderList(board.list)}</tbody>
         </table>
       </div>
       <Pageblock
-        pageblock={pageblock}
-        endpage={endpage}
+        pageblock={board.pageblock}
+        endpage={board.endpage}
         handlePage={handlePage}
       />
     </>

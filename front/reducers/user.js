@@ -1,7 +1,6 @@
 const initialState = {
   loadding: false,
   IsLogin: false,
-  userid: null,
   nickname: null,
 }
 
@@ -67,7 +66,6 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         IsLogin: true,
-        userid: action.data.userid,
         nickname: action.data.nickname,
         loadding: false,
       }
@@ -80,8 +78,7 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         IsLogin: false,
-        userid:null,
-        nickname:null,
+        nickname: null,
       }
     default:
       return state

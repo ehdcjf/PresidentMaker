@@ -1,12 +1,8 @@
 const pool = require('../../config/dbconnection');
 const jwtId = require('../../jwtId')
-const showHead = `SELECT board.subject,board.id,board.createdAt,board.updatedAt,board.hit,board.like,board.del
-FROM (SELECT idx, nickname FROM user) AS user 
-INNER JOIN board AS board
-ON board.writer = user.idx
-`
+const { yymmdd } = require('../util')
 
-const pageblockHead = `SELECT COUNT(id) AS count FROM board `
+
 
 const createArticle = async (req, res) => {
     const { subject, content } = req.body;
@@ -19,7 +15,7 @@ const createArticle = async (req, res) => {
             const sql = `INSERT INTO board (subject,content,writer) values(?,?,?)`
             const params = [subject, content, writer];
             const [rows] = await connection.execute(sql, params)
-            console.log(rows);
+
             res.json(rows);
         } catch (error) {
             console.log('Query Error');
@@ -39,6 +35,13 @@ const createArticle = async (req, res) => {
 
 const showList = async (req, res) => {
     let count = 0;
+    const showHead = `SELECT board.subject,board.id,board.createdAt,board.updatedAt,board.hit,board.like,board.del
+                    FROM (SELECT idx, nickname FROM user) AS user 
+                    INNER JOIN board AS board
+                    ON board.writer = user.idx
+                    `
+
+    const pageblockHead = `SELECT COUNT(id) AS count FROM board `
     const pageblockSql = searchVerse(pageblockHead, req.query);
 
     let connection;
@@ -95,12 +98,48 @@ const showList = async (req, res) => {
 const showArticle = async (req, res) => {
     const { id } = req.params;
     const AccessToken = req.cookies.AccessToken;
-    const writer = jwtId(AccessToken);
+    const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    const now = yymmdd(new Date());
+
+    let writer;
+    if (AccessToken !== undefined)
+        writer = jwtId(AccessToken);
     let connection;
     try {
         connection = await pool.getConnection(async conn => conn);
         try {
-            const sql = `SELECT user.idx AS useridx,user.nickname,board.id,board.subject,board.content,board.createdAt,board.updatedAt,board.hit,board.like,board.del
+
+            //////=============================== hit update sql =====================================================///
+            // 조회수를 ip말고 쿠키로 처리하는 방법도 생각하기
+            // 접근했던 게시글에 대한 정보를 쿠키에 담고 있으면? ==> 내가 누른 게시글 색깔 변하게 해주는 것도 쉽게 구현할 수 있을 듯
+            // 쿠키에 있으면 보라색. 아니면 검은색 이런식으로.
+            // 생각해보니 쿠키에 안 담고 그냥 상태로 담아도 상관 없음..
+            const hitSearchSql = `SELECT  id,date from hit where board_id=? AND ip=?`
+            const hitParams = [id, ip];
+            const [hitInfo] = await connection.execute(hitSearchSql, hitParams)
+            let updatedAt;
+            let hitID;
+            if (hitInfo.length !== 0) {
+                updatedAt = yymmdd(hitInfo[0].date);
+                hitID = hitInfo[0].id;
+            }
+            if (hitInfo.length === 0 || updatedAt !== now) {//upsert 구문 쓰는 법 알아볼것( primary key 가 하나여야한다는데??)
+                if (hitInfo.length === 0) {
+                    const hitInsertSql = `INSERT INTO hit (board_id,ip,date) values(?,?,?);`
+                    const hitInsertParams = [id, ip, now];
+                    const [result] = await connection.execute(hitInsertSql, hitInsertParams)
+                } else {
+                    const hitUpdateSql = `UPDATE hit SET date=? WHERE id=?;`
+                    const hitUpdateParams = [now, hitID];
+                    const [result] = await connection.execute(hitUpdateSql, hitUpdateParams)
+                }
+                const boardHitUpdateSql = `UPDATE board SET hit=hit+1 WHERE id=?;` //// 이부분 트리거로 빼기.
+                const boardHitParams = [id];
+                const [hit] = await connection.execute(boardHitUpdateSql, boardHitParams)
+            }
+            //////=============================== hit update sql =====================================================///
+
+            const sql = `SELECT user.idx AS useridx,user.nickname,board.id,board.subject,board.content,board.createdAt,board.updatedAt,board.hit,board.like,board.del AS del
             FROM (SELECT idx, nickname FROM user) AS user 
             INNER JOIN board AS board
             ON board.writer = user.idx 
@@ -148,7 +187,6 @@ const updateArticle = async (req, res) => {
             const sql = `UPDATE board SET subject=?,content=?,updatedAt=? WHERE id=?`
             const params = [subject, content, update, id];
             const [rows] = await connection.execute(sql, params)
-            console.log(rows);
             res.json(rows);
         } catch (error) {
             console.log('Query Error');

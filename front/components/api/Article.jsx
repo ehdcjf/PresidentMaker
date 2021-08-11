@@ -11,6 +11,27 @@ export const showArticle = async (data) => {
   return result;
 };
 
+export const createArticle = async (data) => {
+  const { subject, body } = data;
+  let url = "http://localhost:3002/board/write";
+  let options = {
+    method: "POST",
+    mode: "cors",
+    credentials: "include",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      subject,
+      content: body,
+    }),
+  };
+
+  const response = await fetch(url, options);
+  const result = await response.json();
+  return result;
+};
+
 export const deleteArticle = async (data) => {
   const { id, useridx } = data;
   const url = `http://localhost:3002/board/${id}/${useridx}`;
@@ -19,6 +40,27 @@ export const deleteArticle = async (data) => {
     mode: "cors",
     credentials: "include",
   };
+  const response = await fetch(url, options);
+  const result = await response.json();
+  return result;
+};
+
+export const updateArticle = async (data) => {
+  const { subject, body, id } = data;
+  let url = `http://localhost:3002/board/${id}`;
+  let options = {
+    method: "put",
+    mode: "cors",
+    credentials: "include",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      subject,
+      content: body,
+    }),
+  };
+
   const response = await fetch(url, options);
   const result = await response.json();
   return result;

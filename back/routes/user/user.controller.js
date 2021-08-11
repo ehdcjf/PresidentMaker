@@ -120,6 +120,16 @@ const deleteUser = async (req, res) => {
 
 
 
+const logoutUser = (req, res) => {
+    res.clearCookie('AccessToken', { path: '/' })
+    const data = {
+        isLogout: true,
+    }
+    res.json(data)
+}
+
+
+
 
 
 
@@ -128,6 +138,7 @@ module.exports = {
     showUser,
     updateUser,
     deleteUser,
+    logoutUser,
 }
 
 // id,userid,nickname,hometown,residence,gender,age,status,show 

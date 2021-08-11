@@ -3,8 +3,10 @@ import Head from "next/head";
 import "../style/style.css";
 import wrapper from "../store/configureStore";
 import { CookiesProvider } from "react-cookie";
+import { useStore } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 const App = ({ Component }) => {
+  const store = useStore((state) => state);
   return (
     <>
       <Head>
@@ -19,8 +21,11 @@ const App = ({ Component }) => {
           rel="stylesheet"
         />
       </Head>
+
       <CookiesProvider>
-        <Component />
+        <PersistGate persistor={store.__persistor} loading={<div>Loading</div>}>
+          <Component />
+        </PersistGate>
       </CookiesProvider>
     </>
   );

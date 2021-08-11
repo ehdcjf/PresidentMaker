@@ -1,7 +1,21 @@
 import BlogLayout from "../components/BlogLayout";
 import Head from "next/head";
-
+import { useSelector, useDispatch } from "react-redux";
+import { useEffect } from "react";
+import { UserLogoutAction } from "../reducers/user";
+import { deleteToken } from "../components/api/deleteToken";
+import Router from "next/router";
 const Index = () => {
+  const dispatch = useDispatch();
+  useEffect(async () => {
+    const logout = new URL(window.location.href).searchParams.get("logout");
+    if (logout == "success") {
+      const result = await deleteToken();
+      if (result.isLogout) dispatch(UserLogoutAction());
+      Router.push("/", undefined, { shallow: true });
+    }
+  }, []);
+
   return (
     <>
       <Head>

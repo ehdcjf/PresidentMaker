@@ -8,8 +8,8 @@ const initialState = {
   hit: null,
   like: null,
   del: null,
-  createAt: null,
-  updateAt: null,
+  createdAt: null,
+  updatedAt: null,
   nickname: null,
   useridx: null,
   comment: [],
@@ -20,6 +20,7 @@ const initialState = {
 const SHOW_ARTICLE_REQUEST = 'SHOW_ARTICLE_REQUEST'
 const SHOW_ARTICLE_SUCCESS = 'SHOW_ARTICLE_SUCCESS'
 const SHOW_ARTICLE_ERROR = 'SHOW_ARTICLE_ERROR'
+
 
 
 

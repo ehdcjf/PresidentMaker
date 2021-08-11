@@ -3,8 +3,8 @@ const initialState = {
   type: 'all',
   search: null,
   keyword: null,
-  rows: 20,
   page: 1,
+  rows: 20,
   pageblock: [],
   endpage: null,
   list: [],
@@ -18,6 +18,7 @@ const SHOW_LIST_ERROR = 'SHOW_LIST_ERROR'
 const DELETE_ARTICLE_REQUEST = 'DELETE_ARTICLE_REQUEST'
 const DELETE_ARTICLE_SUCCESS = 'DELETE_ARTICLE_SUCCESS'
 const DELETE_ARTICLE_ERROR = 'DELETE_ARTICLE_ERROR'
+const CREATE_ARTICLE_ACTION = 'CREATE_ARTICLE_ACTION'
 
 export const ShowListAction = (data) => {
   return async (dispatch) => {
@@ -34,8 +35,6 @@ export const ShowListAction = (data) => {
 }
 
 export const DeleteArticleAction = (data) => {
-  console.log('xxxxxxxxxxxx')
-  console.log(data)
   return async (dispatch) => {
     dispatch(DeleteArticleRequest());
     try {
@@ -48,6 +47,7 @@ export const DeleteArticleAction = (data) => {
     }
   }
 }
+
 
 
 
@@ -88,6 +88,11 @@ export const DeleteArticleError = () => {
 }
 
 
+export const CreateArticleAction = () => {
+  return {
+    type: CREATE_ARTICLE_ACTION,
+  }
+}
 
 
 const reducer = (state = initialState, action) => {
@@ -121,8 +126,6 @@ const reducer = (state = initialState, action) => {
       }
     case DELETE_ARTICLE_SUCCESS:
       const target = action.data.id;
-      console.log(state.list);
-      console.log(list)
       const newList = [...state.list].map((v) => {
         if (v.id == target) {
           v.subject = "삭제된 게시글입니다."
@@ -142,6 +145,12 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         loadding: false,
+      }
+    case CREATE_ARTICLE_ACTION:
+      return {
+        ...state,
+        type: 'all',
+        page: 1,
       }
     default:
       return state
