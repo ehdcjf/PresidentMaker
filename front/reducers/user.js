@@ -15,10 +15,9 @@ export const UserLoginAction = (data) => {
   return async (dispatch) => {
     dispatch(UserLoginRequest());
     try {
-      const result = data;
-      console.log(result)
-      result.isUser === true
-        ? dispatch(UserLoginSuccess(result))
+
+      data.isUser === true
+        ? dispatch(UserLoginSuccess(data))
         : dispatch(UserLoginError())
     } catch (e) {
       dispatch(UserLoginError())

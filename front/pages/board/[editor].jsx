@@ -36,8 +36,7 @@ export default function Home() {
      이 함수를 호출했을 때 컴포넌트 내의 useEffect가 실행되어 body의 수정 사항이 적용됩니다.*/
 
   useEffect(() => {
-    if (editor !== "write") {
-      console.log(article);
+    if (editor === "modify") {
       setBody(article.content);
       setSubject(article.subject);
     }
@@ -50,7 +49,7 @@ export default function Home() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const data = {
+    let data = {
       subject: subject,
       body: body,
       id: article.id,
@@ -58,6 +57,7 @@ export default function Home() {
     // setBody("");
 
     if (editor === "write") {
+      delete data.id;
       //==write
       const result = await createArticle(data);
       dispatch(CreateArticleAction());

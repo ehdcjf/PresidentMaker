@@ -1,8 +1,7 @@
 const pool = require('../../../config/dbconnection');
 
 const createPolitician = async (req, res) => {
-  const { name } = req.body;
-  const image = req.file.filename;
+  const { name, image } = req.body;
 
   let connection;
   try {
@@ -30,8 +29,7 @@ const createPolitician = async (req, res) => {
 
 
 const createParty = async (req, res) => {
-  const { name } = req.body;
-  const image = req.file.filename;
+  const { name, image } = req.body;
 
   let connection;
   try {
@@ -57,8 +55,9 @@ const createParty = async (req, res) => {
 }
 
 const createElection = async (req, res) => {
-  const { name, table } = req.body;
-  const temp = JSON.parse(table)
+  const { name, candidate } = req.body;
+
+  const table = candidate.split(',');
 
   let connection;
   try {
@@ -69,14 +68,42 @@ const createElection = async (req, res) => {
       const [rows] = await connection.execute(createEelectionSql, params)
       const tableIndex = rows.insertId
 
-      const maketableSql = `INSERT INTO vote_info (vote_idx,politician_idx,party_idx) value(?,?,?)`
-      temp.forEach(async (ele) => {
-        const man = ele[0];
-        const party = ele[1];
-        const params = [tableIndex, man, party];
+      const maketableSql = `INSERT INTO vote_info (vote_idx,politician_idx) value(?,?)`
+      table.forEach(async (ele) => {
+        const man = ele;
+        // const party = ele[1];
+        const params = [tableIndex, man];
         const result = await connection.execute(maketableSql, params);
-        console.log(result);
+
       });
+      const data = {
+        success: true
+      }
+      res.json(data);// 완료 데이터 넘겨주기.
+    } catch (error) {
+      console.log('Query Error');
+      console.log(error)
+      res.json(error)
+    }
+  } catch (error) {
+    console.log('DB Error')
+    console.log(error)
+    res.json(error)
+  } finally {
+    connection.release();
+  }
+
+}
+
+const showList = async (req, res) => {
+  const { type } = req.query;
+  let connection;
+  try {
+    connection = await pool.getConnection(async conn => conn);
+    try {
+      const createEelectionSql = `SELECT * FROM ${type}`
+      const params = []
+      const [rows] = await connection.execute(createEelectionSql, params)
       res.json(rows);// 완료 데이터 넘겨주기.
     } catch (error) {
       console.log('Query Error');
@@ -101,4 +128,5 @@ module.exports = {
   createPolitician,
   createParty,
   createElection,
+  showList,
 }

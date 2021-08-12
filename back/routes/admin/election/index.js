@@ -15,10 +15,11 @@ const upload = multer({
   }),
 })
 
+router.get('/', electionController.showList);
 
-router.post('/politician', upload.single('image'), electionController.createPolitician);
-router.post('/party', upload.single('image'), electionController.createParty);
 
+router.post('/politician', electionController.createPolitician);
+router.post('/party', electionController.createParty);
 router.post('/table', electionController.createElection);
 
 

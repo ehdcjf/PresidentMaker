@@ -4,20 +4,22 @@ import { useDispatch, useSelector } from "react-redux";
 import { showArticle, deleteArticle } from "../../../components/api/Article";
 import { ShowArticleAction } from "../../../reducers/article";
 import { DeleteArticleAction } from "../../../reducers/board";
+import Comment from "../../../components/comment/Comment";
 
 import Link from "next/link";
 import Router from "next/router";
-import { FcLike, FcLikePlaceholder } from "react-icons/fc";
+import { LikeBtn } from "../../../components/LikeBtn";
 
 const View = () => {
   const dispatch = useDispatch();
   const view = useSelector((state) => state.article);
-  console.log(view);
   const { type, page, search, keyword, rows } = useSelector(
     (state) => state.board
   );
   const router = useRouter();
   const { id } = router.query;
+  const blike = "blike";
+  const clike = "clike";
 
   const makeQuery = () => {
     let queryStr = `/board/list?type=${type}&rows=${rows}&page=${page}`;
@@ -29,7 +31,7 @@ const View = () => {
   useEffect(async () => {
     if (id !== undefined) {
       const data = { id: id };
-      const result = await showArticle(data);
+      const result = await showArticle(data); //// 정보를 가져올 필요가 없을 때도 가져온다.
       dispatch(ShowArticleAction(result));
     }
   }, [id]);
@@ -90,41 +92,37 @@ const View = () => {
     console.log(result);
   };
 
-  const renderLike = () => {
-    if (view.isLike == false) {
-      return (
-        <>
-          <button
-            onClick={() => {
-              handleLike(true);
-            }}
-          >
-            <FcLikePlaceholder size="24" />
-          </button>
-        </>
-      );
-    }
-  };
-
   return (
     <div>
-      <h2>{view.subject}</h2>
-      작성일: <span>{view.createdAt}</span>
-      <br />
-      작성자:{" "}
-      <span>
-        <Link href="/user/info/:[useridx]" as={`/user/info/${view.useridx}`}>
-          <a>{view.nickname}</a>
-        </Link>
-      </span>
-      <br />
-      조회수: <span>{view.hit}</span>
-      <br />
-      추천수: <span>{view.like}</span>
-      <div dangerouslySetInnerHTML={{ __html: view.content }}></div>
-      {renderArticleAction()}
-      {renderLike()}
-      <button onClick={moveList}>게시판 목록</button>
+      {/* 게시글 영역 */}
+      <div>
+        <h2>{view.subject}</h2>
+        작성일: <span>{view.createdAt}</span>
+        <br />
+        작성자:{" "}
+        <span>
+          <Link href="/user/info/:[useridx]" as={`/user/info/${view.useridx}`}>
+            <a>{view.nickname}</a>
+          </Link>
+        </span>
+        <br />
+        조회수: <span>{view.hit}</span>
+        <br />
+        좋아요: <span>{view.liked}</span>
+        <br />
+        싫어요: <span>{view.disliked}</span>
+        <div dangerouslySetInnerHTML={{ __html: view.content }}></div>
+        {renderArticleAction()}
+        {id !== undefined && (
+          <LikeBtn isLike={view.isLike} type={blike} id={id} />
+        )}
+        <button onClick={moveList}>게시판 목록</button>
+      </div>
+
+      {/* 댓글영역 */}
+      <div>
+        <Comment />
+      </div>
     </div>
   );
 };

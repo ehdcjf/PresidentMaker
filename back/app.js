@@ -1,6 +1,8 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
+
+
 const cors = require('cors')
 const PORT = 3002;
 const router = require('./routes');
@@ -15,9 +17,10 @@ app.use(
     cors({
         origin: 'http://localhost:3001',
         credentials: true
-        
+
     })
 );
+
 app.use('/uploads', express.static('uploads'));
 app.use(express.static('uploads/'));
 app.use(express.static('public'));

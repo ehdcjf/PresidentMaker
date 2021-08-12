@@ -1,17 +1,24 @@
 const pool = require('../../config/dbconnection');
+const jwtId = require('../../jwtId')
 
 const createComment = async (req, res) => {
   const { content } = req.body;
-  const { board_id, comment_id } = req.params;
-  const id = req.cookies.presidentMaker;
+  const { board_id, master } = req.params;
+  const AccessToken = req.cookies.AccessToken;
+  const writer = jwtId(AccessToken);
+
   let connection;
   try {
     connection = await pool.getConnection(async conn => conn);
     try {
       const sql = `INSERT INTO comment (content,board_id,writer,master) values(?,?,?,?)`
-      const params = [content, board_id, id, comment_id];
+      const params = [content, board_id, writer, master];
       const [rows] = await connection.execute(sql, params)
       console.log(rows);
+      const data = {
+        success: true,
+
+      }
       res.json(rows);
     } catch (error) {
       console.log('Query Error');

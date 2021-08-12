@@ -15,7 +15,6 @@ const createUser = async (req, res) => { // 회원가입 완료되면 쿠키만�
             const [rows] = await connection.execute(sql, params)
             const data = {
                 isUser: true,
-                userid: userid,
                 nickname: nickname,
             }
             res.json(data);

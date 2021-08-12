@@ -35,7 +35,7 @@ const createArticle = async (req, res) => {
 
 const showList = async (req, res) => {
     let count = 0;
-    const showHead = `SELECT board.subject,board.id,board.createdAt,board.updatedAt,board.hit,board.like,board.del
+    const showHead = `SELECT user.nickname as nickname, board.subject,board.id,board.createdAt,board.updatedAt,board.hit,board.liked,board.disliked,board.del
                     FROM (SELECT idx, nickname FROM user) AS user 
                     INNER JOIN board AS board
                     ON board.writer = user.idx
@@ -141,21 +141,20 @@ const showArticle = async (req, res) => {
 
             /////================================ like sql  start =======================================================///
             //join 해서 가져오고 싶은데 비회원일경우에 조회하는 게 힘들 것 같음... 
-            let isLike = false;
+            let isLike = null;
             if (writer !== undefined) {//회원일 경우 좋아요 눌렀는 지 확인해야함.
-                const likeSql = `SELECT id FROM blike WHERE board_id=? AND user_idx=?`
+                const likeSql = `SELECT islike FROM blike WHERE board_id=? AND user_idx=?`
                 const likeParams = [id, writer]
-                const [like] = await connection.execute(likeSql, likeParams)
-                console.log(like);
-                if (like.length !== 0) {
-                    isLike = true;
+                const [result] = await connection.execute(likeSql, likeParams)
+                if (result.length !== 0) {
+                    isLike = result.islike;
                 }
             }
 
             /////================================ like sql end=======================================================///
 
-
-            const sql = `SELECT user.idx AS useridx, user.nickname,board.id,board.subject,board.content,board.createdAt,board.updatedAt,board.hit,board.like,board.del AS del
+            /////=================================article sql start======================================///
+            const sql = `SELECT user.idx AS useridx, user.nickname,board.id,board.subject,board.content,board.createdAt,board.updatedAt,board.hit,board.liked,board.disliked,board.del AS del
             FROM (SELECT idx, nickname FROM user) AS user 
             INNER JOIN board AS board
             ON board.writer = user.idx 
@@ -163,6 +162,11 @@ const showArticle = async (req, res) => {
 
             const params = [id];
             const [result] = await connection.execute(sql, params)
+
+            /////=================================article sql end======================================///
+
+            ///===============================
+
 
             let data = { ...result[0], isLike }
 
@@ -264,12 +268,10 @@ const deleteArticle = async (req, res) => {
         }
 
     }
-
-
-
-
-
 }
+
+
+
 
 
 
