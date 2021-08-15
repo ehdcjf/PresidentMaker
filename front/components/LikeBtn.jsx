@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { likeAction } from "./api/like";
 import {
   InsertBLikeAction,
@@ -15,7 +15,9 @@ import {
 
 export const LikeBtn = (props) => {
   const dispatch = useDispatch();
+  const { liked, disliked } = props;
   const { isLike, type, id } = props;
+  console.log(liked, disliked);
 
   const handleOutlineLike = (value) => {
     if (isLike === null) {
@@ -67,6 +69,7 @@ export const LikeBtn = (props) => {
 
   return (
     <div>
+      <span className="liked">{liked}</span>
       {isLike === true ? (
         <button
           onClick={() => {
@@ -101,6 +104,7 @@ export const LikeBtn = (props) => {
           <AiOutlineDislike />
         </button>
       )}
+      <span className="disliked">{disliked}</span>
     </div>
   );
 };

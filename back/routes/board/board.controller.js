@@ -1,6 +1,6 @@
 const pool = require('../../config/dbconnection');
 const jwtId = require('../../jwtId')
-const { yymmdd } = require('../util')
+const { yymmdd, clearDate } = require('../util')
 
 
 
@@ -35,7 +35,7 @@ const createArticle = async (req, res) => {
 
 const showList = async (req, res) => {
     let count = 0;
-    const showHead = `SELECT user.nickname as nickname, board.subject,board.id,board.createdAt,board.updatedAt,board.hit,board.liked,board.disliked,board.del
+    const showHead = `SELECT user.nickname as nickname, board.subject as subject,board.id as id,board.createdAt as createdAt,board.updatedAt,board.hit,board.liked,board.disliked,board.del
                     FROM (SELECT idx, nickname FROM user) AS user 
                     INNER JOIN board AS board
                     ON board.writer = user.idx
@@ -60,6 +60,9 @@ const showList = async (req, res) => {
                     ele.subject = '삭제된 게시글입니다.'
                 }
             });
+            results.forEach(v => {
+                v.createdAt = clearDate(v.createdAt)
+            })
 
             const data = {
                 success: true,
@@ -94,7 +97,6 @@ const showList = async (req, res) => {
 
 
 
-//댓글도 불러오기.
 const showArticle = async (req, res) => {
     const { id } = req.params;
     const AccessToken = req.cookies.AccessToken;
@@ -167,6 +169,7 @@ const showArticle = async (req, res) => {
 
             ///===============================
 
+            result[0].createdAt = clearDate(result[0].createdAt)
 
             let data = { ...result[0], isLike }
 
@@ -182,7 +185,7 @@ const showArticle = async (req, res) => {
             } else {
                 data.isWriter = false;
             }
-
+            console.log(data);
             data.success = true;
             res.json(data);
         } catch (error) {

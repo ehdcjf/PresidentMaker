@@ -13,10 +13,10 @@ router.put('/:id', boardController.updateArticle);
 router.delete('/:id/:useridx', boardController.deleteArticle);
 
 
-router.get('/comment/:master/:comment_id', commentController.showRyple)
-router.post('/comment/:board_id/:master', commentController.createComment);
-router.patch('/comment/:comment_id', commentController.updateComment);
-router.delete('/comment/:comment_id', commentController.deleteComment);
+router.get('/comment/:board_id/:master/:skip', commentController.showComment)
+router.post('/comment/:board_id/:master/:sub_master', commentController.createComment);
+router.patch('/comment/:id/:writer', commentController.updateComment);
+router.delete('/comment/:id/:writer', commentController.deleteComment);
 
 router.post('/like', likeController.LikeAction)
 
