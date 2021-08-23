@@ -15,10 +15,13 @@ const KakaoLogin = () => {
 
     // console.log(result);
     //이 아래 부분을 kakaoCallback 함수에서 다 처리하고 싶은데 방법을 못찾음.
-    if (!result.isUser) {
-      Router.push(`/user/join?id=${result.userid}`);
+    if (!result.success) {
+      console.log(result);
+      Router.push(`/user/join?id=${result.kakao_code}`);
     } else {
+      console.log(result);
       dispatch(UserLoginAction(result));
+
       Router.push(`/`);
     }
   }, []);

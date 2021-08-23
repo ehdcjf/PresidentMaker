@@ -8,15 +8,15 @@ const likeController = require('./like.controller')
 
 router.get('/list', boardController.showList);
 router.post('/write', boardController.createArticle);
-router.get('/:id', boardController.showArticle);
-router.put('/:id', boardController.updateArticle);
-router.delete('/:id/:useridx', boardController.deleteArticle);
+router.get('/:board_id', boardController.showArticle);
+router.put('/:board_id/:writer', boardController.updateArticle);
+router.delete('/:board_id/:writer', boardController.deleteArticle);
 
 
-router.get('/comment/:board_id/:master/:skip', commentController.showComment)
-router.post('/comment/:board_id/:master/:sub_master', commentController.createComment);
-router.patch('/comment/:id/:writer', commentController.updateComment);
-router.delete('/comment/:id/:writer', commentController.deleteComment);
+router.post('/comment/:board_id/:root/:target', commentController.createComment);
+router.get('/comment/:board_id/:root/:skip', commentController.showComment)
+router.patch('/comment/:comment_id/:writer', commentController.updateComment);
+router.delete('/comment/:comment_id/:writer', commentController.deleteComment);
 
 router.post('/like', likeController.LikeAction)
 

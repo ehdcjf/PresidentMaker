@@ -15,8 +15,6 @@ const get_code = async (req, res) => {
   let token;
   let user;
 
-
-
   try {
     token = await axios({
       method: 'POST',
@@ -50,21 +48,22 @@ const get_code = async (req, res) => {
     res.json(err.data)
   }
 
-  const userid = user.data.id;
+  const kakao_code = user.data.id;
 
 
   let connection;
   try {
     connection = await pool.getConnection(async conn => conn);
     try {
-      const sql = `SELECT nickname,idx FROM user WHERE userid=?`
-      const params = [userid];
+      const sql = `SELECT nickname,user_id,image FROM user WHERE kakao_code=?`
+      const params = [kakao_code];
 
       const [result] = await connection.execute(sql, params)
-      const access_token = createToken(result[0].idx)
+      const access_token = createToken(result[0].user_id)
       const data = {
-        isUser: true,
+        success: true,
         nickname: result[0].nickname,
+        image: result[0].image,
       }
       res.cookie('AccessToken', access_token, { httpOnly: true, secure: true })
       res.json(data);
@@ -73,42 +72,22 @@ const get_code = async (req, res) => {
       console.log('비회원. 회원가입진행')
       console.log(error)
       const join = {
-        isUser: false,
-        userid: userid,
+        success: false,
+        kakao_code: kakao_code,
       }
       res.json(join)
     }
   } catch (error) {
     console.log('DB Error')
     console.log(error)
-    res.json(error)
+    const data = {
+      success: false,
+      error: error
+    }
+    res.json(data)
   } finally {
     connection.release();
   }
-
-
-  //   connection.query(sql, (error, results) => {
-  //     if (error) {
-  //       res.json(error);
-  //     } else {
-  //       console.log(results)
-  //       if (results.length === 0) {
-  //         // 회원가입해야돼서. 
-  //         const data = {
-  //           userid: userid,
-  //         }
-  //         res.json(data)
-  //       } else { // 회원가입이 되어 있는 경우는 토큰을 보내줌. 
-
-  //         const token = createToken(userid);
-  //         console.log('토큰 전송')
-  //         res.cookie('presidentMaker', token, { httpOnly: true, secure: true });
-  //         res.json('xxx')
-  //       }
-  //     }
-  //   });
-  // })
-
 }
 
 const get_image = (req, res) => {

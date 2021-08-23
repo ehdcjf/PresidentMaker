@@ -5,6 +5,13 @@ import { useEffect } from "react";
 import { UserLogoutAction } from "../reducers/user";
 import { deleteToken } from "../components/api/deleteToken";
 import Router from "next/router";
+import dynamic from "next/dynamic";
+import Link from "next/link";
+
+const Home = dynamic(() => import("../containers/Home"), {
+  ssr: false,
+});
+
 const Index = () => {
   const dispatch = useDispatch();
   useEffect(async () => {
@@ -21,12 +28,7 @@ const Index = () => {
       <Head>
         <title>Blog</title>
       </Head>
-      <BlogLayout>
-        Hello NEXT
-        <div>
-          <img src="/arger.jpg" />
-        </div>
-      </BlogLayout>
+      <Home />
     </>
   );
 };

@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { showList } from "../../components/api/showList";
 import { ShowListAction } from "../../reducers/board";
-import { Pageblock } from "../../components/pageblock";
+import { Pageblock } from "../../components/board/pageblock";
 import Router from "next/router";
 
 const List = () => {
@@ -45,10 +45,13 @@ const List = () => {
   const renderList = (list) => {
     return list.map((v) => {
       return (
-        <tr key={v.id}>
-          <td>{v.id}</td>
+        <tr key={v.board_id}>
+          <td>{v.board_id}</td>
           <td>
-            <Link href="/board/view/:[id]" as={`/board/view/${v.id}`}>
+            <Link
+              href="/board/view/:[board_id]"
+              as={`/board/view/${v.board_id}`}
+            >
               <a>{v.subject}</a>
             </Link>
           </td>

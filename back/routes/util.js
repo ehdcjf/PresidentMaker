@@ -30,4 +30,20 @@ const clearDate = (date) => {
   return `${y}.${m}.${d} ${h}:${mm}:${s}`
 }
 
-module.exports = { yymmdd, clearDate }
+
+const clearDateOnly = (date) => {
+  const now = new Date(date);
+
+  const y = now.getFullYear();
+  let m = now.getMonth() + 1;
+  let d = now.getDate();
+
+
+  if (m < 10) m = '0' + m;
+  if (d < 10) d = '0' + d;
+
+
+  return `${y}.${m}.${d}`
+}
+
+module.exports = { yymmdd, clearDate, clearDateOnly }

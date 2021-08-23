@@ -1,6 +1,6 @@
 import Head from "next/head";
 import { useState, useEffect } from "react";
-import QuillEditor from "../../components/QuillEditor";
+import QuillEditor from "../../components/board/QuillEditor";
 import Styled from "styled-components";
 import { createArticle, updateArticle } from "../../components/api/Article";
 import Router, { useRouter } from "next/router";
@@ -27,6 +27,7 @@ export default function Home() {
   const router = useRouter();
   const article = useSelector((state) => state.article);
   const { editor } = router.query;
+  console.log(article);
 
   const dispatch = useDispatch();
   const [body, setBody] = useState(""); // Quill 에디터의 innerHTML을 담는 state
@@ -37,10 +38,14 @@ export default function Home() {
 
   useEffect(() => {
     if (editor === "modify") {
+      //여기서 유저확인 필요.
+
+      //맞으면?
       setBody(article.content);
       setSubject(article.subject);
+      ///틀리면 back
     }
-  }, [editor]);
+  }, [editor, article]);
 
   const handleSubject = (e) => {
     const { value } = { ...e.target };
@@ -52,12 +57,14 @@ export default function Home() {
     let data = {
       subject: subject,
       body: body,
-      id: article.id,
+      writer: article.writer,
+      board_id: article.board_id,
     };
     // setBody("");
 
     if (editor === "write") {
-      delete data.id;
+      delete data.board_id;
+      delete data.writer;
       //==write
       const result = await createArticle(data);
       dispatch(CreateArticleAction());
@@ -65,10 +72,14 @@ export default function Home() {
     } else {
       //==modify
       const result = await updateArticle(data);
-      // dispatch(UpdateArticleAction(result));
-      Router.push(`/board/view/${article.id}`);
+      if (result.success) {
+        console.log(result.success);
+        Router.push(`/board/view/${article.board_id}`);
+      } else {
+        alert(result.error);
+        Router.back();
+      }
     }
-    // await dispatch(UserLoginAction(result));
   };
 
   return (

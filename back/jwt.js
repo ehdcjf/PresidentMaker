@@ -1,7 +1,7 @@
 require('dotenv').config();
 const crypto = require('crypto');
 
-function createToken(idx) {
+function createToken(user_id) {
     let header = {
         "tpy": "JWT",
         "alg": "HS256"
@@ -10,7 +10,7 @@ function createToken(idx) {
     let exp = new Date().getTime() + ((60 * 60 * 2) * 1000)
 
     let payload = {
-        idx,
+        user_id,
         exp,
     }
 

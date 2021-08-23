@@ -3,6 +3,11 @@ import { useState } from "react";
 import Accordion from "./Accordion";
 
 const Toggle = Styled.div`
+
+  /* @media only screen and (min-width:768px) {
+        display:none;    
+    } */
+
   background:transparent;
   border-color:transparent;
   &> .nav-toggle { 
@@ -50,8 +55,6 @@ const Toggle = Styled.div`
     }
 `;
 
-
-
 const NavToggle = () => {
   const [visible, setVisible] = useState(false);
   const handleToggle = () => {
@@ -70,8 +73,7 @@ const NavToggle = () => {
         <span></span>
         <span></span>
       </label>
-      <Accordion visible={visible} handleToggle={handleToggle}/>
-      
+      <Accordion visible={visible} handleToggle={handleToggle} />
     </Toggle>
   );
 };

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { imageUpload } from "./api/joinRequest";
+import { imageUpload } from "../api/joinRequest";
 
 export default function QuillEditor({ body, handleQuillChange }) {
   const quillElement = useRef();

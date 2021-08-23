@@ -12,13 +12,22 @@ const HeaderContainer = Styled.div`
     padding:0 5vw;
     box-sizing:border-box;
     border-bottom:1px solid #ddd;
-    width:100vw;
+    font-family: "Syncopate", sans-serif;
+    
 `;
 
 const Gnb = Styled.ul`
     //모바일
     display:flex;
     flex-direction:row;
+    justify-content: space-between;
+  padding: 50px 0;
+  font: 24px;
+  letter-spacing: 1px;
+  font-family: "Syncopate", sans-serif;
+  color: #464646;
+  font-weight: 600;
+  text-transform: uppercase;
     & > li {
         margin-left:20px;
     }
@@ -65,7 +74,7 @@ const Header = () => {
   return (
     <HeaderContainer>
       {/* 로고와 메뉴 */}
-      <h1>로고</h1>
+      <h1>pRESIDENT MAKER</h1>
       <Gnb>
         <li>
           <Link href="/">
@@ -73,8 +82,13 @@ const Header = () => {
           </Link>
         </li>
         <li>
+          <Link href="/">
+            <a>투표</a>
+          </Link>
+        </li>
+        <li>
           <Link href="/board/list?type=all&rows=20&page=1">
-            <a>자유게시판</a>
+            <a>게시판</a>
           </Link>
         </li>
         {IsLogin === false ? <LoginComponent /> : <LogoutComponent />}

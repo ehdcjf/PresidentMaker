@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { likeAction } from "./api/like";
+import { likeAction } from "../api/like";
 import {
   InsertBLikeAction,
   DeleteBLikeAction,
   UpdateBLikeAction,
-} from "../reducers/article";
+} from "../../reducers/article";
 import {
   AiFillDislike,
   AiFillLike,
@@ -16,8 +16,7 @@ import {
 export const LikeBtn = (props) => {
   const dispatch = useDispatch();
   const { liked, disliked } = props;
-  const { isLike, type, id } = props;
-  console.log(liked, disliked);
+  const { isLike, type, board_id } = props;
 
   const handleOutlineLike = (value) => {
     if (isLike === null) {
@@ -29,7 +28,7 @@ export const LikeBtn = (props) => {
 
   const handleInsert = async (value) => {
     const data = {
-      board_id: id,
+      board_id: board_id,
       isLike: value,
       type: type,
       action: "INSERT",
@@ -43,7 +42,7 @@ export const LikeBtn = (props) => {
 
   const handleDelte = async (value) => {
     const data = {
-      board_id: id,
+      board_id: board_id,
       type: type,
       action: "DELETE",
     };
@@ -55,7 +54,7 @@ export const LikeBtn = (props) => {
 
   const handleUpdate = async (value) => {
     const data = {
-      board_id: id,
+      board_id: board_id,
       isLike: value,
       type: type,
       action: "UPDATE",
@@ -68,43 +67,43 @@ export const LikeBtn = (props) => {
   };
 
   return (
-    <div>
-      <span className="liked">{liked}</span>
+    <>
+      <h3 className="liked">{liked}</h3>
       {isLike === true ? (
-        <button
+        <h2
           onClick={() => {
             handleDelte(true);
           }}
         >
           <AiFillLike />
-        </button>
+        </h2>
       ) : (
-        <button
+        <h2
           onClick={() => {
             handleOutlineLike(true);
           }}
         >
           <AiOutlineLike />
-        </button>
+        </h2>
       )}
       {isLike === false ? (
-        <button
+        <h2
           onClick={() => {
             handleDelte(false);
           }}
         >
           <AiFillDislike />
-        </button>
+        </h2>
       ) : (
-        <button
+        <h2
           onClick={() => {
             handleOutlineLike(false);
           }}
         >
           <AiOutlineDislike />
-        </button>
+        </h2>
       )}
-      <span className="disliked">{disliked}</span>
-    </div>
+      <h3 className="disliked">{disliked}</h3>
+    </>
   );
 };

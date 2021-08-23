@@ -9,9 +9,9 @@ import { UserLoginAction } from "../../reducers/user";
 
 const Join = () => {
   const dispatch = useDispatch();
-  const [userid, setUserid] = useState();
+  const [kakao, setKakao] = useState();
   const nickname = useInput("");
-  const age = useInput("");
+  const birth = useInput("");
   const [gender, setGender] = useState({ male: false, female: false });
   const [term, setTerm] = useState(false);
   const [termError, setTermError] = useState(false);
@@ -20,8 +20,8 @@ const Join = () => {
   const [image, setImage] = useState();
 
   useEffect(async () => {
-    const id = new URL(window.location.href).searchParams.get("id");
-    setUserid(id);
+    const code = new URL(window.location.href).searchParams.get("id");
+    setKakao(code);
   }, []);
 
   const handleTerm = () => {
@@ -49,9 +49,10 @@ const Join = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    let imageURI = "defaultProfil";
+    let imageURI = "http://localhost:3001/defaultProfil";
     if (image != undefined) {
       imageURI = await imageUpload(image);
+      imageURI = "http://localhost:3002/" + imageURI;
     }
 
     let sex;
@@ -62,15 +63,17 @@ const Join = () => {
     }
 
     const data = {
-      userid: userid,
+      kakao: kakao,
       nickname: nickname.value,
-      age: age.value,
+      birth: birth.value,
       hometown: hometown,
       residence: residence,
       gender: sex,
       image: imageURI,
+      // 투표까지 추가
     };
     const result = await joinRequest(data);
+    console.log(result);
     await dispatch(UserLoginAction(result));
     Router.push("/");
   };
@@ -111,50 +114,50 @@ const Join = () => {
           />
           <br />
           출생 연도:{" "}
-          <input type="number" {...age} placeholder="출생연도 입력해주세요" />
+          <input type="number" {...birth} placeholder="출생연도 입력해주세요" />
           <br />
           고향:{" "}
           <select name="hometown" onChange={handleHometown}>
-            <option value="">고향</option>
-            <option value="서울특별시">서울특별시</option>
-            <option value="부산광역시">부산광역시</option>
-            <option value="대구광역시">대구광역시</option>
-            <option value="인천광역시">인천광역시</option>
-            <option value="광주광역시">광주광역시</option>
-            <option value="대전광역시">대전광역시</option>
-            <option value="울산광역시">울산광역시</option>
-            <option value="세종특별자치시">세종특별자치시</option>
-            <option value="경기도">경기도</option>
-            <option value="강원도">강원도</option>
-            <option value="충청북도">충청북도</option>
-            <option value="충청남도">충청남도</option>
-            <option value="전라북도">전라북도</option>
-            <option value="전라남도">전라남도</option>
-            <option value="경상북도">경상북도</option>
-            <option value="경상남도">경상남도</option>
-            <option value="제주특별자치도">제주특별자치도</option>
+            <option value={null}>고향</option>
+            <option value={1}>서울특별시</option>
+            <option value={2}>부산광역시</option>
+            <option value={3}>대구광역시</option>
+            <option value={4}>인천광역시</option>
+            <option value={5}>광주광역시</option>
+            <option value={6}>대전광역시</option>
+            <option value={7}>울산광역시</option>
+            <option value={8}>세종특별자치시</option>
+            <option value={9}>경기도</option>
+            <option value={10}>강원도</option>
+            <option value={11}>충청북도</option>
+            <option value={12}>충청남도</option>
+            <option value={13}>전라북도</option>
+            <option value={14}>전라남도</option>
+            <option value={15}>경상북도</option>
+            <option value={16}>경상남도</option>
+            <option value={17}>제주특별자치도</option>
           </select>
           <br />
           거주지:{" "}
           <select name="residence" onChange={handleResidence}>
-            <option value="">거주지</option>
-            <option value="서울특별시">서울특별시</option>
-            <option value="부산광역시">부산광역시</option>
-            <option value="대구광역시">대구광역시</option>
-            <option value="인천광역시">인천광역시</option>
-            <option value="광주광역시">광주광역시</option>
-            <option value="대전광역시">대전광역시</option>
-            <option value="울산광역시">울산광역시</option>
-            <option value="세종특별자치시">세종특별자치시</option>
-            <option value="경기도">경기도</option>
-            <option value="강원도">강원도</option>
-            <option value="충청북도">충청북도</option>
-            <option value="충청남도">충청남도</option>
-            <option value="전라북도">전라북도</option>
-            <option value="전라남도">전라남도</option>
-            <option value="경상북도">경상북도</option>
-            <option value="경상남도">경상남도</option>
-            <option value="제주특별자치도">제주특별자치도</option>
+            <option value={null}>거주지</option>
+            <option value={1}>서울특별시</option>
+            <option value={2}>부산광역시</option>
+            <option value={3}>대구광역시</option>
+            <option value={4}>인천광역시</option>
+            <option value={5}>광주광역시</option>
+            <option value={6}>대전광역시</option>
+            <option value={7}>울산광역시</option>
+            <option value={8}>세종특별자치시</option>
+            <option value={9}>경기도</option>
+            <option value={10}>강원도</option>
+            <option value={11}>충청북도</option>
+            <option value={12}>충청남도</option>
+            <option value={13}>전라북도</option>
+            <option value={14}>전라남도</option>
+            <option value={15}>경상북도</option>
+            <option value={16}>경상남도</option>
+            <option value={17}>제주특별자치도</option>
           </select>
           <br />
           <input

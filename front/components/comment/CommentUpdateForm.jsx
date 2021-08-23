@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-
+import { updateComment } from "../api/Comment";
+import { UpdateComment } from "../../reducers/comment";
 const UpdateForm = (props) => {
-  const { id, writer, handleUpdate, handleModify } = props;
+  const { id, writer, handleUpdate } = props;
+  const dispatch = useDispatch();
   const [input, setInput] = useState(props.content);
 
   const handleChange = (e) => {
@@ -18,8 +20,13 @@ const UpdateForm = (props) => {
       writer: props.writer,
     };
     setInput("");
-    handleModify(data);
     handleUpdate(false);
+    const result = await updateComment(data);
+    if (result.success) {
+      dispatch(UpdateComment(result));
+    } else {
+      alert(result.error);
+    }
   };
 
   return (

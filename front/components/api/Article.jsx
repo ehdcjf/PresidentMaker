@@ -1,6 +1,6 @@
 export const showArticle = async (data) => {
-  const { id } = data;
-  const url = `http://localhost:3002/board/${id}`;
+  const { board_id } = data;
+  const url = `http://localhost:3002/board/${board_id}`;
   const options = {
     methode: "GET",
     mode: "cors",
@@ -33,8 +33,8 @@ export const createArticle = async (data) => {
 };
 
 export const deleteArticle = async (data) => {
-  const { id, useridx } = data;
-  const url = `http://localhost:3002/board/${id}/${useridx}`;
+  const { board_id, writer } = data;
+  const url = `http://localhost:3002/board/${board_id}/${writer}`;
   const options = {
     method: "delete",
     mode: "cors",
@@ -46,8 +46,8 @@ export const deleteArticle = async (data) => {
 };
 
 export const updateArticle = async (data) => {
-  const { subject, body, id } = data;
-  let url = `http://localhost:3002/board/${id}`;
+  const { subject, body, board_id, writer } = data;
+  let url = `http://localhost:3002/board/${board_id}/${writer}`;
   let options = {
     method: "put",
     mode: "cors",

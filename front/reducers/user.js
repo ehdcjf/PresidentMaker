@@ -2,6 +2,7 @@ const initialState = {
   loadding: false,
   IsLogin: false,
   nickname: null,
+  image: null,
 }
 
 
@@ -16,7 +17,7 @@ export const UserLoginAction = (data) => {
     dispatch(UserLoginRequest());
     try {
 
-      data.isUser === true
+      data.success === true
         ? dispatch(UserLoginSuccess(data))
         : dispatch(UserLoginError())
     } catch (e) {
@@ -66,6 +67,7 @@ const reducer = (state = initialState, action) => {
         ...state,
         IsLogin: true,
         nickname: action.data.nickname,
+        image: action.data.image,
         loadding: false,
       }
     case USER_LOGIN_ERROR:

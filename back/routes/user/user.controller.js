@@ -1,32 +1,45 @@
 const pool = require('../../config/dbconnection');
+const createToken = require('../../jwt');
+const jwtId = require('../../jwtId')
 
 
-const createUser = async (req, res) => { // 회원가입 완료되면 쿠키만들어서 넘겨주기.
-    console.log(req.body);
+const createUser = async (req, res) => {
 
     let connection;
     try {
         connection = await pool.getConnection(async conn => conn);
         try {
-            const { userid, nickname, hometown, residence, gender, age } = req.body;
-            const params = [userid, nickname, hometown, residence, gender, age]
-            const sql = `INSERT INTO USER (userid,nickname,hometown,residence,gender,age) 
-                            values(?,?,?,?,?,?)`
+            const { kakao_code, nickname, hometown, residence, gender, birth, image } = req.body;
+            const params = [kakao_code, nickname, hometown, residence, gender, birth, image]
+            const sql = `INSERT INTO USER (kakao_code,nickname,hometown,residence,gender,birth,image) 
+                            values(?,?,?,?,?,?,?)`
             const [rows] = await connection.execute(sql, params)
+            const user_id = rows.insertedId;
+            const access_token = createToken(user_id)
             const data = {
-                isUser: true,
+                success: true,
                 nickname: nickname,
+                image: image,
             }
+            res.cookie('AccessToken', access_token, { httpOnly: true, secure: true })
             res.json(data);
         } catch (error) {
             console.log('Query Error');
             console.log(error)
-            res.json(error)
+            const data = {
+                success: false,
+                error: error,
+            }
+            res.json(data)
         }
     } catch (error) {
         console.log('DB Error')
         console.log(error)
-        res.json(error)
+        const data = {
+            success: false,
+            error: error,
+        }
+        res.json(data)
     } finally {
         connection.release();
     }
@@ -36,15 +49,15 @@ const createUser = async (req, res) => { // 회원가입 완료되면 쿠키만�
 
 //투표까지 만들고 하기. 
 const showUser = async (req, res) => {
-    const { targetidx } = req.query;
-    const { useridx } = req.headers;
+    const { target_id } = req.query;
+
 
     let connection;
     try {
         connection = await pool.getConnection(async conn => conn);
         try {
-            const sql = `SELECT * FROM user WHERE id = ?`
-            const params = [targetidx]
+            const sql = `SELECT * FROM user WHERE user_id = ?`
+            const params = [target_id]
             const results = await connection.execute(sql, params)
             console.log(results[0][0])
             res.json(results[0][0]);
@@ -63,7 +76,7 @@ const showUser = async (req, res) => {
 }
 
 const updateUser = async (req, res) => {
-    const { nickname, hometown, residence, gender, age } = req.body;
+    const { nickname, hometown, residence, gender, birth } = req.body;
     //쿠키에서 idx 가져오기. 
     const idx = 1;
     let connection;
@@ -71,8 +84,8 @@ const updateUser = async (req, res) => {
         connection = await pool.getConnection(async conn => conn);
         try {
 
-            const sql = `UPDATE user SET nickname=?,hometown=?,residence=?,gender=?,age=? WHERE id=?`
-            const params = [nickname, hometown, residence, gender, age, idx]
+            const sql = `UPDATE user SET nickname=?,hometown=?,residence=?,gender=?,birth=? WHERE user_id=?`
+            const params = [nickname, hometown, residence, gender, birth, idx]
             const results = await connection.execute(sql, params)
             console.log(results[0][0])
             res.json(results[0][0]);
@@ -98,7 +111,7 @@ const deleteUser = async (req, res) => {
     try {
         connection = await pool.getConnection(async conn => conn);
         try {
-            const sql = `UPDATE user SET status=1 WHERE id=?`
+            const sql = `UPDATE user SET status=1 WHERE user_id=?`
             const params = [idx]
             const [rows] = await connection.execute(sql, params)
             console.log(rows)
@@ -140,7 +153,7 @@ module.exports = {
     logoutUser,
 }
 
-// id,userid,nickname,hometown,residence,gender,age,status,show 
+// id,userid,nickname,hometown,residence,gender,birth,status,show 
 const clearInfo = (results, useridx) => {
     const target = results[0];
     // const targetArr = Object.entries(target); 

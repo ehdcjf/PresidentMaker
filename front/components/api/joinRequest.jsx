@@ -24,7 +24,7 @@ export const imageUpload = async (image) => {
 };
 
 export const joinRequest = async (data) => {
-  const { userid, age, gender, image, hometown, residence, nickname } = data;
+  const { kakao, birth, gender, image, hometown, residence, nickname } = data;
   let url = "http://localhost:3002/user";
   let options = {
     method: "POST",
@@ -32,8 +32,8 @@ export const joinRequest = async (data) => {
       "content-type": "application/json",
     },
     body: JSON.stringify({
-      userid,
-      age,
+      kakao_code: kakao,
+      birth,
       gender,
       image,
       hometown,

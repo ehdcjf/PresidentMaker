@@ -1,12 +1,18 @@
 // import Link from "next/link";
 // import NavToggle from "./NavToggle";
 import Header from "./layout/Header";
+import styled from "styled-components";
+const StyledWrap = styled.div`
+  /* width: 100%; */
+  height: auto;
+  overflow: hidden;
+`;
 
 const BlogLayout = ({ children }) => {
   return (
     <>
       <Header />
-      <div className="container">{children}</div>
+      <StyledWrap>{children}</StyledWrap>
       <div className="footer">copyright &copy; all reserved</div>
     </>
   );
