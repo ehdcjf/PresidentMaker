@@ -3,14 +3,17 @@ import CommentItem from "./CommentItem";
 import { useState, useEffect } from "react";
 import { showComment } from "../api/Comment";
 import { useSelector, useDispatch } from "react-redux";
-import { AddComments, AddReplys } from "../../reducers/article";
+import { AddComments, AddReplys,ReSetComment } from "../../reducers/comment";
 
 const CommentList = (props) => {
-  const { root, isReply } = props;
+  const { root, isReply ,board_id} = props;
   const dispatch = useDispatch();
-  const { board_id, comment } = useSelector((state) => state.article);
+  const { comment } = useSelector((state) => state.comment);
   const [fetching, setFetching] = useState(false);
   const [skip, setSkip] = useState(0);
+
+  const [replys,setReplys] = useState([]);
+
 
   useEffect(async () => {
     const data = {
@@ -20,9 +23,18 @@ const CommentList = (props) => {
     };
     const result = await showComment(data);
     if (!isReply) dispatch(AddComments(result));
-    else dispatch(AddReplys(result));
+    else {
+      setReplys([...replys,...result])
+    }
     setSkip(skip + 10);
-  }, [board_id]);
+
+    return ()=>{
+      setSkip(0);
+      setReplys([]);
+    }
+
+
+  }, []);
 
   const fetchMoreComment = async () => {
     setFetching(true);
@@ -61,21 +73,11 @@ const CommentList = (props) => {
   });
 
   const randerItem = () => {
-    let list = [];
-    if (root === 0) list = comment;
-    else {
-      list = comment
-        .filter((v) => {
-          v.comment_id == root;
-        })
-        .map((v) => v.replys);
-      console.log(
-        comment.filter((v) => {
-          v.comment_id == root;
-        })
-      );
-    }
-    return list.map((v, i) => {
+    let temp = [];
+    if (isReply === false) temp = comment;
+    // else temp = replys;
+    
+    return temp.map((v, i) => {
       return (
         <CommentItem
           key={i}

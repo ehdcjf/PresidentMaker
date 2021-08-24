@@ -4,6 +4,7 @@ import user from './user'
 import category from './category'
 import board from './board'
 import article from './article'
+import comment from './comment'
 
 import { persistReuder } from 'redux-persist'
 import storage from "redux-persist/lib/storage"
@@ -20,7 +21,7 @@ const reducer = combineReducers({
         return state
     }
   },
-  user, board, category, article
+  user, board, category, article,comment
 })
 
 export default reducer

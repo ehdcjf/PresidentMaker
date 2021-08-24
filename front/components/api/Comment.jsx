@@ -33,8 +33,8 @@ export const showComment = async (data) => {
 };
 
 export const destroyComment = async (data) => {
-  const { id, writer } = data;
-  let url = `http://localhost:3002/board/comment/${id}/${writer}`;
+  const { comment_id, writer } = data;
+  let url = `http://localhost:3002/board/comment/${comment_id}/${writer}`;
   let options = {
     method: "DELETE",
     mode: "cors",
@@ -47,8 +47,8 @@ export const destroyComment = async (data) => {
 };
 
 export const updateComment = async (data) => {
-  const { id, writer, content } = data;
-  let url = `http://localhost:3002/board/comment/${id}/${writer}`;
+  const { comment_id, writer, content } = data;
+  let url = `http://localhost:3002/board/comment/${comment_id}/${writer}`;
   let options = {
     method: "PATCH",
     mode: "cors",

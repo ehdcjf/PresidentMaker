@@ -15,10 +15,17 @@ const createComment = async (req, res) => {
       const sql = `INSERT INTO comment (content,board_id,writer,root,target) values(?,?,?,?,?)`
       const params = [content, board_id, writer, root, target];
       const [rows] = await connection.execute(sql, params)
+
+      if(root!=0){
+        const sql = 'UPDATE comment SET reply_cnt = reply_cnt+1 WHERE comment_id=?'
+        const params = [root];
+        await connection.execute(sql,params);
+      }
+
       const createdAt = clearDate(new Date());
       const data = {
         success: true,
-        id: rows.insertId,
+        comment_id: rows.insertId,
         writer: writer,
         createdAt: createdAt,
       }
@@ -62,6 +69,7 @@ const showComment = async (req, res) => {
       const sql = `SELECT * 
                   FROM comment 
                   LEFT JOIN (SELECT user_id,nickname as writer_nick, image FROM user) as writer ON writer.user_id = comment.writer
+                  LEFT JOIN (SELECT user_id as target_id,nickname as target_nick FROM user) as target ON target.target_id = comment.target
                   WHERE board_id = ? AND root = ?   ORDER BY comment_id DESC LIMIT ?,? ;
                   `
 
@@ -73,11 +81,10 @@ const showComment = async (req, res) => {
       //         WHERE board_id = ? AND root = ?   ORDER BY id DESC LIMIT ?,?) AS comment 
       //      left JOIN (SELECT * FROM clike WHERE user_idx=?) AS clike ON clike.comment_id= comment.id;`
 
-
       const params = [board_id, root, skip, 10];
       const [rows] = await connection.execute(sql, params)
+      console.log(rows)
       rows.forEach(v => {
-        v.replys = [];
         v.createdAt = clearDate(v.createdAt);
         if (v.writer == client) {
           v.isWriter = true;
@@ -109,11 +116,11 @@ const showComment = async (req, res) => {
 
 const updateComment = async (req, res) => {
   const { content } = req.body;
-  const { writer, id } = req.params;
-  const update = new Date();
+  const { writer, comment_id } = req.params;
+  const update = true;
   const AccessToken = req.cookies.AccessToken;
-  const user = jwtId(AccessToken);
-  if (user != writer) {
+  const client = jwtId(AccessToken);
+  if (client != writer) {
     const data = {
       success: false,
       error: '수정권한이 없습니다.'
@@ -124,12 +131,12 @@ const updateComment = async (req, res) => {
     try {
       connection = await pool.getConnection(async conn => conn);
       try {
-        const sql = `UPDATE comment SET content = ?, updatedAt = ? WHERE id = ? `
-        const params = [content, update, id];
+        const sql = `UPDATE comment SET content = ?, updated = ? WHERE comment_id = ? `
+        const params = [content, update, comment_id];
         const [rows] = await connection.execute(sql, params)
         const data = {
           success: true,
-          id: id,
+          comment_id: comment_id,
           content: content,
         }
         res.json(data);
@@ -162,11 +169,11 @@ const updateComment = async (req, res) => {
 
 
 const deleteComment = async (req, res) => {
-  const { id, writer } = req.params;
+  const { comment_id, writer } = req.params;
 
   const AccessToken = req.cookies.AccessToken;
-  const user = jwtId(AccessToken);
-  if (user != writer) {
+  const client = jwtId(AccessToken);
+  if (client != writer) {
     const data = {
       success: false,
       error: '삭제권한이 없습니다.'
@@ -177,12 +184,12 @@ const deleteComment = async (req, res) => {
     try {
       connection = await pool.getConnection(async conn => conn);
       try {
-        const sql = `UPDATE comment SET del = 1 WHERE id =? `
-        const params = [id];
+        const sql = `UPDATE comment SET del = 1 WHERE comment_id =? `
+        const params = [comment_id];
         const [rows] = await connection.execute(sql, params)
         const data = {
           success: true,
-          id: id,
+          comment_id: comment_id,
         }
         res.json(data);
       } catch (error) {

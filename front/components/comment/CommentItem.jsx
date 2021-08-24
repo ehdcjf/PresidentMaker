@@ -1,11 +1,35 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useDispatch } from "react-redux";
-// import { DestroyComment } from "../../reducers/comment";
+import { DeleteComment } from "../../reducers/comment";
 import { destroyComment } from "../api/Comment";
-// import UpdateForm from "./CommentUpdateForm";
+import UpdateForm from "./CommentUpdateForm";
 import CommentForm from "./CommentForm";
 import CommentList from "./CommentList";
+import styled from "styled-components";
+
+const StyledCommentItem = styled.div`
+& > .image {
+    float: left;
+    width: 50px;
+    height: 50px;
+    border-radius: 25px;
+    margin-right: 10px;
+    background-size: cover;
+    background-position: center;
+  }
+
+&>ul{
+  float: left;
+    width: 90%;
+    height: auto;
+    overflow: hidden;
+}
+
+`
+
+
+
 const CommentItem = ({
   board_id,
   comment_id,
@@ -45,10 +69,10 @@ const CommentItem = ({
   const handleDelete = async () => {
     const answer = confirm("삭제하시겠습니까?");
     if (answer) {
-      const data = { id: id, writer: writer };
+      const data = { comment_id: comment_id, writer: writer };
       const result = await destroyComment(data);
       if (result.success) {
-        dispatch(DestroyComment(result.id));
+        dispatch(DeleteComment(comment_id));
       } else {
         alert(result.error);
       }
@@ -57,10 +81,9 @@ const CommentItem = ({
 
   return (
     <>
-      <div>
-        <div>
-          <img src={image} alt="" style={{ width: "40px", height: "40px" }} />
-        </div>
+      <StyledCommentItem>
+      <div className="image" style={{ backgroundImage: `url(${image})` }}></div>
+
         <ul>
           <li>
             <Link href="/user/info/:id" as={`/user/info/${writer}`}>
@@ -109,7 +132,7 @@ const CommentItem = ({
             )}
           </li>
           {createReply && (
-            <CommentForm root={comment_id} handleCreate={handleCreate} />
+            <CommentForm root={comment_id} handleCreate={handleCreate} board_id={board_id}/>
           )}
           <li>
             {parseInt(reply_cnt) > 0 && (
@@ -137,12 +160,12 @@ const CommentItem = ({
           {showReply && (
             <li>
               <ul>
-                <CommentList root={comment_id} isReply={true} />
+                <CommentList root={comment_id} isReply={true} board_id={board_id}/>
               </ul>
             </li>
           )}
         </ul>
-      </div>
+      </StyledCommentItem>
     </>
   );
 };

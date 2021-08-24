@@ -8,6 +8,7 @@ const StyledCommentLayout = styled.div`
   margin-top: 50px;
 `;
 
+
 const CommentLayout = ({ children }) => {
   return <StyledCommentLayout>{children}</StyledCommentLayout>;
 };

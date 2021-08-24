@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { showArticle, deleteArticle } from "../../../components/api/Article";
 import { ShowArticleAction } from "../../../reducers/article";
 import { DeleteArticleAction } from "../../../reducers/board";
-import Comment from "../../../components/comment/Comment";
+import Comment from "../../../components/test/Comment";
 import Link from "next/link";
 import Router from "next/router";
 import { LikeBtn } from "../../../components/board/LikeBtn";

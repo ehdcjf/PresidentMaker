@@ -2,7 +2,7 @@ const initialState = {
   loadding: false,
   IsLogin: false,
   nickname: null,
-  image: null,
+  image: '/defaultProfil.png',
 }
 
 
@@ -78,8 +78,7 @@ const reducer = (state = initialState, action) => {
     case USER_LOGOUT:
       return {
         ...state,
-        IsLogin: false,
-        nickname: null,
+        ...initialState,
       }
     default:
       return state

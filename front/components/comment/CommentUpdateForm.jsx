@@ -2,10 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { updateComment } from "../api/Comment";
 import { UpdateComment } from "../../reducers/comment";
-const UpdateForm = (props) => {
-  const { id, writer, handleUpdate } = props;
+const UpdateForm = ({content,handleUpdate,comment_id,writer}) => {
   const dispatch = useDispatch();
-  const [input, setInput] = useState(props.content);
+  const [input, setInput] = useState(content);
 
   const handleChange = (e) => {
     const { value } = { ...e.target };
@@ -15,9 +14,9 @@ const UpdateForm = (props) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const data = {
-      id: props.id,
+      comment_id: comment_id,
       content: input,
-      writer: props.writer,
+      writer: writer,
     };
     setInput("");
     handleUpdate(false);
