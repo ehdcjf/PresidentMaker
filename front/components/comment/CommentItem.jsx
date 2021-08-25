@@ -7,6 +7,7 @@ import UpdateForm from "./CommentUpdateForm";
 import CommentForm from "./CommentForm";
 import CommentList from "./CommentList";
 import styled from "styled-components";
+import { LikeBtn } from "../board/LikeBtn";
 
 const StyledCommentItem = styled.div`
 & > .image {
@@ -42,7 +43,6 @@ const CommentItem = ({
   updated,
   liked,
   disliked,
-  replys,
   reply_cnt,
   target_id,
   target_nick,
@@ -110,9 +110,9 @@ const CommentItem = ({
           )}
 
           <li>
-            <span>
-              {liked}/{disliked}
-            </span>
+            
+              <LikeBtn liked={liked} disliked={disLiked} isLike={isLike} type={'clike'} id={comment_id} />
+            
             {createReply === false ? (
               <span
                 onClick={() => {

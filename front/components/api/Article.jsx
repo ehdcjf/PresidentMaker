@@ -66,20 +66,13 @@ export const updateArticle = async (data) => {
   return result;
 };
 
-const updateLike = async (data) => {
-  const { isLike, board_id } = data;
-  let url = "http://localhost:3002/board/like";
+export const updatecheck = async (data) => {
+  const { board_id } = data;
+  let url = `http://localhost:3002/board/update/${board_id}`;
   let options = {
-    method: "POST",
+    method: "get",
     mode: "cors",
     credentials: "include",
-    headers: {
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({
-      isLike,
-      board_id,
-    }),
   };
 
   const response = await fetch(url, options);

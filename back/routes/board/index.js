@@ -9,6 +9,7 @@ const likeController = require('./like.controller')
 router.get('/list', boardController.showList);
 router.post('/write', boardController.createArticle);
 router.get('/:board_id', boardController.showArticle);
+router.get('/update/:board_id', boardController.updateCheck);
 router.put('/:board_id/:writer', boardController.updateArticle);
 router.delete('/:board_id/:writer', boardController.deleteArticle);
 

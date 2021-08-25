@@ -12,7 +12,7 @@ import {
   updateComment,
 } from "../api/Comment";
 import { useSelector } from "react-redux";
-
+import {CommentLikeBtn} from "./CommentLikeBtn";
 
 const StyledCommentItem = styled.div`
   width: 100%;
@@ -31,7 +31,7 @@ const StyledCommentItem = styled.div`
 
 &>ul{
   float: left;
-    width: 90%;
+    width: 85%;
     height: auto;
     overflow: hidden;
 }
@@ -70,7 +70,7 @@ const defaultComment = {
 
 
 const CommentItem = ({
-  board_id, comment_id,image,writer,writer_nick,content,root,createdAt,liked,disliked,updated,reply_cnt,target_id,target_nick,isLike,isWriter,handleDelete,handleModify,
+  board_id, comment_id,image,writer,writer_nick,content,root,createdAt,liked,disliked,updated,reply_cnt,target_id,target_nick,isLike,isWriter,handleDelete,handleModify,OriginhandleCreate
 }) => {
   const [list, setList] = useState([]);
   const [skip, setSkip] = useState(0);
@@ -117,7 +117,6 @@ const CommentItem = ({
   };
   
   const result = await createComment(data);
-  console.log(result)
   if (result.success) {
     const commentInfo = {
       ...defaultComment,
@@ -129,8 +128,8 @@ const CommentItem = ({
       root: v.root,
       createdAt: result.createdAt,
       image: clientImage,
-      target_id:result.target_id,
-      target_nick:result.target_nick,
+      target_id:v.target_id,
+      target_nick:v.target_nick,
     };
       const newList = [commentInfo, ...list];
       setList(newList);
@@ -163,7 +162,6 @@ const CommentItem = ({
     const newList = [...list, ...result].sort((a,b)=>{
       return a.comment_id-b.comment_id
     });
-    console.log(newList);
     setList(newList);
     setSkip(skip + 10);
 
@@ -256,7 +254,7 @@ const CommentItem = ({
             />
           ) : (
             <li>
-              {target_nick!==null &&<Link href="/user/info/:id" as={`/user/info/${target_id}`}>
+              {target_nick &&<Link href="/user/info/:id" as={`/user/info/${target_id}`}>
               <a>@{target_nick}</a>
             </Link>}
               
@@ -268,7 +266,7 @@ const CommentItem = ({
               <>
             <li>
             <span>
-              {liked}/{disliked}
+            <CommentLikeBtn liked={liked} disliked={disliked} isLike={isLike} type={'clike'} id={comment_id} />
             </span>
             {create === false ? (
               <span
@@ -287,7 +285,7 @@ const CommentItem = ({
                 답글쓰기 취소
               </span>
             )}
-          {create && <CommentForm root={comment_id} handleCreate={handleCreate}  showReplyMakeForm={showReplyMakeForm} handleShow={handleShow}/>}
+          {create && <CommentForm  root={comment_id} handleCreate={handleCreate}  showReplyMakeForm={showReplyMakeForm} handleShow={handleShow}/>}
           </li>
           <li>
             {parseInt(replyCnt) > 0 && (
@@ -318,10 +316,12 @@ const CommentItem = ({
               <ul>
                 <CommentList
                   root={comment_id}
+                  
+                  origin
                   list={list}
                   handleDelete={handleDeleteReply}
                   handleModify={handleModifyReply}
-                  handleCreate={handleCreate}
+                  OriginhandleCreate={handleCreate}
                 />
                 
                 {replyCnt > list.length && (
@@ -338,7 +338,7 @@ const CommentItem = ({
             <>
                <li>
             <span>
-              {liked}/{disliked}
+            <CommentLikeBtn liked={liked} disliked={disliked} isLike={isLike} type={'clike'} id={comment_id} />
             </span>
             {create === false ? (
               <span
@@ -357,7 +357,7 @@ const CommentItem = ({
                 답글쓰기 취소
               </span>
             )}
-          {create && <CommentForm root={root} target={writer} handleCreate={handleCreate}  showReplyMakeForm={showReplyMakeForm} handleShow={handleShow}/>}
+          {create && <CommentForm root={root} target={writer} handleCreate={OriginhandleCreate} target_id={writer} target_nick={writer_nick} showReplyMakeForm={showReplyMakeForm} handleShow={handleShow}/>}
           </li>
             </>}
 

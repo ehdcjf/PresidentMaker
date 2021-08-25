@@ -2,7 +2,7 @@ import Head from "next/head";
 import { useState, useEffect } from "react";
 import QuillEditor from "../../components/board/QuillEditor";
 import Styled from "styled-components";
-import { createArticle, updateArticle } from "../../components/api/Article";
+import { createArticle, updateArticle, updatecheck } from "../../components/api/Article";
 import Router, { useRouter } from "next/router";
 import { useDispatch, useSelector } from "react-redux";
 import { CreateArticleAction } from "../../reducers/board";
@@ -18,38 +18,55 @@ const StyledContainer = Styled.div`
 `;
 
 const StyledTitle = Styled.h1`
-margin: 0;
+  margin: 0;
   line-height: 1.15;
   font-size: 4rem;
 `;
 
+
+
 export default function Home() {
   const router = useRouter();
   const article = useSelector((state) => state.article);
-  const { editor } = router.query;
-  console.log(article);
-
+  const { editor,board_id } = router.query;
+  
   const dispatch = useDispatch();
-  const [body, setBody] = useState(""); // Quill 에디터의 innerHTML을 담는 state
+  const [body, setBody] = useState(''); // Quill 에디터의 innerHTML을 담는 state
   const [subject, setSubject] = useState("");
+  const [writer, setWriter] = useState("");
+  const [loadding,setLoadding] = useState(false)
 
   /* 외부에서 body의 수정이 일어난 경우 body에 자동으로 적용되지 않습니다!
      이 함수를 호출했을 때 컴포넌트 내의 useEffect가 실행되어 body의 수정 사항이 적용됩니다.*/
 
-  useEffect(() => {
+  useEffect(async() => {
     if (editor === "modify") {
-      //여기서 유저확인 필요.
-
-      //맞으면?
-      setBody(article.content);
-      setSubject(article.subject);
-      ///틀리면 back
+      const data = {
+        board_id:board_id
+      }
+      const result = await updatecheck(data);
+      if(result.success){
+        setBody(result.content);
+        setSubject(result.subject);
+        setWriter(result.writer);
+        setLoadding(true);
+      }else{
+        alert(result.error);
+        Router.back();
+      }
+    }else if( editor==='write'){
+      setLoadding(true)
     }
-  }, [editor, article]);
+  }, [editor]);
 
   const handleSubject = (e) => {
     const { value } = { ...e.target };
     setSubject(value);
+  };
+
+  const handleBody = (value) => {
+    setTimeout(setBody(value))
+
   };
 
   const handleSubmit = async (e) => {
@@ -57,8 +74,8 @@ export default function Home() {
     let data = {
       subject: subject,
       body: body,
-      writer: article.writer,
-      board_id: article.board_id,
+      writer: writer,
+      board_id: board_id,
     };
     // setBody("");
 
@@ -74,7 +91,7 @@ export default function Home() {
       const result = await updateArticle(data);
       if (result.success) {
         console.log(result.success);
-        Router.push(`/board/view/${article.board_id}`);
+        Router.push(`/board/view/${board_id}`);
       } else {
         alert(result.error);
         Router.back();
@@ -107,7 +124,7 @@ export default function Home() {
         <StyledTitle>수정하기</StyledTitle>
       )}
 
-      <div style={{ width: "80%", marginTop: "40px" }}>
+      <div style={{ width: "80%", marginTop: "40px", height:'auto' ,overflow:'hidden'}}>
         <div>
           제목:
           <input
@@ -117,7 +134,7 @@ export default function Home() {
             placeholder="제목을 입력해주세요"
           />
         </div>
-        <QuillEditor body={body} handleQuillChange={setBody} />
+        {loadding &&<QuillEditor body={body} handleQuillChange={handleBody}   />}
       </div>
 
       <form onSubmit={handleSubmit}>

@@ -53,7 +53,7 @@ const Comment = ({board_id}) => {
       const commentInfo = {
         ...defaultComment,
         board_id: board_id,
-        comment_id: result.id,
+        comment_id: result.comment_id,
         writer: result.writer,
         writer_nick: nickname,
         content: v.content,
@@ -103,22 +103,6 @@ const Comment = ({board_id}) => {
 
   // const { loadding, commentItem, error } = state;
 
-  const fetchReply = async (v) => {
-    const data = {
-      board_id: board_id,
-      skip: v.skip,
-      root: v.root,
-    }
-    const result = await showComment(data);
-    const newList = list.map(ele=>{
-      if(ele.comment_id==v.root){
-        if(result.length!=0)
-        ele.replys = [result,...ele.replys];
-      }
-      return ele
-    })
-    setList([...newList])
-  }
 
 
 
@@ -177,13 +161,13 @@ const Comment = ({board_id}) => {
 
   return (
     <CommentLayout>
-      <CommentForm root={0} handleCreate={handleCreate} />
+      <CommentForm root={0} handleCreate={handleCreate}  />
       <CommentList
         list={list}
+
         root={0}
         handleDelete={handleDelete}
         handleModify={handleModify}
-        fetchReply={fetchReply}
       />
     </CommentLayout>
   );

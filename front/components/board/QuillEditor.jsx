@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { imageUpload } from "../api/joinRequest";
 
+const Quill = typeof window === 'object' ? require('quill') : () => false;
+
 export default function QuillEditor({ body, handleQuillChange }) {
   const quillElement = useRef();
   const quillInstance = useRef();

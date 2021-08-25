@@ -4,10 +4,11 @@ import { useSelector } from "react-redux";
 
 const StyledCommentForm = styled.div`
   width: 100%;
-  height: 80px;
-  padding-bottom: 20px;
+  display: flex;
+  justify-content: flex-start;
+  
   & > .image {
-    float: left;
+    
     width: 50px;
     height: 50px;
     border-radius: 25px;
@@ -17,9 +18,12 @@ const StyledCommentForm = styled.div`
   }
 
   & > .content {
-    float: left;
+    display: flex;
+    align-items: flex-start;
+
     width: 90%;
     height: 90px;
+    margin: 20px 0;
 
     & > input {
       display: block;
@@ -60,10 +64,9 @@ const StyledCommentForm = styled.div`
 
 
 
-const CommentForm = ({ handleCreate, root,showReplyMakeForm ,handleShow, target} ) => {
+const CommentForm = ({ handleCreate, root,showReplyMakeForm ,handleShow, target, target_nick, target_id} ) => {
   const {image} = useSelector((state)=>state.user)  
   const [input, setInput] = useState("");
-
   const handleChange = (e) => {
     const { value } = { ...e.target };
     setInput(value);
@@ -75,12 +78,24 @@ const CommentForm = ({ handleCreate, root,showReplyMakeForm ,handleShow, target}
     let data = {
       content: input,
       root: root,
+      
     };
-    if(target!==undefined) data.target = target
+    if(target!==undefined) {
+      data.target = target
+      data.target_id = target_id
+      data.target_nick = target_nick
+      
+    }
+    //댓글에 대한 답글..
     if(root!=0){
       showReplyMakeForm(false)
       handleShow(true)
     }
+
+    //답글에 대한 답글은 따로 처리해야됨..
+    
+
+
     // if (sub_master != undefined) data.sub_master = sub_master;
     handleCreate(data);
     setInput("");

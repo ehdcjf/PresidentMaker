@@ -1,6 +1,7 @@
 import "../index.css";
 import Head from "next/head";
 import "../style/style.css";
+import 'react-quill/dist/quill.snow.css'
 import wrapper from "../store/configureStore";
 import { CookiesProvider } from "react-cookie";
 import { useStore } from "react-redux";

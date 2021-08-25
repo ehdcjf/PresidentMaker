@@ -106,7 +106,7 @@ const showArticle = async (req, res) => {
     const AccessToken = req.cookies.AccessToken;
     const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
     const now = yymmdd(new Date());
-    let client;
+    let client = 0;
     if (AccessToken !== undefined)
         client = jwtId(AccessToken);
     let connection;
@@ -147,34 +147,35 @@ const showArticle = async (req, res) => {
 
             /////================================ like sql  start =======================================================///
             //join 해서 가져오고 싶은데 비회원일경우에 조회하는 게 힘들 것 같음... 
+            //비회원이면 client = 0 으로 셋팅
             //프로시저로 요청 한번만 날리게 만들고 싶음.. 
-            let isLike = null;
-            if (client !== undefined) {//회원일 경우 좋아요 눌렀는 지 확인해야함.
-                const likeSql = `SELECT islike FROM blike WHERE board_id=? AND user_id=?`
-                const likeParams = [board_id, client]
-                const [result] = await connection.execute(likeSql, likeParams)
-                if (result.length !== 0) {
-                    isLike = result.islike;
-                }
-            }
+            // let isLike = null;
+            // if (client !== undefined) {//회원일 경우 좋아요 눌렀는 지 확인해야함.
+            //     const likeSql = `SELECT islike FROM blike WHERE target_id=? AND user_id=?`
+            //     const likeParams = [board_id, client]
+            //     const [result] = await connection.execute(likeSql, likeParams)
+            //     if (result.length !== 0) {
+            //         isLike = result.islike;
+            //     }
+            // }
 
             /////================================ like sql end=======================================================///
 
             /////=================================article sql start======================================///
-            const sql = `SELECT board.writer, user.nickname,board.board_id as board_id,board.subject,board.content,board.createdAt,board.updated,board.hit,board.liked,board.disliked,board.del AS del
-            FROM (SELECT user_id, nickname FROM user) AS user 
-            INNER JOIN board AS board
-            ON board.writer = user.user_id
+            const sql = `SELECT board.writer, user.nickname,board.board_id as board_id,board.subject,board.content,board.createdAt,board.updated,board.hit,board.liked,board.disliked,board.del, isLike
+            FROM board 
+            LEFT JOIN (SELECT user_id, nickname FROM user) AS user  ON board.writer = user.user_id
+            LEFT JOIN (SELECT * FROM blike WHERE user_id = ?) as blike ON board.board_id = blike.target_id 
             WHERE board.board_id=?`
 
-            const params = [board_id];
+            const params = [client,board_id];
             const [result] = await connection.execute(sql, params)
             /////=================================article sql end======================================///
 
             ///===============================
 
 
-            let data = { ...result[0], isLike }
+            let data = { ...result[0] }
 
             //삭제된 게시글은 제목과 내용을 가려줌.
             if (data.del === 1) {
@@ -183,6 +184,7 @@ const showArticle = async (req, res) => {
             }
 
             //해당 글의 작성자면  isWriter 를 true 값을 부여하여 프론트에서 수정 삭제 버튼을 보여줄지 말지 정함.
+            if(!data.hasOwnProperty('isLike')) data.isLike = null;
             if (data.writer == client) {
                 data.isWriter = true;
             } else {
@@ -215,9 +217,82 @@ const showArticle = async (req, res) => {
 };
 
 
+const updateCheck = async(req,res)=>{
+    const { board_id} = req.params;
+    const AccessToken = req.cookies.AccessToken;
+    if(AccessToken===undefined){
+        const data = {
+            success:false,
+            error:'수정권한이 없습니다'
+        }
+        res.json(data)
+    }else{
+        const client = jwtId(AccessToken);
+
+        let connection;
+        try {
+            connection = await pool.getConnection(async conn => conn);
+            try {
+                const sql = `SELECT writer,content,subject,del  FROM board WHERE board_id=?`
+                const params = [board_id];
+                const [result] = await connection.execute(sql, params)
+                if (result[0].writer != client) {//사용자 측에서 억지로 delete요청을 보냈을 때,
+                    const data = {
+                        success: false,
+                        error: "수정 권한이 없습니다."
+                    }
+                    res.json(data)
+                }else{
+                    if(result[0].del==1){
+                        const data = {
+                            success: false,
+                            error: "삭제된 게시글입니다."
+                        }
+                        res.json(data)
+                    }else{
+                        const data = {
+                            success: true,
+                            content:result[0].content,
+                            subject:result[0].subject,
+                            writer:result[0].writer,
+                        }
+                        res.json(data);
+                    }
+
+                   
+                }
+            } catch (error) {
+                console.log('Query Error');
+                console.log(error)
+                const data = {
+                    success: false,
+                    error: error
+                }
+                res.json(data)
+            }
+        } catch (error) {
+            console.log('DB Error')
+            console.log(error)
+            const data = {
+                success: false,
+                error: error
+            }
+            res.json(data)
+        } finally {
+            connection.release();
+        }
+
+
+    }
+
+
+
+
+
+}
+
 
 const updateArticle = async (req, res) => {
-    console.log('update');
     const { subject, content } = req.body;
     const { board_id, writer } = req.params;
     const AccessToken = req.cookies.AccessToken;
@@ -330,6 +405,7 @@ module.exports = {
     showArticle,
     createArticle,
     updateArticle,
+    updateCheck,
     deleteArticle,
 }
 

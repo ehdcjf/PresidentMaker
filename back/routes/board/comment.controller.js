@@ -70,6 +70,7 @@ const showComment = async (req, res) => {
                   FROM comment 
                   LEFT JOIN (SELECT user_id,nickname as writer_nick, image FROM user) as writer ON writer.user_id = comment.writer
                   LEFT JOIN (SELECT user_id as target_id,nickname as target_nick FROM user) as target ON target.target_id = comment.target
+                  LEFT JOIN (SELECT * FROM clike WHERE user_id = ?) as clike ON comment.comment_id = clike.target_id 
                   WHERE board_id = ? AND root = ?   ORDER BY comment_id DESC LIMIT ?,? ;
                   `
 
@@ -81,9 +82,8 @@ const showComment = async (req, res) => {
       //         WHERE board_id = ? AND root = ?   ORDER BY id DESC LIMIT ?,?) AS comment 
       //      left JOIN (SELECT * FROM clike WHERE user_idx=?) AS clike ON clike.comment_id= comment.id;`
 
-      const params = [board_id, root, skip, 10];
+      const params = [client,board_id, root, skip, 10];
       const [rows] = await connection.execute(sql, params)
-      console.log(rows)
       rows.forEach(v => {
         v.createdAt = clearDate(v.createdAt);
         if (v.writer == client) {

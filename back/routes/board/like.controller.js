@@ -3,44 +3,48 @@ const jwtId = require('../../jwtId')
 
 
 const LikeAction = async (req, res) => {
-  const { isLike, board_id, type, action } = req.body;
+  const { isLike, id, type, action } = req.body;
 
   const AccessToken = req.cookies.AccessToken;
-  let user;
-  if (AccessToken != undefined) {
-    user = jwtId(AccessToken);
-  }
+  let client=0
+  if (AccessToken == undefined) {
+    const data = {
+      success:error,
+      error:'you must log in'
+    }
+    res.json(data);
+  }else{
+    client = jwtId(AccessToken);
 
-
-
-  let connection;
+    let connection;
   try {
     connection = await pool.getConnection(async conn => conn);
     try {
       let [result] = [];
       switch (action) {
         case 'INSERT':
-          const insertSql = `INSERT INTO ${type} (board_id,user_id,islike) values(?,?,?)`
-          const insertParams = [board_id, user, isLike];
+          const insertSql = `INSERT INTO ${type} (target_id,user_id,islike) values(?,?,?)`
+          const insertParams = [id, client, isLike];
           [result] = await connection.execute(insertSql, insertParams)
           break;
         case 'DELETE':
-          const deleteSql = `DELETE FROM ${type} WHERE board_id=? AND user_id=?`
-          const deleteParams = [board_id, user,];
+          const deleteSql = `DELETE FROM ${type} WHERE target_id=? AND user_id=?`
+          const deleteParams = [id, client,];
           [result] = await connection.execute(deleteSql, deleteParams)
           break;
         case 'UPDATE':
-          const updateSql = `UPDATE ${type} SET islike=? WHERE board_id=? AND user_id=?`
-          const updateParams = [isLike, board_id, user];
+          const updateSql = `UPDATE ${type} SET islike=? WHERE target_id=? AND user_id=?`
+          const updateParams = [isLike, id, client];
           [result] = await connection.execute(updateSql, updateParams)
           break;
         default:
           break;
       }
-      const data = {
+      let data = {
         success: true,
         isLike: isLike
       }
+      if(!data.hasOwnProperty(isLike)) data.isLike= null;
       res.json(data);
     } catch (error) {
       console.log('Query Error');
@@ -62,6 +66,12 @@ const LikeAction = async (req, res) => {
   } finally {
     connection.release();
   }
+
+  }
+  
+
+
+  
 
 
 

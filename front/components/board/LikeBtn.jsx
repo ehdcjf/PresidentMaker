@@ -12,11 +12,19 @@ import {
   AiOutlineDislike,
   AiOutlineLike,
 } from "react-icons/ai";
+import styled from 'styled-components';
+
+const StyledBoardLikeBtn = styled.div`
+width: 15vw;
+display: flex;
+justify-content: center;
+
+`
 
 export const LikeBtn = (props) => {
+  const {type,id,liked,disliked,isLike} = props
+  console.log(props.isLike==true)
   const dispatch = useDispatch();
-  const { liked, disliked } = props;
-  const { isLike, type, board_id } = props;
 
   const handleOutlineLike = (value) => {
     if (isLike === null) {
@@ -28,82 +36,87 @@ export const LikeBtn = (props) => {
 
   const handleInsert = async (value) => {
     const data = {
-      board_id: board_id,
+      id: id,
       isLike: value,
       type: type,
       action: "INSERT",
     };
 
     const result = await likeAction(data);
-    if (type === "blike") {
-      dispatch(InsertBLikeAction(result.isLike));
+    if(result.success){
+        dispatch(InsertBLikeAction(result.isLike));
     }
   };
 
   const handleDelte = async (value) => {
     const data = {
-      board_id: board_id,
+      id: id,
       type: type,
       action: "DELETE",
     };
     const result = await likeAction(data);
-    if (type === "blike") {
+    if(result.success){
       dispatch(DeleteBLikeAction(value));
-    }
-  };
+    };
+  }
 
   const handleUpdate = async (value) => {
     const data = {
-      board_id: board_id,
+      id: id,
       isLike: value,
       type: type,
       action: "UPDATE",
     };
 
     const result = await likeAction(data);
-    if (type === "blike") {
-      dispatch(UpdateBLikeAction(value));
+    if(result.success){
+        dispatch(UpdateBLikeAction(value));
     }
   };
 
   return (
-    <>
-      <h3 className="liked">{liked}</h3>
-      {isLike === true ? (
-        <h2
-          onClick={() => {
-            handleDelte(true);
-          }}
+    <StyledBoardLikeBtn>
+      <div>
+
+      {isLike == true ? (
+        <span
+        onClick={() => {
+          handleDelte(true);
+        }}
         >
           <AiFillLike />
-        </h2>
+        </span>
       ) : (
-        <h2
-          onClick={() => {
-            handleOutlineLike(true);
-          }}
+        <span
+        onClick={() => {
+          handleOutlineLike(true);
+        }}
         >
           <AiOutlineLike />
-        </h2>
+        </span>
       )}
-      {isLike === false ? (
-        <h2
-          onClick={() => {
-            handleDelte(false);
-          }}
+      <span className="liked">{liked}</span>
+      </div>
+      <div>
+      {isLike == false ? (
+        <span
+        onClick={() => {
+          handleDelte(false);
+        }}
         >
           <AiFillDislike />
-        </h2>
+        </span>
       ) : (
-        <h2
+        <span
           onClick={() => {
             handleOutlineLike(false);
           }}
-        >
+          >
           <AiOutlineDislike />
-        </h2>
+        </span>
       )}
-      <h3 className="disliked">{disliked}</h3>
-    </>
+      <span className="disliked">{disliked}</span>
+      </div>
+    </StyledBoardLikeBtn>
   );
 };

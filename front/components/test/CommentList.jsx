@@ -1,13 +1,14 @@
 import { useEffect } from "react";
 import CommentItem from "./CommentItem";
 
-const CommentList = ({list,handleModify,root,handleDelete}) => {
-
+const CommentList = ({list,handleModify,root,handleDelete, OriginhandleCreate}) => {
 
 
   const renderItem = () =>{
     
     return list.map((v, i) => {  
+
+        
       return (
         <CommentItem
           handleDelete={() => {
@@ -15,8 +16,8 @@ const CommentList = ({list,handleModify,root,handleDelete}) => {
           }}
           
           handleModify={handleModify}
-  
-          key={v.comment_id}
+          OriginhandleCreate={OriginhandleCreate}
+          key={v.createdAt+v.comment_id}
           board_id={v.board_id}
           comment_id={v.comment_id}
           image={v.image}
@@ -28,7 +29,6 @@ const CommentList = ({list,handleModify,root,handleDelete}) => {
           liked={v.liked}
           disliked={v.disliked}
           updated={v.updated}
-          replys={v.replys}
           reply_cnt={v.reply_cnt}
           target_id={v.target_id}
           target_nick={v.target_nick}

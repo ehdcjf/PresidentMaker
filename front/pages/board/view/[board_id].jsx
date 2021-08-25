@@ -10,6 +10,7 @@ import Router from "next/router";
 import { LikeBtn } from "../../../components/board/LikeBtn";
 import BoardLayout from "../../../components/layout/BoardLayout";
 import Head from "next/head";
+import 'react-quill/dist/quill.snow.css'
 
 import { RiFileListLine, RiDeleteBin6Line } from "react-icons/ri";
 import { GrUpdate } from "react-icons/gr";
@@ -23,7 +24,7 @@ const View = () => {
   const { type, page, search, keyword, rows } = useSelector(
     (state) => state.board
   );
-
+  console.log(article)
   const router = useRouter();
   const { board_id } = router.query;
 
@@ -101,18 +102,17 @@ const View = () => {
     }
   };
 
-  const handleLike = async (v) => {
-    //비회원 확인 만들기.
-    const data = {
-      board_id: board_id,
-      isLike: v,
-    };
-    const result = await updateLike(data);
-  };
-
   return (
     <>
       <Head>
+              <link rel="stylesheet" src="../../style/style.css" />
+        <link
+          href="//cdn.jsdelivr.net/npm/katex@0.13.3/dist/katex.min.css"
+          rel="stylesheet"
+        />
+        <script src="//cdn.jsdelivr.net/npm/katex@0.13.3/dist/katex.min.js"></script>
+        <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.7.2/build/highlight.min.js"></script>
+        <script src="//cdn.quilljs.com/1.3.6/quill.min.js"></script>
         <link
           rel="stylesheet"
           href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.7.2/build/styles/default.min.css"
@@ -137,14 +137,14 @@ const View = () => {
             <span className="article-hit">조회수: {article.hit}</span>
           </div>
         </div>
-        <div
-          className="content"
+          <div className="ql-editor"
           dangerouslySetInnerHTML={{ __html: article.content }}
-        ></div>
+          />
+        
         <LikeBtn
           isLike={article.isLike}
           type={blike}
-          board_id={article.board_id}
+          id={article.board_id}
           liked={article.liked}
           disliked={article.disliked}
         />
