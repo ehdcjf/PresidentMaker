@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { createComment } from "../api/Comment";
-import { AddComment, } from "../../reducers/comment";
+import { AddComment, } from "../../reducers/article";
 import styled from "styled-components";
 
 const StyledCommentForm = styled.div`
@@ -59,10 +59,12 @@ const StyledCommentForm = styled.div`
   }
 `;
 
-const CommentForm = ({ handleCreate, root ,board_id}) => {
+const CommentForm = ({ handleCreate, root }) => {
   const dispatch = useDispatch();
   const { image, nickname } = useSelector((state) => state.user);
+  const article = useSelector((state)=>state.acticle)
   const [input, setInput] = useState("");
+
   const handleChange = (e) => {
     const { value } = { ...e.target };
     setInput(value);
@@ -72,7 +74,7 @@ const CommentForm = ({ handleCreate, root ,board_id}) => {
     e.preventDefault();
 
     const data = {
-      board_id: board_id,
+      board_id: article.board_id,
       content: input,
       root: root,
     };
@@ -80,7 +82,7 @@ const CommentForm = ({ handleCreate, root ,board_id}) => {
 
     if (result.success) {
       const commentInfo = {
-        board_id: board_id,
+        board_id: article.board_id,
         comment_id: result.comment_id,
         writer: result.writer,
         writer_nick: nickname,
@@ -95,6 +97,7 @@ const CommentForm = ({ handleCreate, root ,board_id}) => {
     }else{
       alert(result.error)
     }
+
     setInput("");
     if (handleCreate != undefined) {
       setTimeout(handleCreate(false))

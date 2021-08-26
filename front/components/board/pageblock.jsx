@@ -1,5 +1,5 @@
-export const Pageblock = (props) => {
-  const { pageblock, endpage, handlePage } = props;
+export const Pageblock = ({ pageblock, endpage, handlePage }) => {
+  
 
   const renderPageBlock = () => {
     return pageblock.map((v, i) => {
@@ -7,7 +7,7 @@ export const Pageblock = (props) => {
         <button
           key={i}
           onClick={() => {
-            handlePage(v);
+            handlePage({page:v});
           }}
         >
           {v}
@@ -20,7 +20,7 @@ export const Pageblock = (props) => {
     <>
       <button
         onClick={() => {
-          handlePage(1);
+          handlePage({page:1});
         }}
       >
         처음
@@ -28,7 +28,7 @@ export const Pageblock = (props) => {
       {renderPageBlock()}
       <button
         onClick={() => {
-          handlePage(endpage);
+          handlePage({page:endpage});
         }}
       >
         끝

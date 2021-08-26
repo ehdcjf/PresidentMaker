@@ -60,7 +60,7 @@ const NavBar = () => {
         </Link>
       </div>
       <div>
-        <Link href="/board/list?type=all&rows=20&page=1">
+        <Link href="/board/list?type=all&rows=30&page=1">
           <a>board</a>
         </Link>
       </div>

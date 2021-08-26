@@ -6,6 +6,7 @@ import wrapper from "../store/configureStore";
 import { CookiesProvider } from "react-cookie";
 import { useStore } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
+
 const App = ({ Component }) => {
   const store = useStore((state) => state);
   return (

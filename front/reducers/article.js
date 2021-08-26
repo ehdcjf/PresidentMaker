@@ -29,6 +29,7 @@ const DELETE_B_LIKE_ACTION = 'DELETE_B_LIKE_ACTION'
 const DELETE_B_DISLIKE_ACTION = 'DELETE_B_DISLIKE_ACTION'
 const UPDATE_B_LIKE_ACTION = 'UPDATE_B_LIKE_ACTION'
 const UPDATE_B_DISLIKE_ACTION = 'UPDATE_B_DISLIKE_ACTION'
+const COMMENT_CNT_UP = 'COMMENT_CNT_UP'
 
 
 
@@ -103,10 +104,11 @@ export const UpdateBLikeAction = (data) => {
   }
 }
 
-
-
-
-
+export const CommentCntUp = ()=>{
+  return{
+    type:COMMENT_CNT_UP,
+  }
+}
 
 
 
@@ -167,6 +169,16 @@ const reducer = (state = initialState, action) => {
         isLike: false,
         liked: state.liked - 1,
         disliked: state.disliked + 1,
+      }
+      
+    case COMMENT_CNT_UP:
+      console.log(state.comment_cnt)
+      return {
+        ...state,
+        
+          
+          comment_cnt:state.comment_cnt+1,
+        
       }
 
     default:

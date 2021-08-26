@@ -1,5 +1,9 @@
   import { useEffect, useState } from "react";
   import { likeAction } from "../api/like";
+import { KAKAO_AUTH_URL } from "../../components/api/OAuth";
+import Router from "next/router";
+
+
 
     import {
       AiFillDislike,
@@ -8,6 +12,7 @@
       AiOutlineLike,
     } from "react-icons/ai";
     import styled from 'styled-components';
+import { useSelector } from "react-redux";
     
     const StyledBoardLikeBtn = styled.div`
     width: 15vw;
@@ -21,12 +26,20 @@
         const [liked,setLike] = useState(props.liked);
         const [disliked,setDisLike] = useState(props.disliked);
         const [isLike,setIsLike] = useState(props.isLike)
+        const {IsLogin} = useSelector(state=>state.user)
 
       const handleOutlineLike = (value) => {
-        if (isLike == null) {
-          handleInsert(value);
-        } else {
-          handleUpdate(value);
+        if(IsLogin){
+
+          if (isLike == null) {
+            handleInsert(value);
+          } else {
+            handleUpdate(value);
+          }
+        }else{
+          if(confirm('로그인하시겠습니까?')){
+            Router.push(`${KAKAO_AUTH_URL}`)
+          }
         }
       };
     
@@ -50,7 +63,6 @@
               // 싫어요 눌렀을 때. 
               setDisLike(disliked+1)
             }
-            console.log("insert",isLike,liked,disliked)
         }
       };
     
@@ -73,7 +85,6 @@
           }
           setIsLike(null)
         };
-        console.log( "delete",isLike,liked,disliked)
 
       }
     
@@ -101,7 +112,6 @@
               setDisLike(disliked+1)
             }
         }
-        console.log( "update",isLike,liked,disliked)
         
       };
     

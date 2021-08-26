@@ -4,8 +4,8 @@ import CommentList from "./CommentList";
 const Comment = ({board_id}) => {
   return (
     <CommentLayout>
-      <CommentForm root={0} board_id={board_id}/>
-      <CommentList root={0} isReply={false} board_id={board_id}/>
+      <CommentForm root={0} />
+      {/* <CommentList root={0} /> */}
     </CommentLayout>
   );
 };

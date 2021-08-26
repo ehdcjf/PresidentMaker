@@ -1,13 +1,10 @@
 import {  useEffect } from "react";
 import  Router  from "next/router";
-import { useDispatch } from "react-redux";
-import { UserLogoutAction } from "../../reducers/user";
 
 const Logout = () => {
-  const dispatch = useDispatch(); 
 
   useEffect(() => {
-    dispatch(UserLogoutAction())
+    window.localStorage.clear();
     setTimeout(() => {
       Router.back();
     }, 1000);

@@ -35,14 +35,14 @@ const createArticle = async (req, res) => {
 
 const showList = async (req, res) => {
     let count = 0;
-    const showHead = `SELECT user.nickname as nickname, board.subject,board.board_id,board.createdAt,board.updated,board.hit,board.liked,board.disliked,board.del
-                    FROM (SELECT user_id, nickname FROM user) AS user 
-                    INNER JOIN board AS board
+    const showHead = `SELECT user.nickname as nickname, board.subject,board.board_id,board.createdAt,board.updated,board.hit,board.liked,board.disliked,board.del,board.comment_cnt
+                    FROM board AS board
+                    INNER JOIN (SELECT user_id, nickname FROM user) AS user 
                     ON board.writer = user.user_id
                     `
 
-    const pageblockHead = `SELECT COUNT(board_id) AS count FROM board `
-    const pageblockSql = searchVerse(pageblockHead, req.query);
+    const pageblockHead = `SELECT COUNT(board_id) AS count FROM board INNER JOIN (SELECT user_id, nickname FROM user) AS user ON board.writer = user.user_id`
+    const pageblockSql = searchVerse(pageblockHead, req.query)+';';
 
     let connection;
     try {
@@ -51,32 +51,46 @@ const showList = async (req, res) => {
             const params = [];
             const [result] = await connection.execute(pageblockSql, params)
             count = result[0].count
-            const { page, rows, pageblock, totalPage } = makePageBlock(count, req.query);
-            const searchSql = searchVerse(showHead, req.query) + ` ORDER BY board_id DESC LIMIT ?,?;`
-            const pageParams = [(page - 1) * rows, rows]
-            const [results] = await connection.execute(searchSql, pageParams)
+            if(count!=0){
 
-            results.forEach(ele => {
-                if (ele.del === 1) {
-                    ele.subject = '삭제된 게시글입니다.'
+                const { page, rows, pageblock, totalPage } = makePageBlock(count, req.query);
+                const searchSql = searchVerse(showHead, req.query) + ` ORDER BY board_id DESC LIMIT ?,?;`
+                const pageParams = [(page - 1) * rows, rows]
+                const [results] = await connection.execute(searchSql, pageParams)
+                
+                results.forEach(ele => {
+                    if (ele.del === 1) {
+                        ele.subject = '삭제된 게시글입니다.'
+                    }
+                    ele.createdAt = clearDate(ele.createdAt)
+                });
+                const search = req.query.search!=undefined ? req.query.search : null;
+                const keyword = req.query.keyword!=undefined ? req.query.keyword : null;
+                const data = {
+                    type:req.query.type,
+                    success: true,
+                    page: page,
+                    rows:rows,
+                    search:search,
+                    keyword:keyword,
+                    pageblock: pageblock,
+                    totalPage: totalPage,
+                    results: results,
                 }
-                ele.createdAt = clearDate(ele.createdAt)
-            });
-
-            const data = {
-                success: true,
-                page: page,
-                pageblock: pageblock,
-                totalPage: totalPage,
-                results: results,
+                res.json(data);
+            }else{
+                const data = {
+                    success:false,
+                    error:'검색 결과를 만족하는 게시글이 없습니다.'
+                }
+                res.json(data);
             }
-            res.json(data);
-        } catch (error) {
-            console.log('Query Error');
-            const data = {
-                success: false,
-                error: error,
-            }
+            } catch (error) {
+                console.log('Query Error');
+                const data = {
+                    success: false,
+                    error: error,
+                }
             console.log(error)
             res.json(data)
         }
@@ -162,7 +176,7 @@ const showArticle = async (req, res) => {
             /////================================ like sql end=======================================================///
 
             /////=================================article sql start======================================///
-            const sql = `SELECT board.writer, user.nickname,board.board_id as board_id,board.subject,board.content,board.createdAt,board.updated,board.hit,board.liked,board.disliked,board.del, isLike
+            const sql = `SELECT board.writer, user.nickname,board.board_id as board_id,board.subject,board.content,board.createdAt,board.updated,board.hit,board.liked,board.disliked,board.del, isLike,comment_cnt
             FROM board 
             LEFT JOIN (SELECT user_id, nickname FROM user) AS user  ON board.writer = user.user_id
             LEFT JOIN (SELECT * FROM blike WHERE user_id = ?) as blike ON board.board_id = blike.target_id 
@@ -419,7 +433,6 @@ module.exports = {
 
 const searchVerse = (sql, obj) => {
     const { type, search, keyword } = obj;
-
     let whereVerse = '';
 
     switch (search) {
@@ -438,10 +451,10 @@ const searchVerse = (sql, obj) => {
         default:
             break;
     }
-    if (type !== "all") {
-        whereVerse += `and like>24`
+    if (type == "hot" ) {
+        if(search!=null) whereVerse += ` AND board.liked > 5`
+        else whereVerse += `WHERE board.liked > 5`
     }
-    //searchSql: searchHead + whereVerse + ,
     return sql + whereVerse;
 }
 
@@ -460,12 +473,4 @@ const makePageBlock = (cnt, obj) => {
         if (i === totalPage) break;
     }
     return { page: page, rows: rows, pageblock: pageblock, totalPage: totalPage, }
-}
-
-
-
-
-
-const updateHit = () => {
-
 }

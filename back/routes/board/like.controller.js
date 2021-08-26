@@ -9,7 +9,7 @@ const LikeAction = async (req, res) => {
   let client=0
   if (AccessToken == undefined) {
     const data = {
-      success:error,
+      success:false,
       error:'you must log in'
     }
     res.json(data);
@@ -44,7 +44,7 @@ const LikeAction = async (req, res) => {
         success: true,
         isLike: isLike
       }
-      if(!data.hasOwnProperty(isLike)) data.isLike= null;
+      if(data.isLike==undefined) data.isLike= null;
       res.json(data);
     } catch (error) {
       console.log('Query Error');

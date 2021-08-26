@@ -25,7 +25,6 @@ const defaultComment = {
   target_nick: null,
   isWriter: true,
   isLike: null,
-  replys: [],
 }
 
 

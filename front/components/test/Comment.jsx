@@ -1,14 +1,18 @@
 import CommentLayout from "./CommentLayout";
 import CommentForm from "./CommentForm";
 import CommentList from "./CommentList";
+import CommentInfo from "./CommentInfo";
+import { CommentCntUp } from "../../reducers/article";
 import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector,useDispatch } from "react-redux";
 import {
   createComment,
   showComment,
   destroyComment,
   updateComment,
 } from "../api/Comment";
+import { KAKAO_AUTH_URL } from "../../components/api/OAuth";
+import Router from "next/router";
 
 
 const defaultComment = {
@@ -34,10 +38,34 @@ const defaultComment = {
 
 
 const Comment = ({board_id}) => {
+  const dispatch = useDispatch(); 
   const {image,nickname} = useSelector((state)=>state.user)
+  const {comment_cnt} = useSelector((state)=>state.article)
   const [list, setList] = useState([]);
   const [skip, setSkip] = useState(0);
   const [fetching, setFetching] = useState(false);
+  const [type,setType] = useState('like')
+
+
+  const handleCommentType = async(v) =>{
+      setType(v)
+      const data = {
+        board_id: board_id,
+        skip: 0,
+        root: 0,
+        type:v,
+      };
+      const result = await showComment(data);
+      console.log(result)
+      const newList = [...result];
+      
+      setList(newList);
+      setSkip(10);
+  }
+
+
+  
+
 
   //===== init
 
@@ -63,11 +91,16 @@ const Comment = ({board_id}) => {
       };
         const newList = [commentInfo, ...list];
         setList(newList);
-        ///아티클에서 댓글 수 추가해주기.
-      
+        dispatch(CommentCntUp())      
     }
     else{
-      alert(result.error)
+      if(result.error==='!USER'){
+        if(confirm('로그인하시겠습니까?')){
+          Router.push(`${KAKAO_AUTH_URL}`)
+        }
+      }else{
+        alert(result.error)
+      }
     }
   };
 
@@ -78,8 +111,11 @@ const Comment = ({board_id}) => {
       board_id: board_id,
       skip: skip,
       root: 0,
+      type:type,
     };
     const result = await showComment(data);
+    console.log(result)
+
     const newList = [...list, ...result];
     setList(newList);
     setSkip(skip + 10);
@@ -92,6 +128,7 @@ const Comment = ({board_id}) => {
       board_id: board_id,
       skip: skip,
       root: 0,
+      type:type,
     };
     const result = await showComment(data);
     const newList = [...list, ...result];
@@ -137,7 +174,13 @@ const Comment = ({board_id}) => {
       setList(newList);
       alert("수정되었습니다.");
     } else {
-      alert(result.error);
+      if(result.error==='!USER'){
+        if(confirm('로그인하시겠습니까?')){
+          Router.push(`${KAKAO_AUTH_URL}`)
+        }
+      }else{
+        alert(result.error)
+      }
     }
   };
 
@@ -155,12 +198,19 @@ const Comment = ({board_id}) => {
       setList(newList);
       alert("삭제되었습니다.");
     } else {
-      alert(result.error);
+      if(result.error==='!USER'){
+        if(confirm('로그인하시겠습니까?')){
+          Router.push(`${KAKAO_AUTH_URL}`)
+        }
+      }else{
+        alert(result.error)
+      }
     }
   };
 
   return (
     <CommentLayout>
+      <CommentInfo type={type} cnt={comment_cnt} handleCommentType={handleCommentType}/>
       <CommentForm root={0} handleCreate={handleCreate}  />
       <CommentList
         list={list}

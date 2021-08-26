@@ -3,12 +3,17 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { showList } from "../../components/api/showList";
 import { ShowListAction } from "../../reducers/board";
-import { Pageblock } from "../../components/board/pageblock";
+import { Pageblock } from "../../components/board/Pageblock";
 import Router from "next/router";
+import RowBtn from "../../components/board/RowBtn";
+import SearchBox from "../../components/board/SearchBox";
+import BoardType from "../../components/board/BoardType";
+import { KAKAO_AUTH_URL } from "../../components/api/OAuth";
 
 const List = () => {
   const dispatch = useDispatch();
   const board = useSelector((state) => state.board);
+  const {IsLogin} = useSelector(state=>state.user);
 
   useEffect(async () => {
     const queryStr = new URL(window.location.href).searchParams;
@@ -21,26 +26,46 @@ const List = () => {
     };
 
     const result = await showList(data);
-    await dispatch(ShowListAction(result));
+    if(result.success){
+      await dispatch(ShowListAction(result));
+    }else{
+      alert(result.error)
+    }
   }, []);
 
-  const handlePage = async (num) => {
-    const updatePage = { ...board, page: num };
+
+  const handlePage = async (data) => {
+    const updatePage = { ...board, ...data, };
+    let url = `/board/list?type=${updatePage.type}&rows=${updatePage.rows}&page=${updatePage.page}`
+    if(  updatePage.search!=null &&updatePage.keyword!=null) url+=`&search=${updatePage.search}&keyword=${updatePage.keyword}`
     const result = await showList(updatePage);
-    await dispatch(ShowListAction(result));
-    Router.push(
-      {
-        pathname: `/board/list`,
-        query: {
-          type: board.type,
-          rows: board.rows,
-          page: num,
+    if(result.success){
+      dispatch(ShowListAction(result));
+
+      Router.push(
+        {
+          pathname: `/board/list`,
+          query: updatePage,
         },
-      },
-      `/board/list?type=${board.type}&rows=${board.rows}&page=${num}`,
-      { shallow: true }
-    );
+        url,
+        { shallow: true }
+        );
+      }else{
+        alert(result.error); 
+      }
   };
+
+  const moveWrite = () =>{
+    if(IsLogin){
+    Router.push(`/board/write`);
+    }else{
+      if(confirm('로그인하시겠습니까?')){
+        Router.push(`${KAKAO_AUTH_URL}`)
+      }
+    }
+  }
+
+
 
   const renderList = (list) => {
     return list.map((v) => {
@@ -52,13 +77,17 @@ const List = () => {
               href="/board/view/:[board_id]"
               as={`/board/view/${v.board_id}`}
             >
-              <a>{v.subject}</a>
+              <a>{v.subject}
+              {v.comment_cnt>0 && <span>
+              [{v.comment_cnt}]
+              </span>}
+              </a>
             </Link>
           </td>
           <td>{v.nickname}</td>
           <td>{v.createdAt}</td>
           <td>{v.hit}</td>
-          <td>{v.like}</td>
+          <td>{v.liked}</td>
         </tr>
       );
     });
@@ -68,9 +97,21 @@ const List = () => {
     <>
       <div>
         <div>
-          <Link href="/board/write">
+        <BoardType
+          handlePage={handlePage}
+          type={board.type}
+        />
+        </div>
+        <div>
+          <span onClick={moveWrite}>글쓰기</span>
+          {/* <Link href="/board/write">
             <a>글쓰기</a>
-          </Link>
+          </Link> */}
+          <RowBtn
+            rows={board.rows}
+            handlePage={handlePage}
+          />
+
         </div>
 
         <table>
@@ -90,6 +131,11 @@ const List = () => {
       <Pageblock
         pageblock={board.pageblock}
         endpage={board.endpage}
+        handlePage={handlePage}
+      />
+      <SearchBox
+        search={board.search}
+        keyword={board.keyword}
         handlePage={handlePage}
       />
     </>

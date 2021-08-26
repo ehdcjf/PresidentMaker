@@ -7,6 +7,7 @@ import { DeleteArticleAction } from "../../../reducers/board";
 import Comment from "../../../components/test/Comment";
 import Link from "next/link";
 import Router from "next/router";
+
 import { LikeBtn } from "../../../components/board/LikeBtn";
 import BoardLayout from "../../../components/layout/BoardLayout";
 import Head from "next/head";
@@ -15,8 +16,8 @@ import 'react-quill/dist/quill.snow.css'
 import { RiFileListLine, RiDeleteBin6Line } from "react-icons/ri";
 import { GrUpdate } from "react-icons/gr";
 
-const blike = "blike";
-const clike = "clike";
+
+
 
 const View = () => {
   const dispatch = useDispatch();
@@ -24,7 +25,7 @@ const View = () => {
   const { type, page, search, keyword, rows } = useSelector(
     (state) => state.board
   );
-  console.log(article)
+  const {IsLogin} = useSelector(state=>state.user)
   const router = useRouter();
   const { board_id } = router.query;
 
@@ -44,10 +45,11 @@ const View = () => {
   }, [board_id]);
 
   const deleteHandler = async () => {
-    const data = {
-      board_id,
-      writer: article.writer,
-    };
+    if(confirm('정말 삭제하시겠습니까?')){
+      const data = {
+        board_id,
+        writer: article.writer,
+      };
     const result = await deleteArticle(data);
     if (result.success === true) {
       dispatch(DeleteArticleAction(result));
@@ -56,6 +58,7 @@ const View = () => {
     } else {
       alert("당신에게는 이 글에 대한 삭제 권한이 없습니다.");
     }
+  }
   };
 
   // const modifyHandler = () => {
@@ -76,7 +79,7 @@ const View = () => {
   };
 
   const renderArticleAction = () => {
-    if (article.del === 0 && article.isWriter === true) {
+    if (article.del === 0 && article.isWriter === true &&IsLogin) {
       return (
         <>
           <Link
@@ -140,11 +143,11 @@ const View = () => {
           <div className="ql-editor"
           dangerouslySetInnerHTML={{ __html: article.content }}
           />
-        
+
         <LikeBtn
           isLike={article.isLike}
-          type={blike}
-          id={article.board_id}
+          type={'blike'}
+          id={board_id}
           liked={article.liked}
           disliked={article.disliked}
         />
@@ -155,7 +158,7 @@ const View = () => {
           </span>
         </div>
         {/* 댓글영역 */}
-        <div>{board_id !== undefined && <Comment board_id={board_id} />}</div>
+        <div>{board_id !== undefined && <Comment board_id={board_id} comment_cnt={article.comment_cnt}/>}</div>
       </BoardLayout>
     </>
   );

@@ -4,6 +4,10 @@ import UpdateForm from "./CommentUpdateForm";
 import CommentForm from "./CommentForm";
 import CommentList from "./CommentList"
 import styled from "styled-components";
+import { CommentCntUp } from "../../reducers/article";
+import { KAKAO_AUTH_URL } from "../../components/api/OAuth";
+import Router from "next/router";
+
 
 import {
   createComment,
@@ -11,7 +15,7 @@ import {
   destroyComment,
   updateComment,
 } from "../api/Comment";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {CommentLikeBtn} from "./CommentLikeBtn";
 
 const StyledCommentItem = styled.div`
@@ -78,14 +82,21 @@ const CommentItem = ({
   const [create, setCreate] = useState(false);
   const [showReply, setShowReply] = useState(false);
   const [replyCnt,setReplyCnt]= useState(reply_cnt)
-  const nickname = useSelector((state)=>state.user.nickname)
+  const {nickname,IsLogin} = useSelector((state)=>state.user)
   const clientImage = useSelector(state=>state.user.image)
+  const dispatch = useDispatch(); 
 
 
 
 
   const handleUpdate = (value) => {
-    setUpdate(value);
+    if(IsLogin){
+      setUpdate(value);
+    }else{
+      if(confirm('로그인하시겠습니까?')){
+        Router.push(`${KAKAO_AUTH_URL}`)
+      }
+    }
   };
 
   const showReplyMakeForm = (value) => {
@@ -97,9 +108,15 @@ const CommentItem = ({
   };
 
   const deleteRequest = () => {
-    const answer = confirm("삭제하시겠습니까?");
-    if (answer) {
-      handleDelete();
+    if(IsLogin){
+      const answer = confirm("삭제하시겠습니까?");
+      if (answer) {
+        handleDelete();
+      }
+    }else{
+      if(confirm('로그인하시겠습니까?')){
+        Router.push(`${KAKAO_AUTH_URL}`)
+      }
     }
   };
 
@@ -134,7 +151,7 @@ const CommentItem = ({
       const newList = [commentInfo, ...list];
       setList(newList);
       setReplyCnt(replyCnt+1);
-    
+      dispatch(CommentCntUp()) 
   }
   else{
     alert(result.error)
@@ -157,6 +174,7 @@ const CommentItem = ({
       board_id: board_id,
       skip: skip,
       root: comment_id,
+      type:'old'
     };
     const result = await showComment(data);
     const newList = [...list, ...result].sort((a,b)=>{
@@ -182,6 +200,7 @@ const CommentItem = ({
       board_id: board_id,
       skip: skip,
       root:comment_id,
+      type:'old'
     };
     const result = await showComment(data);
     const newList = [...list, ...result];

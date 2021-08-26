@@ -6,7 +6,14 @@ const createComment = async (req, res) => {
   const { content } = req.body;
   const { board_id, root, target } = req.params;
   const AccessToken = req.cookies.AccessToken;
-  const writer = jwtId(AccessToken);
+  if(AccessToken===undefined){
+    const data = {
+      success:false,
+      error:'!USER'
+    }
+    res.json(data)
+  }else{
+    const writer = jwtId(AccessToken);
 
   let connection;
   try {
@@ -50,13 +57,32 @@ const createComment = async (req, res) => {
   } finally {
     connection.release();
   }
+
+  }
+  
 }
 
 
 
 const showComment = async (req, res) => {
-  const { root, board_id, skip } = req.params;
+  const { root, board_id, skip,type } = req.params;
   const AccessToken = req.cookies.AccessToken;
+  let order =''
+  switch(type){
+    case 'like' :
+      order = 'liked DESC'
+      break;
+    case 'old' :
+      order= 'comment_id ASC'
+      break;
+    case 'new':
+      order= 'comment_id DESC'
+      break;
+    default:
+      order = 'comment_id DESC'
+      break;
+  }
+
 
   let client = 0;
   if (AccessToken !== undefined)
@@ -71,9 +97,8 @@ const showComment = async (req, res) => {
                   LEFT JOIN (SELECT user_id,nickname as writer_nick, image FROM user) as writer ON writer.user_id = comment.writer
                   LEFT JOIN (SELECT user_id as target_id,nickname as target_nick FROM user) as target ON target.target_id = comment.target
                   LEFT JOIN (SELECT * FROM clike WHERE user_id = ?) as clike ON comment.comment_id = clike.target_id 
-                  WHERE board_id = ? AND root = ?   ORDER BY comment_id DESC LIMIT ?,? ;
+                  WHERE board_id = ? AND root = ?   ORDER BY ${order} LIMIT ?,? ;
                   `
-
       // const sql = `SELECT id,board_id,writer,nick,createdAt,updatedAt, root, liked,disliked, del,reply,subidx,subnick, type as isLike,content,image
       // FROM (SELECT * 
       //         FROM comment
@@ -119,49 +144,61 @@ const updateComment = async (req, res) => {
   const { writer, comment_id } = req.params;
   const update = true;
   const AccessToken = req.cookies.AccessToken;
-  const client = jwtId(AccessToken);
-  if (client != writer) {
+  if(AccessToken===undefined){
     const data = {
-      success: false,
-      error: '수정권한이 없습니다.'
+      success:false,
+      error:'!USER'
     }
-    res.json(data);
-  } else {
-    let connection;
-    try {
-      connection = await pool.getConnection(async conn => conn);
+    res.json(data)
+
+  }else{
+    const client = jwtId(AccessToken);
+    if (client != writer) {
+      const data = {
+        success: false,
+        error: '수정권한이 없습니다.'
+      }
+      res.json(data);
+    } else {
+      let connection;
       try {
-        const sql = `UPDATE comment SET content = ?, updated = ? WHERE comment_id = ? `
-        const params = [content, update, comment_id];
-        const [rows] = await connection.execute(sql, params)
-        const data = {
-          success: true,
-          comment_id: comment_id,
-          content: content,
+        connection = await pool.getConnection(async conn => conn);
+        try {
+          const sql = `UPDATE comment SET content = ?, updated = ? WHERE comment_id = ? `
+          const params = [content, update, comment_id];
+          const [rows] = await connection.execute(sql, params)
+          const data = {
+            success: true,
+            comment_id: comment_id,
+            content: content,
+          }
+          res.json(data);
+        } catch (error) {
+          console.log('Query Error');
+          console.log(error)
+          const data = {
+            success: false,
+            error: error,
+          }
+          res.json(data)
         }
-        res.json(data);
       } catch (error) {
-        console.log('Query Error');
+        console.log('DB Error')
         console.log(error)
         const data = {
           success: false,
           error: error,
         }
         res.json(data)
+      } finally {
+        connection.release();
       }
-    } catch (error) {
-      console.log('DB Error')
-      console.log(error)
-      const data = {
-        success: false,
-        error: error,
-      }
-      res.json(data)
-    } finally {
-      connection.release();
+  
     }
-
+    
   }
+
+ 
 
 
 }
@@ -172,7 +209,14 @@ const deleteComment = async (req, res) => {
   const { comment_id, writer } = req.params;
 
   const AccessToken = req.cookies.AccessToken;
-  const client = jwtId(AccessToken);
+  if(AccessToken===undefined){
+    const data = {
+      success:false,
+      error:'!USER'
+    }
+    res.json(data)
+  }else{
+    const client = jwtId(AccessToken);
   if (client != writer) {
     const data = {
       success: false,
@@ -213,6 +257,9 @@ const deleteComment = async (req, res) => {
     }
 
   }
+
+  }
+  
 
 
 }

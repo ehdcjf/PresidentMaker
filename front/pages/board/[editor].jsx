@@ -118,11 +118,13 @@ export default function Home() {
         <link rel="stylesheet" href="//cdn.quilljs.com/1.3.6/quill.snow.css" />
       </Head>
 
-      {editor === "write" ? (
+      {/* {editor === "write" ? (
         <StyledTitle>글쓰기</StyledTitle>
       ) : (
         <StyledTitle>수정하기</StyledTitle>
-      )}
+      )} */}
+      {editor==='write' && <StyledTitle>글쓰기</StyledTitle>}
+      {editor==='modify' && <StyledTitle>수정하기</StyledTitle>}
 
       <div style={{ width: "80%", marginTop: "40px", height:'auto' ,overflow:'hidden'}}>
         <div>

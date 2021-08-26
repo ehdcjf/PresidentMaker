@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { likeAction } from "../api/like";
+import { KAKAO_AUTH_URL } from "../../components/api/OAuth";
+import Router from "next/router";
+
 import {
   InsertBLikeAction,
   DeleteBLikeAction,
@@ -15,22 +18,35 @@ import {
 import styled from 'styled-components';
 
 const StyledBoardLikeBtn = styled.div`
-width: 15vw;
+width: 9vw;
 display: flex;
-justify-content: center;
+justify-content: space-around;
+align-items: center;
+
+
+  &>div>span{
+    font-size: 40px;
+  }
 
 `
 
 export const LikeBtn = (props) => {
   const {type,id,liked,disliked,isLike} = props
-  console.log(props.isLike==true)
+  const {IsLogin} = useSelector(state=>state.user)
+  
   const dispatch = useDispatch();
 
   const handleOutlineLike = (value) => {
-    if (isLike === null) {
-      handleInsert(value);
-    } else {
-      handleUpdate(value);
+    if(IsLogin){
+      if (isLike === null) {
+        handleInsert(value);
+      } else {
+        handleUpdate(value);
+      }
+    }else{
+      if(confirm('로그인하시겠습니까?')){
+        Router.push(`${KAKAO_AUTH_URL}`)
+      }
     }
   };
 
@@ -43,6 +59,7 @@ export const LikeBtn = (props) => {
     };
 
     const result = await likeAction(data);
+    console.log(result.isLike)
     if(result.success){
         dispatch(InsertBLikeAction(result.isLike));
     }
@@ -55,6 +72,8 @@ export const LikeBtn = (props) => {
       action: "DELETE",
     };
     const result = await likeAction(data);
+    console.log(result.isLike)
+
     if(result.success){
       dispatch(DeleteBLikeAction(value));
     };
@@ -69,6 +88,8 @@ export const LikeBtn = (props) => {
     };
 
     const result = await likeAction(data);
+    console.log(result.isLike)
+
     if(result.success){
         dispatch(UpdateBLikeAction(value));
     }
@@ -84,7 +105,7 @@ export const LikeBtn = (props) => {
           handleDelte(true);
         }}
         >
-          <AiFillLike />
+          <AiFillLike size={40} />
         </span>
       ) : (
         <span
@@ -92,7 +113,7 @@ export const LikeBtn = (props) => {
           handleOutlineLike(true);
         }}
         >
-          <AiOutlineLike />
+          <AiOutlineLike  size={40}/>
         </span>
       )}
       <span className="liked">{liked}</span>
@@ -104,7 +125,7 @@ export const LikeBtn = (props) => {
           handleDelte(false);
         }}
         >
-          <AiFillDislike />
+          <AiFillDislike size={40} />
         </span>
       ) : (
         <span
@@ -112,7 +133,7 @@ export const LikeBtn = (props) => {
             handleOutlineLike(false);
           }}
           >
-          <AiOutlineDislike />
+          <AiOutlineDislike size={40} />
         </span>
       )}
       <span className="disliked">{disliked}</span>
