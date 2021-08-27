@@ -5,7 +5,7 @@ const Comment = ({board_id}) => {
   return (
     <CommentLayout>
       <CommentForm root={0} />
-      {/* <CommentList root={0} /> */}
+      <CommentList root={0} />
     </CommentLayout>
   );
 };

@@ -159,21 +159,31 @@ const showArticle = async (req, res) => {
             }
             //////=============================== hit update sql =====================================================///
 
-            /////================================ like sql  start =======================================================///
-            //join 해서 가져오고 싶은데 비회원일경우에 조회하는 게 힘들 것 같음... 
-            //비회원이면 client = 0 으로 셋팅
-            //프로시저로 요청 한번만 날리게 만들고 싶음.. 
-            // let isLike = null;
-            // if (client !== undefined) {//회원일 경우 좋아요 눌렀는 지 확인해야함.
-            //     const likeSql = `SELECT islike FROM blike WHERE target_id=? AND user_id=?`
-            //     const likeParams = [board_id, client]
-            //     const [result] = await connection.execute(likeSql, likeParams)
-            //     if (result.length !== 0) {
-            //         isLike = result.islike;
-            //     }
-            // }
+            /////================================ comment sql  start =======================================================///
+            const commentSql = `SELECT * 
+                  FROM comment 
+                  LEFT JOIN (SELECT user_id,nickname as writer_nick, image FROM user) as writer ON writer.user_id = comment.writer
+                  LEFT JOIN (SELECT user_id as target_id,nickname as target_nick FROM user) as target ON target.target_id = comment.target
+                  LEFT JOIN (SELECT * FROM clike WHERE user_id = ?) as clike ON comment.comment_id = clike.target_id 
+                  WHERE board_id = ? AND root = ?   ORDER BY liked DESC LIMIT ?,? ;`
+            const commentparams = [client,board_id, 0, 0, 10];
+            const [comment] = await connection.execute(commentSql, commentparams)
+      comment.forEach(v => {
+        v.createdAt = clearDate(v.createdAt);
+        v.replys=[];
+        if (v.writer == client) {
+          v.isWriter = true;
+        } else {
+          v.isWriter = false;
+        }
+        if (v.del == 1) {
+          v.content = "삭제된 댓글입니다."
+          v.isWriter = false
+          v.isLike = null
+        }
+      })
 
-            /////================================ like sql end=======================================================///
+            /////================================ comment sql end=======================================================///
 
             /////=================================article sql start======================================///
             const sql = `SELECT board.writer, user.nickname,board.board_id as board_id,board.subject,board.content,board.createdAt,board.updated,board.hit,board.liked,board.disliked,board.del, isLike,comment_cnt
@@ -185,9 +195,6 @@ const showArticle = async (req, res) => {
             const params = [client,board_id];
             const [result] = await connection.execute(sql, params)
             /////=================================article sql end======================================///
-
-            ///===============================
-
 
             let data = { ...result[0] }
 
@@ -207,6 +214,7 @@ const showArticle = async (req, res) => {
 
             data.createdAt = clearDate(data.createdAt);
             data.success = true;
+            data.comments=comment;
             res.json(data);
         } catch (error) {
             console.log('Query Error');

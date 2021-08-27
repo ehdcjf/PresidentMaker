@@ -3,50 +3,36 @@ import CommentItem from "./CommentItem";
 import { useState, useEffect } from "react";
 import { showComment } from "../api/Comment";
 import { useSelector, useDispatch } from "react-redux";
-import { AddComments, AddReplys,ReSetComment } from "../../reducers/comment";
+import { GetComments } from "../../reducers/article";
 
-const CommentList = (props) => {
-  const { root, isReply ,board_id} = props;
+const CommentList = ({root}) => {
   const dispatch = useDispatch();
-  const { comment } = useSelector((state) => state.comment);
+  const article = useSelector((state) => state.article);
   const [fetching, setFetching] = useState(false);
-  const [skip, setSkip] = useState(0);
-
-  const [replys,setReplys] = useState([]);
+  const [skip, setSkip] = useState(10);
 
 
-  useEffect(async () => {
-    const data = {
-      board_id: board_id,
-      skip: skip,
-      root: root,
-    };
-    const result = await showComment(data);
-    if (!isReply) dispatch(AddComments(result));
-    else {
-      setReplys([...replys,...result])
+  //클린업함수..
+  useEffect(()=>{
+    return () =>{
+      setFetching(false);
     }
-    setSkip(skip + 10);
+  },[])
 
-    return ()=>{
-      setSkip(0);
-      setReplys([]);
-    }
-
-
-  }, []);
 
   const fetchMoreComment = async () => {
+    console.log('xxxxxxxxxxxxxxxxxxxxxxxxx')
     setFetching(true);
     const data = {
-      board_id: board_id,
+      board_id: article.board_id,
       skip: skip,
       root: root,
     };
     const result = await showComment(data);
-    dispatch(AddComments(result));
     setSkip(skip + 10);
     setFetching(false);
+    dispatch(GetComments(result));
+
   };
 
   // const { loadding, commentItem, error } = state;
@@ -55,11 +41,10 @@ const CommentList = (props) => {
     const scrollHeight = document.documentElement.scrollHeight;
     const scrollTop = document.documentElement.scrollTop;
     const clientHeight = document.documentElement.clientHeight;
-
     if (
-      scrollTop + clientHeight >= scrollHeight &&
-      fetching === false &&
-      isReply === false
+      scrollTop + clientHeight >= scrollHeight 
+      && fetching === false
+      && root==0
     ) {
       fetchMoreComment();
     }
@@ -73,10 +58,9 @@ const CommentList = (props) => {
   });
 
   const randerItem = () => {
-    let temp = [];
-    if (isReply === false) temp = comment;
-    // else temp = replys;
-    
+    let temp = article.comments
+    if(root!=0)
+    {temp=article.comments.filter(v=>v.comment_id==root).map(r=>r.replys)[0]}
     return temp.map((v, i) => {
       return (
         <CommentItem
@@ -94,8 +78,8 @@ const CommentList = (props) => {
           updated={v.updated}
           replys={v.replys}
           reply_cnt={v.reply_cnt}
-          target_id={null}
-          target_nick={null}
+          target_id={v.target_id}
+          target_nick={v.target_nick}
           isLike={v.isLike}
           isWriter={v.isWriter}
         />

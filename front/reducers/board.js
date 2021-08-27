@@ -38,9 +38,8 @@ export const DeleteArticleAction = (data) => {
   return async (dispatch) => {
     dispatch(DeleteArticleRequest());
     try {
-      const result = data;
-      result.success === true
-        ? dispatch(DeleteArticleSuccess(result))
+      data.success === true
+        ? dispatch(DeleteArticleSuccess(data))
         : dispatch(DeleteArticleError())
     } catch (e) {
       dispatch(DeleteArticleError())
