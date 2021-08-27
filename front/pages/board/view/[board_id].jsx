@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { showArticle, deleteArticle } from "../../../components/api/Article";
 import { ShowArticleAction } from "../../../reducers/article";
 import { DeleteArticleAction } from "../../../reducers/board";
-import Comment from "../../../components/test/Comment";
+import Comment from "../../../components/comment/Comment";
 import Link from "next/link";
 import Router from "next/router";
 
@@ -39,8 +39,9 @@ const View = () => {
   useEffect(async () => {
     if (board_id !== undefined) {
       const data = { board_id: board_id };
-      const result = await showArticle(data); //// 정보를 가져올 필요가 없을 때도 가져온다.??
+      const result = await showArticle(data); 
       dispatch(ShowArticleAction(result));
+      console.log(article);
     }
   }, [board_id]);
 
@@ -84,7 +85,7 @@ const View = () => {
         <>
           <Link
             href="/board/:[editor]"
-            as={`/board/modify?board_id=${board_id}`}
+            as={`/board/modify?board_id=${article.board_id}`}
           >
             <a>
               <GrUpdate />
@@ -147,7 +148,7 @@ const View = () => {
         <LikeBtn
           isLike={article.isLike}
           type={'blike'}
-          id={board_id}
+          id={article.board_id}
           liked={article.liked}
           disliked={article.disliked}
         />
@@ -158,7 +159,8 @@ const View = () => {
           </span>
         </div>
         {/* 댓글영역 */}
-        <div>{board_id !== undefined && <Comment board_id={board_id} comment_cnt={article.comment_cnt}/>}</div>
+        {/* <div>{board_id !== undefined && <Comment board_id={board_id} comment_cnt={article.comment_cnt}/>}</div> */}
+        <Comment/>
       </BoardLayout>
     </>
   );

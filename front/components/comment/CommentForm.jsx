@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { createComment } from "../api/Comment";
-import { AddComment, } from "../../reducers/article";
+import { AddComment, AddReply } from "../../reducers/article";
 import styled from "styled-components";
 
 const StyledCommentForm = styled.div`
@@ -62,7 +62,7 @@ const StyledCommentForm = styled.div`
 const CommentForm = ({ handleCreate, root }) => {
   const dispatch = useDispatch();
   const { image, nickname } = useSelector((state) => state.user);
-  const article = useSelector((state)=>state.acticle)
+  const article = useSelector((state)=>state.article)
   const [input, setInput] = useState("");
 
   const handleChange = (e) => {
@@ -79,6 +79,7 @@ const CommentForm = ({ handleCreate, root }) => {
       root: root,
     };
     const result = await createComment(data);
+    console.log(result)
 
     if (result.success) {
       const commentInfo = {
@@ -90,12 +91,20 @@ const CommentForm = ({ handleCreate, root }) => {
         root: root,
         createdAt: result.createdAt,
         image: image,
-        nickname: nickname,
       };
+      if(root==0){
         dispatch(AddComment(commentInfo));
-       
+      }else{
+        dispatch(AddReply(commentInfo));
+      }
     }else{
-      alert(result.error)
+      if(result.error==='!USER'){
+        if(confirm('로그인하시겠습니까?')){
+          Router.push(`${KAKAO_AUTH_URL}`)
+        }
+      }else{
+        alert(result.error)
+      }
     }
 
     setInput("");

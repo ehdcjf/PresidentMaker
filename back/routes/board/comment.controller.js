@@ -111,6 +111,7 @@ const showComment = async (req, res) => {
       const [rows] = await connection.execute(sql, params)
       rows.forEach(v => {
         v.createdAt = clearDate(v.createdAt);
+        v.replys=[];
         if (v.writer == client) {
           v.isWriter = true;
         } else {
