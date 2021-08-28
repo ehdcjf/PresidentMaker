@@ -14,7 +14,7 @@ router.put('/:board_id/:writer', boardController.updateArticle);
 router.delete('/:board_id/:writer', boardController.deleteArticle);
 
 
-router.post('/comment/:board_id/:root/:target', commentController.createComment);
+router.post('/comment/:board_id/:root/:target_id', commentController.createComment);
 router.get('/comment/:board_id/:root/:skip/:type', commentController.showComment)
 router.patch('/comment/:comment_id/:writer', commentController.updateComment);
 router.delete('/comment/:comment_id/:writer', commentController.deleteComment);

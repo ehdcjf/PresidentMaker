@@ -42,7 +42,7 @@ const showList = async (req, res) => {
                     `
 
     const pageblockHead = `SELECT COUNT(board_id) AS count FROM board INNER JOIN (SELECT user_id, nickname FROM user) AS user ON board.writer = user.user_id`
-    const pageblockSql = searchVerse(pageblockHead, req.query)+';';
+    const pageblockSql = searchVerse(pageblockHead, req.query) + ';';
 
     let connection;
     try {
@@ -51,47 +51,47 @@ const showList = async (req, res) => {
             const params = [];
             const [result] = await connection.execute(pageblockSql, params)
             count = result[0].count
-            if(count!=0){
+            if (count != 0) {
 
                 const { page, rows, pageblock, totalPage } = makePageBlock(count, req.query);
                 const searchSql = searchVerse(showHead, req.query) + ` ORDER BY board_id DESC LIMIT ?,?;`
                 const pageParams = [(page - 1) * rows, rows]
                 const [results] = await connection.execute(searchSql, pageParams)
-                
+
                 results.forEach(ele => {
                     if (ele.del === 1) {
                         ele.subject = '삭제된 게시글입니다.'
                     }
                     ele.createdAt = clearDate(ele.createdAt)
                 });
-                const search = req.query.search!=undefined ? req.query.search : null;
-                const keyword = req.query.keyword!=undefined ? req.query.keyword : null;
+                const search = req.query.search != undefined ? req.query.search : null;
+                const keyword = req.query.keyword != undefined ? req.query.keyword : null;
                 const data = {
-                    type:req.query.type,
+                    type: req.query.type,
                     success: true,
                     page: page,
-                    rows:rows,
-                    search:search,
-                    keyword:keyword,
+                    rows: rows,
+                    search: search,
+                    keyword: keyword,
                     pageblock: pageblock,
                     totalPage: totalPage,
                     results: results,
                 }
                 res.json(data);
-            }else{
+            } else {
                 const data = {
-                    success:false,
-                    error:'검색 결과를 만족하는 게시글이 없습니다.'
+                    success: false,
+                    error: '검색 결과를 만족하는 게시글이 없습니다.'
                 }
                 res.json(data);
             }
-            } catch (error) {
-                console.log('Query Error');
-                const data = {
-                    success: false,
-                    error: error,
-                }
+        } catch (error) {
+            console.log('Query Error');
             console.log(error)
+            const data = {
+                success: false,
+                error: error,
+            }
             res.json(data)
         }
     } catch (error) {
@@ -165,23 +165,23 @@ const showArticle = async (req, res) => {
                   LEFT JOIN (SELECT user_id,nickname as writer_nick, image FROM user) as writer ON writer.user_id = comment.writer
                   LEFT JOIN (SELECT user_id as target_id,nickname as target_nick FROM user) as target ON target.target_id = comment.target
                   LEFT JOIN (SELECT * FROM clike WHERE user_id = ?) as clike ON comment.comment_id = clike.target_id 
-                  WHERE board_id = ? AND root = ?   ORDER BY liked DESC LIMIT ?,? ;`
-            const commentparams = [client,board_id, 0, 0, 10];
+                  WHERE board_id = ? AND root = ?   ORDER BY  liked DESC LIMIT ?,? ;`
+            const commentparams = [client, board_id, 0, 0, 10];
             const [comment] = await connection.execute(commentSql, commentparams)
-      comment.forEach(v => {
-        v.createdAt = clearDate(v.createdAt);
-        v.replys=[];
-        if (v.writer == client) {
-          v.isWriter = true;
-        } else {
-          v.isWriter = false;
-        }
-        if (v.del == 1) {
-          v.content = "삭제된 댓글입니다."
-          v.isWriter = false
-          v.isLike = null
-        }
-      })
+            comment.forEach(v => {
+                v.createdAt = clearDate(v.createdAt);
+                v.replys = [];
+                if (v.writer == client) {
+                    v.isWriter = true;
+                } else {
+                    v.isWriter = false;
+                }
+                if (v.del == 1) {
+                    v.content = "삭제된 댓글입니다."
+                    v.isWriter = false
+                    v.isLike = null
+                }
+            })
 
             /////================================ comment sql end=======================================================///
 
@@ -192,7 +192,7 @@ const showArticle = async (req, res) => {
             LEFT JOIN (SELECT * FROM blike WHERE user_id = ?) as blike ON board.board_id = blike.target_id 
             WHERE board.board_id=?`
 
-            const params = [client,board_id];
+            const params = [client, board_id];
             const [result] = await connection.execute(sql, params)
             /////=================================article sql end======================================///
 
@@ -205,7 +205,7 @@ const showArticle = async (req, res) => {
             }
 
             //해당 글의 작성자면  isWriter 를 true 값을 부여하여 프론트에서 수정 삭제 버튼을 보여줄지 말지 정함.
-            if(!data.hasOwnProperty('isLike')) data.isLike = null;
+            if (!data.hasOwnProperty('isLike')) data.isLike = null;
             if (data.writer == client) {
                 data.isWriter = true;
             } else {
@@ -214,7 +214,7 @@ const showArticle = async (req, res) => {
 
             data.createdAt = clearDate(data.createdAt);
             data.success = true;
-            data.comments=comment;
+            data.comments = comment;
             res.json(data);
         } catch (error) {
             console.log('Query Error');
@@ -239,16 +239,16 @@ const showArticle = async (req, res) => {
 };
 
 
-const updateCheck = async(req,res)=>{
-    const { board_id} = req.params;
+const updateCheck = async (req, res) => {
+    const { board_id } = req.params;
     const AccessToken = req.cookies.AccessToken;
-    if(AccessToken===undefined){
+    if (AccessToken === undefined) {
         const data = {
-            success:false,
-            error:'수정권한이 없습니다'
+            success: false,
+            error: '수정권한이 없습니다'
         }
         res.json(data)
-    }else{
+    } else {
         const client = jwtId(AccessToken);
 
         let connection;
@@ -264,24 +264,24 @@ const updateCheck = async(req,res)=>{
                         error: "수정 권한이 없습니다."
                     }
                     res.json(data)
-                }else{
-                    if(result[0].del==1){
+                } else {
+                    if (result[0].del == 1) {
                         const data = {
                             success: false,
                             error: "삭제된 게시글입니다."
                         }
                         res.json(data)
-                    }else{
+                    } else {
                         const data = {
                             success: true,
-                            content:result[0].content,
-                            subject:result[0].subject,
-                            writer:result[0].writer,
+                            content: result[0].content,
+                            subject: result[0].subject,
+                            writer: result[0].writer,
                         }
                         res.json(data);
                     }
 
-                   
+
                 }
             } catch (error) {
                 console.log('Query Error');
@@ -459,8 +459,8 @@ const searchVerse = (sql, obj) => {
         default:
             break;
     }
-    if (type == "hot" ) {
-        if(search!=null) whereVerse += ` AND board.liked > 5`
+    if (type == "hot") {
+        if (search != null) whereVerse += ` AND board.liked > 5`
         else whereVerse += `WHERE board.liked > 5`
     }
     return sql + whereVerse;

@@ -15,8 +15,8 @@ const initialState = {
   del: null,
   isWriter: false,
   comment_cnt: 0,
-  comments:[],
-  
+  comments: [],
+
 }
 
 
@@ -39,7 +39,7 @@ const defaultComment = {
   target_nick: null,
   isWriter: true,
   isLike: null,
-  replys:[],
+  replys: [],
 }
 
 
@@ -65,6 +65,9 @@ const GET_REPLYS = 'GET_REPLYS';
 const CLEAR_REPLYS = 'CLEAR_REPLYS';
 const DELETE_COMMENT = 'DELETE_COMMENT';
 const DELETE_REPLY = 'DELETE_REPLY';
+const UPDATE_COMMENT = 'UPDATE_COMMENT'
+const UPDATE_REPLY = 'UPDATE_REPLY'
+
 
 
 
@@ -141,9 +144,9 @@ export const UpdateBLikeAction = (data) => {
   }
 }
 
-export const CommentCntUp = ()=>{
-  return{
-    type:COMMENT_CNT_UP,
+export const CommentCntUp = () => {
+  return {
+    type: COMMENT_CNT_UP,
   }
 }
 
@@ -158,51 +161,67 @@ export const AddComment = (data) => {
   }
 }
 
-export const GetComments = (data)=>{
+export const GetComments = (data) => {
   return {
-    type:GET_COMMENTS,
-    data:data
+    type: GET_COMMENTS,
+    data: data
   }
 }
 
-export const AddReply = (data)=>{
-  return{
-    type:Add_REPLY,
-    data:data
+export const AddReply = (data) => {
+  return {
+    type: Add_REPLY,
+    data: data
   }
 }
 
-export const GetReplys = (data)=>{
-  return{
-    type:GET_REPLYS,
-    data:data,
+export const GetReplys = (data) => {
+  return {
+    type: GET_REPLYS,
+    data: data,
   }
 }
 
-export const ClearReplys = (data)=>{
-  return{
-    type:CLEAR_REPLYS,
-    data:data,
+export const ClearReplys = (data) => {
+  return {
+    type: CLEAR_REPLYS,
+    data: data,
   }
 }
 
-export const DeleteComment = (data)=>{
-  return{
-    type:DELETE_COMMENT,
-    data:data,
+export const UpdateComment = (data) => {
+  return {
+    type: UPDATE_COMMENT,
+    data: data,
   }
 }
 
-export const DeleteReply = (data)=>{
-  return{
-    type:DELETE_Reply,
-    data:data,
+export const UpdateReply = (data) => {
+  return {
+    type: UPDATE_REPLY,
+    data: data,
+  }
+}
+
+
+export const DeleteComment = (data) => {
+  return {
+    type: DELETE_COMMENT,
+    data: data,
+  }
+}
+
+export const DeleteReply = (data) => {
+  return {
+    type: DELETE_REPLY,
+    data: data,
   }
 }
 
 
 
 const reducer = (state = initialState, action) => {
+
   switch (action.type) {
 
     case SHOW_ARTICLE_REQUEST:
@@ -260,92 +279,153 @@ const reducer = (state = initialState, action) => {
         liked: state.liked - 1,
         disliked: state.disliked + 1,
       }
-      
+
     case COMMENT_CNT_UP:
       console.log(state.comment_cnt)
       return {
         ...state,
-          comment_cnt:state.comment_cnt+1,
+        comment_cnt: state.comment_cnt + 1,
       }
 
-      case ADD_COMMENT:
-        const newComment = {...defaultComment,...action.data}
-        return{
-          ...state,
-          comments:[newComment,...state.comments],
-          comment_cnt:state.comment_cnt+1,
-        }
+    case ADD_COMMENT:
+      const newComment = { ...defaultComment, ...action.data }
+      return {
+        ...state,
+        comments: [newComment, ...state.comments],
+        comment_cnt: state.comment_cnt + 1,
+      }
 
-      ///중복되는거 아래 replys에서 제거한거처럼 제거해주기.
-      case GET_COMMENTS:
-        let tempComments = [...state.comments,...action.data];
-        // const comments=[];
-        // const commentCheck = [];
-        // for(let i = 0; i<tempComments.length; i++){
-        //   if(!commentCheck.includes(tempComments[i].comment_id)){
-        //     commentCheck.push(tempComments[i].comment_id)
-        //     comments.push(tempComments[i])
-        //   }
-        // }
-        return{
-          ...state,
-          comments:tempComments,
-        }
+    ///중복되는거 아래 replys에서 제거한거처럼 제거해주기.
+    case GET_COMMENTS:
+      let tempComments = [...state.comments, ...action.data];
+      // const comments=[];
+      // const commentCheck = [];
+      // for(let i = 0; i<tempComments.length; i++){
+      //   if(!commentCheck.includes(tempComments[i].comment_id)){
+      //     commentCheck.push(tempComments[i].comment_id)
+      //     comments.push(tempComments[i])
+      //   }
+      // }
+      return {
+        ...state,
+        comments: tempComments,
+      }
 
-      case Add_REPLY:
-        const newReply = {...defaultComment,...action.data}
-        let replytemp = [...state.comments];
-        replytemp.forEach(v=>{
-          if(v.comment_id==action.data.root){
-              v.replys=[newReply,...v.replys];
-              v.reply_cnt = v.reply_cnt+1;
-          }
-        })
-        return{
-          ...state,
-          comments:replytemp,
-          comment_cnt:state.comment_cnt+1,
+    case Add_REPLY:
+      const newReply = { ...defaultComment, ...action.data }
+      let replytemp = [...state.comments];
+      replytemp.forEach(v => {
+        if (v.comment_id == action.data.root) {
+          v.replys = [newReply, ...v.replys];
+          v.reply_cnt = v.reply_cnt + 1;
         }
-      
-      case GET_REPLYS: 
-        const root = action.data[0].root
-        let replystemp = [...state.comments];
-        replystemp.forEach(v=>{
-          if(v.comment_id==root){
-              v.replys=[...v.replys,...action.data];
-              let check = [];
-              let replys = [];
-              for(let i = 0; i<v.replys.length; i++){
-                if(!check.includes(v.replys[i].comment_id)){
-                  check.push(v.replys[i].comment_id)
-                  replys.push(v.replys[i])
-                }
-              }
-              v.replys=replys
+      })
+      return {
+        ...state,
+        comments: replytemp,
+        comment_cnt: state.comment_cnt + 1,
+      }
+
+    case GET_REPLYS:
+      const root = action.data[0].root
+      let replystemp = [...state.comments];
+      replystemp.forEach(v => {
+        if (v.comment_id == root) {
+          v.replys = [...v.replys, ...action.data];
+          let check = [];
+          let replys = [];
+          for (let i = 0; i < v.replys.length; i++) {
+            if (!check.includes(v.replys[i].comment_id)) {
+              check.push(v.replys[i].comment_id)
+              replys.push(v.replys[i])
+            }
           }
-        })
-        return {
-          ...state,
-          comments:replystemp,
+          v.replys = replys
         }
-      
-      case CLEAR_REPLYS:
-        let clearReplys = [...state.comments];
-        clearReplys.forEach(v=>{
-          if(v.comment_id==action.data){
-              v.replys=[];
-          }
-        })
-        return {
-          ...state,
-          comments:clearReplys,
+      })
+      return {
+        ...state,
+        comments: replystemp,
+      }
+
+    case UPDATE_COMMENT:
+      let updateComments = [...state.comments]
+      updateComments.forEach(c => {
+        if (c.comment_id == action.data.comment_id) {
+          c.updated = true;
+          c.content = action.data.content
         }
-      
-      case DELETE_COMMENT:
-        return{...state}
-      
-      case DELETE_REPLY:
-        return{...state}
+      })
+      return {
+        ...state,
+        comments: updateComments
+      }
+
+    case UPDATE_REPLY:
+      let updateReply = [...state.comments]
+      updateReply.forEach(c => {
+        if (c.comment_id == action.data.root) {
+          c.replys.forEach(r => {
+            if (r.comment_id == action.data.comment_id) {
+              r.updated = true;
+              r.content = action.data.content;
+            }
+          })
+        }
+      })
+
+      return {
+        ...state,
+        comments: updateReply,
+      }
+
+
+
+
+    case CLEAR_REPLYS:
+      let clearReplys = [...state.comments];
+      clearReplys.forEach(v => {
+        if (v.comment_id == action.data) {
+          v.replys = [];
+        }
+      })
+      return {
+        ...state,
+        comments: clearReplys,
+      }
+
+    case DELETE_COMMENT:
+      let dltComments = [...state.comments]
+      dltComments.forEach(c => {
+        if (c.comment_id == action.data) {
+          c.del = 1;
+          c.content = '삭제된 댓글입니다.'
+          c.isWriter = false;
+        }
+      })
+      return {
+        ...state,
+        comments: dltComments
+      }
+
+    case DELETE_REPLY:
+      let dltReply = [...state.comments]
+      dltReply.forEach(c => {
+        if (c.comment_id == action.data.root) {
+          c.replys.forEach(r => {
+            if (r.comment_id == action.data.comment_id) {
+              r.del = 1;
+              r.content = '삭제된 댓글입니다.';
+              r.isWriter = false;
+            }
+          })
+        }
+      })
+
+      return {
+        ...state,
+        comments: dltReply,
+      }
 
 
     default:

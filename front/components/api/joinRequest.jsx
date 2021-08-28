@@ -46,3 +46,17 @@ export const joinRequest = async (data) => {
 
   return result;
 };
+
+export const nicknameCheck = async (data) => {
+  const nickname = data.nickname;
+  const url = `http://localhost:3002/user/join/${nickname}`;
+  const options = {
+    methode: "GET",
+    mode: "cors",
+    credentials: "include",
+  };
+  const response = await fetch(url, options);
+  const result = await response.json();
+
+  return result;
+};

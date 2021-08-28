@@ -3,6 +3,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { createComment } from "../api/Comment";
 import { AddComment, AddReply } from "../../reducers/article";
 import styled from "styled-components";
+import { KAKAO_AUTH_URL } from "../../components/api/OAuth";
+import Router from "next/router";
 
 const StyledCommentForm = styled.div`
   width: 100%;
@@ -59,12 +61,18 @@ const StyledCommentForm = styled.div`
   }
 `;
 
-const CommentForm = ({ handleCreate, root }) => {
+const CommentForm = ({
+  handleCreate,
+  handleShow,
+  root,
+  target_id,
+  target_nick,
+}) => {
   const dispatch = useDispatch();
   const { image, nickname } = useSelector((state) => state.user);
-  const article = useSelector((state)=>state.article)
+  const article = useSelector((state) => state.article);
   const [input, setInput] = useState("");
-
+  const TARGET_ID = target_id == null ? 0 : target_id;
   const handleChange = (e) => {
     const { value } = { ...e.target };
     setInput(value);
@@ -77,9 +85,11 @@ const CommentForm = ({ handleCreate, root }) => {
       board_id: article.board_id,
       content: input,
       root: root,
+      target_id: TARGET_ID,
     };
+
     const result = await createComment(data);
-    console.log(result)
+    console.log(result);
 
     if (result.success) {
       const commentInfo = {
@@ -91,25 +101,28 @@ const CommentForm = ({ handleCreate, root }) => {
         root: root,
         createdAt: result.createdAt,
         image: image,
+        target_id: target_id,
+        target_nick: target_nick,
       };
-      if(root==0){
+      if (root == 0) {
         dispatch(AddComment(commentInfo));
-      }else{
+      } else {
         dispatch(AddReply(commentInfo));
       }
-    }else{
-      if(result.error==='!USER'){
-        if(confirm('로그인하시겠습니까?')){
-          Router.push(`${KAKAO_AUTH_URL}`)
+    } else {
+      if (result.error === "!USER") {
+        if (confirm("로그인하시겠습니까?")) {
+          Router.push(`${KAKAO_AUTH_URL}`);
         }
-      }else{
-        alert(result.error)
+      } else {
+        alert(result.error);
       }
     }
 
     setInput("");
     if (handleCreate != undefined) {
-      setTimeout(handleCreate(false))
+      handleShow(true);
+      setTimeout(handleCreate(false));
     }
     //
   };

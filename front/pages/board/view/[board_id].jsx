@@ -11,13 +11,10 @@ import Router from "next/router";
 import { LikeBtn } from "../../../components/board/LikeBtn";
 import BoardLayout from "../../../components/layout/BoardLayout";
 import Head from "next/head";
-import 'react-quill/dist/quill.snow.css'
+import "react-quill/dist/quill.snow.css";
 
 import { RiFileListLine, RiDeleteBin6Line } from "react-icons/ri";
 import { GrUpdate } from "react-icons/gr";
-
-
-
 
 const View = () => {
   const dispatch = useDispatch();
@@ -25,7 +22,7 @@ const View = () => {
   const { type, page, search, keyword, rows } = useSelector(
     (state) => state.board
   );
-  const {IsLogin} = useSelector(state=>state.user)
+  const { IsLogin } = useSelector((state) => state.user);
   const router = useRouter();
   const { board_id } = router.query;
 
@@ -37,29 +34,30 @@ const View = () => {
   };
 
   useEffect(async () => {
+    console.log(article.loadding);
     if (board_id !== undefined) {
       const data = { board_id: board_id };
-      const result = await showArticle(data); 
+      const result = await showArticle(data);
       dispatch(ShowArticleAction(result));
       console.log(article);
     }
   }, [board_id]);
 
   const deleteHandler = async () => {
-    if(confirm('정말 삭제하시겠습니까?')){
+    if (confirm("정말 삭제하시겠습니까?")) {
       const data = {
         board_id,
         writer: article.writer,
       };
-    const result = await deleteArticle(data);
-    if (result.success === true) {
-      dispatch(DeleteArticleAction(result));
-      const href = makeQuery();
-      Router.push(href);
-    } else {
-      alert("당신에게는 이 글에 대한 삭제 권한이 없습니다.");
+      const result = await deleteArticle(data);
+      if (result.success === true) {
+        dispatch(DeleteArticleAction(result));
+        const href = makeQuery();
+        Router.push(href);
+      } else {
+        alert("당신에게는 이 글에 대한 삭제 권한이 없습니다.");
+      }
     }
-  }
   };
 
   // const modifyHandler = () => {
@@ -80,7 +78,7 @@ const View = () => {
   };
 
   const renderArticleAction = () => {
-    if (article.del === 0 && article.isWriter === true &&IsLogin) {
+    if (article.del === 0 && article.isWriter === true && IsLogin) {
       return (
         <>
           <Link
@@ -109,7 +107,7 @@ const View = () => {
   return (
     <>
       <Head>
-              <link rel="stylesheet" src="../../style/style.css" />
+        <link rel="stylesheet" src="../../style/style.css" />
         <link
           href="//cdn.jsdelivr.net/npm/katex@0.13.3/dist/katex.min.css"
           rel="stylesheet"
@@ -141,13 +139,14 @@ const View = () => {
             <span className="article-hit">조회수: {article.hit}</span>
           </div>
         </div>
-          <div className="ql-editor"
+        <div
+          className="ql-editor"
           dangerouslySetInnerHTML={{ __html: article.content }}
-          />
+        />
 
         <LikeBtn
           isLike={article.isLike}
-          type={'blike'}
+          type={"blike"}
           id={article.board_id}
           liked={article.liked}
           disliked={article.disliked}
@@ -160,7 +159,7 @@ const View = () => {
         </div>
         {/* 댓글영역 */}
         {/* <div>{board_id !== undefined && <Comment board_id={board_id} comment_cnt={article.comment_cnt}/>}</div> */}
-        <Comment/>
+        <Comment />
       </BoardLayout>
     </>
   );

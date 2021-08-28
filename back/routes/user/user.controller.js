@@ -141,6 +141,45 @@ const logoutUser = (req, res) => {
 }
 
 
+const nicknameCheck = async (req, res) => {
+    const nickname = req.params.nickname;
+    let connection;
+    try {
+        connection = await pool.getConnection(async conn => conn);
+        try {
+            const sql = `SELECT COUNT(user_id) as count FROM user WHERE nickname=?`
+            const params = [nickname]
+            const [[result]] = await connection.execute(sql, params)
+            let data = {
+                success: false,
+            }
+            if (result.count == 0) {
+                data.success = true;
+            }
+            res.json(data);
+        } catch (error) {
+            console.log('Query Error');
+            console.log(error)
+            const data = {
+                success: null,
+                error: "부적절한 입력입니다.",
+            }
+            res.json(data)
+        }
+    } catch (error) {
+        console.log('DB Error')
+        console.log(error)
+        const data = {
+            success: null,
+            error: `${error}: 관리자에게 문의해주세요.`,
+        }
+        res.json(data)
+    } finally {
+        connection.release();
+    }
+}
+
+
 
 
 
@@ -151,7 +190,11 @@ module.exports = {
     updateUser,
     deleteUser,
     logoutUser,
+    nicknameCheck,
 }
+
+
+
 
 // id,userid,nickname,hometown,residence,gender,birth,status,show 
 const clearInfo = (results, useridx) => {
