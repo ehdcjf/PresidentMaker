@@ -9,13 +9,15 @@ const createUser = async (req, res) => {
     try {
         connection = await pool.getConnection(async conn => conn);
         try {
-            const { kakao_code, nickname, hometown, residence, gender, birth, image } = req.body;
-            const params = [kakao_code, nickname, hometown, residence, gender, birth, image]
-            const sql = `INSERT INTO USER (kakao_code,nickname,hometown,residence,gender,birth,image) 
-                            values(?,?,?,?,?,?,?)`
-            const [rows] = await connection.execute(sql, params)
-            const user_id = rows.insertedId;
+            const { kakao_code, nickname, hometown, residence, gender, birth, image, vote20, vote19 } = req.body;
+            const sql = `INSERT INTO USER (kakao_code,nickname,hometown,residence,gender,birth,image,vote_19th,vote_pm) 
+            values(?,?,?,?,?,?,?,?,?)`
+            const params = [kakao_code, nickname, hometown, residence, gender, birth, image, vote20, vote19]
+            const [result] = await connection.execute(sql, params)
+            console.log(result)
+            const user_id = result.insertedId;
             const access_token = createToken(user_id)
+            console.log(access_token)
             const data = {
                 success: true,
                 nickname: nickname,
@@ -113,9 +115,9 @@ const deleteUser = async (req, res) => {
         try {
             const sql = `UPDATE user SET status=1 WHERE user_id=?`
             const params = [idx]
-            const [rows] = await connection.execute(sql, params)
-            console.log(rows)
-            res.json(rows);
+            const [result] = await connection.execute(sql, params)
+            console.log(result)
+            res.json(result);
         } catch (error) {
             console.log('Query Error');
             console.log(error)

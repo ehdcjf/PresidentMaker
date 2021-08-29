@@ -1,28 +1,63 @@
 import { useState } from "react";
+import styled from "styled-components";
+import cn from "classnames";
 
-const Gender = ({ value, onComplete }) => {
+const StyledGender = styled.div`
+  & > .btn_box {
+    & > .isSelected {
+      border: 1px solid blue;
+      background-color: cyan;
+    }
+  }
+`;
+
+const Gender = ({ value, onComplete, step, handleStep }) => {
+  const handleGender = (data) => {
+    onComplete(data);
+  };
+
   return (
-    <div>
-      <div>
+    <StyledGender>
+      <div className="btn_box">
         <button
+          className={cn({ isSelected: value == true })}
           onClick={() => {
-            onComplete(true);
+            handleGender(true);
           }}
         >
           남자
         </button>
+
         <button
+          className={cn({ isSelected: value == false })}
           onClick={() => {
-            onComplete(false);
+            handleGender(false);
           }}
         >
           여자
         </button>
       </div>
       <div>
-        <div>{value !== null && <button>다음</button>}</div>
+        <div>
+          <button
+            onClick={() => {
+              handleStep(step - 1);
+            }}
+          >
+            이전
+          </button>
+          {value !== null && (
+            <button
+              onClick={() => {
+                handleStep(step + 1);
+              }}
+            >
+              다음
+            </button>
+          )}
+        </div>
       </div>
-    </div>
+    </StyledGender>
   );
 };
 

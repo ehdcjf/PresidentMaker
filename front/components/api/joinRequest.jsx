@@ -24,27 +24,23 @@ export const imageUpload = async (image) => {
 };
 
 export const joinRequest = async (data) => {
-  const { kakao, birth, gender, image, hometown, residence, nickname } = data;
-  let url = "http://localhost:3002/user";
-  let options = {
-    method: "POST",
+  const config = {
     headers: {
       "content-type": "application/json",
     },
-    body: JSON.stringify({
-      kakao_code: kakao,
-      birth,
-      gender,
-      image,
-      hometown,
-      residence,
-      nickname,
-    }),
   };
-  const response = await fetch(url, options);
-  const result = await response.json();
-
-  return result;
+  try {
+    const response = await axios.post(
+      `http://localhost:3002/user`,
+      data,
+      config
+    );
+    console.log(response.data);
+    return response.data;
+  } catch (e) {
+    const data = { success: false, error: e };
+    return data;
+  }
 };
 
 export const nicknameCheck = async (data) => {
