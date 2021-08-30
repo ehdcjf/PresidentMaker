@@ -16,6 +16,8 @@ const StyledNavbar = styled.div`
   text-transform: uppercase;
 `;
 
+
+
 const LoginComponent = () => {
   return (
     <>
@@ -29,6 +31,8 @@ const LoginComponent = () => {
 };
 
 const LogoutComponent = (props) => {
+  const { user_id } = useSelector((state) => state.user);
+  const userinfo = `/user/${user_id}`
   return (
     <>
       <div>
@@ -36,7 +40,7 @@ const LogoutComponent = (props) => {
           <a>Logout</a>
         </Link>
         <span>/</span>
-        <Link href="/user/join">
+        <Link href={userinfo}>
           <a>User Info</a>
         </Link>
       </div>

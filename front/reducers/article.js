@@ -16,6 +16,8 @@ const initialState = {
   isWriter: false,
   comment_cnt: 0,
   comments: [],
+  comment_type:'like',
+  skip:0,
 
 }
 
@@ -40,6 +42,7 @@ const defaultComment = {
   isWriter: true,
   isLike: null,
   replys: [],
+  skip:0,
 }
 
 
@@ -56,7 +59,14 @@ const DELETE_B_DISLIKE_ACTION = 'DELETE_B_DISLIKE_ACTION'
 const UPDATE_B_LIKE_ACTION = 'UPDATE_B_LIKE_ACTION'
 const UPDATE_B_DISLIKE_ACTION = 'UPDATE_B_DISLIKE_ACTION'
 
-const COMMENT_CNT_UP = 'COMMENT_CNT_UP'
+const INSERT_C_LIKE_ACTION = 'INSERT_C_LIKE_ACTION'
+const INSERT_C_DISLIKE_ACTION = 'INSERT_C_DISLIKE_ACTION'
+const DELETE_C_LIKE_ACTION = 'DELETE_C_LIKE_ACTION'
+const DELETE_C_DISLIKE_ACTION = 'DELETE_C_DISLIKE_ACTION'
+const UPDATE_C_LIKE_ACTION = 'UPDATE_C_LIKE_ACTION'
+const UPDATE_C_DISLIKE_ACTION = 'UPDATE_C_DISLIKE_ACTION'
+
+const CHANGE_COMMENT_TYPE = 'CHANGE_COMMENT_TYPE'
 
 const ADD_COMMENT = 'ADD_COMMENT';
 const GET_COMMENTS = 'GET_COMMENTS';
@@ -143,12 +153,51 @@ export const UpdateBLikeAction = (data) => {
     }
   }
 }
+export const InsertCLikeAction = (data) => {
 
-export const CommentCntUp = () => {
-  return {
-    type: COMMENT_CNT_UP,
+  if (data.isLike) {
+    return {
+      type: INSERT_C_LIKE_ACTION,
+      data: data,
+    }
+  } else {
+    return {
+      type: INSERT_C_DISLIKE_ACTION,
+      data: data,
+    }
   }
 }
+
+export const DeleteCLikeAction = (data) => {
+
+  if (data.isLike) {
+    return {
+      type: DELETE_C_LIKE_ACTION,
+      data:data
+    }
+  } else {
+    return {
+      type: DELETE_C_DISLIKE_ACTION,
+      data:data,
+    }
+  }
+}
+
+export const UpdateCLikeAction = (data) => {
+  if (data.isLike) {
+    return {
+      type: UPDATE_C_LIKE_ACTION,
+      data:data
+    }
+  } else {
+    return {
+      type: UPDATE_C_DISLIKE_ACTION,
+      data:data
+
+    }
+  }
+}
+
 
 
 
@@ -219,6 +268,15 @@ export const DeleteReply = (data) => {
 }
 
 
+export const ChangeCommentType = (data)=>{
+  console.log(data);
+  return {
+    type:CHANGE_COMMENT_TYPE,
+    data:data,
+  }
+}
+
+
 
 const reducer = (state = initialState, action) => {
 
@@ -234,6 +292,7 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         ...action.data,
+        skip:10,
         loadding: false,
       }
     case SHOW_ARTICLE_ERROR:
@@ -280,11 +339,196 @@ const reducer = (state = initialState, action) => {
         disliked: state.disliked + 1,
       }
 
-    case COMMENT_CNT_UP:
-      console.log(state.comment_cnt)
-      return {
-        ...state,
-        comment_cnt: state.comment_cnt + 1,
+
+    case INSERT_C_LIKE_ACTION:
+      if(action.data.root==0){
+        const comments = [...state.comments]
+        comments.forEach(v=>{
+          if(v.comment_id==action.data.comment_id){
+            v.isLike=true;
+            v.liked++;
+          }
+        })
+        return {
+          ...state,
+          comments:comments,
+        }
+      }else{
+        const comments = [...state.comments];
+        comments.forEach(c=>{
+          if(c.comment_id==action.data.root){
+            c.replys.forEach(r=>{
+              if(r.comment_id==action.data.comment_id){
+                r.isLike=true;
+                r.liked++;
+              }
+            })
+          }
+        })
+        return {
+          ...state,
+          comments:comments,
+        }
+      }
+
+
+    case INSERT_C_DISLIKE_ACTION:
+      if(action.data.root==0){
+        const comments = [...state.comments]
+        comments.forEach(v=>{
+          if(v.comment_id==action.data.comment_id){
+            v.isLike=false;
+            v.disliked++;
+          }
+        })
+        return {
+          ...state,
+          comments:comments,
+        }
+      }else{
+        const comments = [...state.comments];
+        comments.forEach(c=>{
+          if(c.comment_id==action.data.root){
+            c.replys.forEach(r=>{
+              if(r.comment_id==action.data.comment_id){
+                r.isLike=false;
+                r.disliked++;
+              }
+            })
+          }
+        })
+        return {
+          ...state,
+          comments:comments,
+        }
+      }
+
+
+    case DELETE_C_LIKE_ACTION:
+     if(action.data.root==0){
+        const comments = [...state.comments]
+        comments.forEach(v=>{
+          if(v.comment_id==action.data.comment_id){
+            v.isLike=null;
+            v.liked--;
+          }
+        })
+        return {
+          ...state,
+          comments:comments,
+        }
+      }else{
+        const comments = [...state.comments];
+        comments.forEach(c=>{
+          if(c.comment_id==action.data.root){
+            c.replys.forEach(r=>{
+              if(r.comment_id==action.data.comment_id){
+                r.isLike=null;
+                r.liked--;
+              }
+            })
+          }
+        })
+        return {
+          ...state,
+          comments:comments,
+        }
+      }
+
+    case DELETE_C_DISLIKE_ACTION:
+      if(action.data.root==0){
+        const comments = [...state.comments]
+        comments.forEach(v=>{
+          if(v.comment_id==action.data.comment_id){
+            v.isLike=null;
+            v.disliked--;
+          }
+        })
+        return {
+          ...state,
+          comments:comments,
+        }
+      }else{
+        const comments = [...state.comments];
+        comments.forEach(c=>{
+          if(c.comment_id==action.data.root){
+            c.replys.forEach(r=>{
+              if(r.comment_id==action.data.comment_id){
+                r.isLike=null;
+                r.disliked--;
+              }
+            })
+          }
+        })
+        return {
+          ...state,
+          comments:comments,
+        }
+      }
+    case UPDATE_C_LIKE_ACTION:
+      if(action.data.root==0){
+        const comments = [...state.comments]
+        comments.forEach(v=>{
+          if(v.comment_id==action.data.comment_id){
+            v.isLike=true;
+            v.disliked--;
+            v.liked++;
+          }
+        })
+        return {
+          ...state,
+          comments:comments,
+        }
+      }else{
+        const comments = [...state.comments];
+        comments.forEach(c=>{
+          if(c.comment_id==action.data.root){
+            c.replys.forEach(r=>{
+              if(r.comment_id==action.data.comment_id){
+                r.isLike=true;
+                r.disliked--;
+                r.liked++;
+              }
+            })
+          }
+        })
+        return {
+          ...state,
+          comments:comments,
+        }
+      }
+
+    case UPDATE_C_DISLIKE_ACTION:
+      if(action.data.root==0){
+        const comments = [...state.comments]
+        comments.forEach(v=>{
+          if(v.comment_id==action.data.comment_id){
+            v.isLike=false;
+            v.disliked++;
+            v.liked--;
+          }
+        })
+        return {
+          ...state,
+          comments:comments,
+        }
+      }else{
+        const comments = [...state.comments];
+        comments.forEach(c=>{
+          if(c.comment_id==action.data.root){
+            c.replys.forEach(r=>{
+              if(r.comment_id==action.data.comment_id){
+                r.isLike=false;
+                r.disliked++;
+                r.liked--;
+              }
+            })
+          }
+        })
+        return {
+          ...state,
+          comments:comments,
+        }
       }
 
     case ADD_COMMENT:
@@ -309,6 +553,7 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         comments: tempComments,
+        skip:state.skip+10,
       }
 
     case Add_REPLY:
@@ -421,11 +666,20 @@ const reducer = (state = initialState, action) => {
           })
         }
       })
-
       return {
         ...state,
         comments: dltReply,
       }
+
+      case CHANGE_COMMENT_TYPE:
+        console.log(action.data);
+        return {
+          ...state,
+          comments:[...action.data.comments],
+          comment_type:action.data.type,
+          skip:action.data.comments.length,
+        }
+
 
 
     default:

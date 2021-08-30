@@ -3,6 +3,7 @@ const initialState = {
   IsLogin: false,
   nickname: null,
   image: '/defaultProfil.png',
+  user_id:null,
 }
 
 
@@ -68,6 +69,7 @@ const reducer = (state = initialState, action) => {
         IsLogin: true,
         nickname: action.data.nickname,
         image: action.data.image,
+        user_id:action.data.user_id,
         loadding: false,
       }
     case USER_LOGIN_ERROR:

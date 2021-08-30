@@ -28,6 +28,7 @@ export const joinRequest = async (data) => {
     headers: {
       "content-type": "application/json",
     },
+    withCredentials: true,
   };
   try {
     const response = await axios.post(

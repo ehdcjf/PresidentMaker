@@ -2,6 +2,12 @@ import styled from "styled-components";
 import { korea } from "../../public/korea";
 import { list19 } from "../../public/list19";
 import { list20 } from "../../public/list20";
+import { joinRequest } from "../../components/api/joinRequest";
+import Router from "next/router";
+import { useDispatch } from "react-redux";
+import { UserLoginAction } from "../../reducers/user";
+
+
 
 const StyledResult = styled.div`
   width: 60vw;
@@ -16,9 +22,9 @@ const StyledResult = styled.div`
 `;
 
 const Result = ({
+  kakao,
   step,
   handleStep,
-  handleSubmit,
   nickname,
   gender,
   birth,
@@ -28,11 +34,32 @@ const Result = ({
   vote20,
   profil,
 }) => {
-  console.log(list19[vote19.value]);
+  const dispatch = useDispatch();
   const myvote19 = list19[vote19.value];
   const myvote20 = list20[vote20.value];
   const myhometown = korea[hometown.value];
   const myresidence = korea[residence.value];
+
+  const handleSubmit = async () => {
+    const data = {
+      kakao,
+      nickname:nickname.value,
+      birth:birth.value,
+      hometown:hometown.value,
+      residence:residence.value,
+      gender:gender.value,
+      image:profil.value,
+      vote19:vote19.value,
+      vote20:vote20.value,
+    };
+    const result = await joinRequest(data);
+    dispatch(UserLoginAction(result));
+    Router.push("/");
+  };
+
+
+
+
 
   return (
     <div>

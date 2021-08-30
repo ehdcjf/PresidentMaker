@@ -9,7 +9,6 @@ const CommentList = ({ root }) => {
   const dispatch = useDispatch();
   const article = useSelector((state) => state.article);
   const [fetching, setFetching] = useState(false);
-  const [skip, setSkip] = useState(10);
 
   //클린업함수..
   useEffect(() => {
@@ -19,16 +18,15 @@ const CommentList = ({ root }) => {
   }, []);
 
   const fetchMoreComment = async () => {
-    console.log("xxxxxxxxxxxxxxxxxxxxxxxxx");
+    console.log(article.comment_type)
     setFetching(true);
     const data = {
       board_id: article.board_id,
-      skip: skip,
+      skip: article.skip,
       root: root,
-      type: "like",
+      type: article.comment_type,
     };
     const result = await showComment(data);
-    setSkip(skip + 10);
     setFetching(false);
     dispatch(GetComments(result));
   };
@@ -64,7 +62,6 @@ const CommentList = ({ root }) => {
         }
       });
     }
-    console.log(temp);
     return temp.map((v, i) => {
       return (
         <CommentItem
