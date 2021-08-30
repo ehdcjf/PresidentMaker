@@ -1,8 +1,6 @@
 import Head from "next/head";
 import { useState, useEffect } from "react";
-import { joinRequest } from "../../components/api/joinRequest";
-import { useDispatch } from "react-redux";
-import { UserLoginAction } from "../../reducers/user";
+
 import useComplete from "../../hooks/useComplete";
 import Nickname from "../../components/join/Nickname";
 import ProfilImage from "../../components/join/ProfilImage";
@@ -13,10 +11,8 @@ import Vote from "../../components/join/Vote";
 import { list19 } from "../../public/list19";
 import { list20 } from "../../public/list20";
 import Result from "../../components/join/Result";
-import Router from "next/router";
 
 const Join = () => {
-  const dispatch = useDispatch();
   const [kakao, setKakao] = useState();
   const nickname = useComplete("");
   const gender = useComplete(null);
@@ -37,22 +33,7 @@ const Join = () => {
     setStep(data);
   };
 
-  const handleSubmit = async () => {
-    const data = {
-      kakao: kakao,
-      nickname: nickname.value,
-      birth: birth.value,
-      hometown: hometown.value,
-      residence: residence.value,
-      gender: gender.value,
-      image: profil.value,
-      vote19: vote19.value,
-      vote20: vote20.value,
-    };
-    const result = await joinRequest(data);
-    dispatch(UserLoginAction(result));
-    Router.push("/");
-  };
+
 
   return (
     <>
@@ -91,6 +72,7 @@ const Join = () => {
       )}
       {step === 8 && (
         <Result
+          kakao={kakao}
           list19={list19}
           list20={list20}
           nickname={nickname}
@@ -103,7 +85,6 @@ const Join = () => {
           profil={profil}
           step={step}
           handleStep={handleStep}
-          handleSubmit={handleSubmit}
         />
       )}
     </>

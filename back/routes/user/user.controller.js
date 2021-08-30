@@ -9,19 +9,18 @@ const createUser = async (req, res) => {
     try {
         connection = await pool.getConnection(async conn => conn);
         try {
-            const { kakao_code, nickname, hometown, residence, gender, birth, image, vote20, vote19 } = req.body;
+            const { kakao, nickname, hometown, residence, gender, birth, image, vote20, vote19 } = req.body;
             const sql = `INSERT INTO USER (kakao_code,nickname,hometown,residence,gender,birth,image,vote_19th,vote_pm) 
             values(?,?,?,?,?,?,?,?,?)`
-            const params = [kakao_code, nickname, hometown, residence, gender, birth, image, vote20, vote19]
+            const params = [kakao, nickname, hometown, residence, gender, birth, image, vote20, vote19]
             const [result] = await connection.execute(sql, params)
-            console.log(result)
-            const user_id = result.insertedId;
+            const user_id = result.insertId;
             const access_token = createToken(user_id)
-            console.log(access_token)
             const data = {
                 success: true,
                 nickname: nickname,
                 image: image,
+                user_id:user_id
             }
             res.cookie('AccessToken', access_token, { httpOnly: true, secure: true })
             res.json(data);
@@ -49,29 +48,45 @@ const createUser = async (req, res) => {
 
 
 
-//투표까지 만들고 하기. 
 const showUser = async (req, res) => {
-    const { target_id } = req.query;
-
-
+    const { id } = req.query;
+    const AccessToken = req.cookies.AccessToken;
+    let client= 0; 
+    if(AccessToken!=undefined){
+        client = jwtId(AccessToken)
+    }
     let connection;
     try {
         connection = await pool.getConnection(async conn => conn);
         try {
             const sql = `SELECT * FROM user WHERE user_id = ?`
-            const params = [target_id]
-            const results = await connection.execute(sql, params)
-            console.log(results[0][0])
-            res.json(results[0][0]);
+            const params = [id]
+            const result = await connection.execute(sql, params)
+            console.log(result[0][0])
+
+            if(client==id){
+                res.json(result[0][0]);
+            }else{
+                res.json(hideInfo(result[0][0]));
+            }
         } catch (error) {
             console.log('Query Error');
             console.log(error)
-            res.json(error)
+
+             const data = {
+                success: false,
+                error: error,
+            }
+            res.json(data)
         }
     } catch (error) {
         console.log('DB Error')
         console.log(error)
-        res.json(error)
+        const data = {
+            success: false,
+            error: error,
+        }
+        res.json(data)
     } finally {
         connection.release();
     }
@@ -198,32 +213,8 @@ module.exports = {
 
 
 
-// id,userid,nickname,hometown,residence,gender,birth,status,show 
-const clearInfo = (results, useridx) => {
-    const target = results[0];
-    // const targetArr = Object.entries(target); 
-    let voteHistory;
+const hideInfo = (data)=>{
+//// 가려주기.
 
-    // 투표이력도 가져와야함
-
-    /*
-    투표이력 가져오는 함수
-    */
-
-    if (target.id === useridx || target.show & (1 << 0)) {
-        //투표이력 가져오는 쿼리.
-        console.log('투표이력가져오는 쿼리')
-
-    }
-
-    delete target.id;
-    delete target.userid;
-    console.log(target.show);
-    for (let i = 0; i < 5; i++) {
-        if (target.show & (1 << i)) {
-            console.log(targetArr[i + 1])
-        }
-    }
-
-    return;
+    return {...data}
 }

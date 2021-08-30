@@ -10,7 +10,7 @@ const LikeAction = async (req, res) => {
   if (AccessToken == undefined) {
     const data = {
       success:false,
-      error:'you must log in'
+      error:'!USER'
     }
     res.json(data);
   }else{
