@@ -28,6 +28,7 @@ export const joinRequest = async (data) => {
     headers: {
       "content-type": "application/json",
     },
+    withCredentials: true,
   };
   try {
     const response = await axios.post(
@@ -47,7 +48,7 @@ export const nicknameCheck = async (data) => {
   const nickname = data.nickname;
   const url = `http://localhost:3002/user/join/${nickname}`;
   const options = {
-    methode: "GET",
+    method: "GET",
     mode: "cors",
     credentials: "include",
   };

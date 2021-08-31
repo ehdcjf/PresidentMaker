@@ -164,6 +164,7 @@ const CommentItem = ({
 
           <li>
             <LikeBtn
+              root={root}
               liked={liked}
               disliked={disliked}
               isLike={isLike}

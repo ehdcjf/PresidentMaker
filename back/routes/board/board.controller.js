@@ -161,12 +161,12 @@ const showArticle = async (req, res) => {
 
             /////================================ comment sql  start =======================================================///
             const commentSql = `SELECT * 
-                  FROM comment 
+                  FROM comment as comment
                   LEFT JOIN (SELECT user_id,nickname as writer_nick, image FROM user) as writer ON writer.user_id = comment.writer
                   LEFT JOIN (SELECT user_id as target_id,nickname as target_nick FROM user) as target ON target.target_id = comment.target
                   LEFT JOIN (SELECT * FROM clike WHERE user_id = ?) as clike ON comment.comment_id = clike.target_id 
-                  WHERE board_id = ? AND root = ?   ORDER BY  liked DESC LIMIT ?,? ;`
-            const commentparams = [client, board_id, 0, 0, 10];
+                  WHERE board_id = ? AND root = 0 ORDER BY comment.liked DESC LIMIT 0,10 ;`
+            const commentparams = [client, board_id];
             const [comment] = await connection.execute(commentSql, commentparams)
             comment.forEach(v => {
                 v.createdAt = clearDate(v.createdAt);
@@ -182,6 +182,7 @@ const showArticle = async (req, res) => {
                     v.isLike = null
                 }
             })
+            
 
             /////================================ comment sql end=======================================================///
 
@@ -194,6 +195,7 @@ const showArticle = async (req, res) => {
 
             const params = [client, board_id];
             const [result] = await connection.execute(sql, params)
+            
             /////=================================article sql end======================================///
 
             let data = { ...result[0] }
@@ -215,6 +217,7 @@ const showArticle = async (req, res) => {
             data.createdAt = clearDate(data.createdAt);
             data.success = true;
             data.comments = comment;
+            data.comment_type='like'
             res.json(data);
         } catch (error) {
             console.log('Query Error');

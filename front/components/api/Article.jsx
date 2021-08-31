@@ -2,7 +2,7 @@ export const showArticle = async (data) => {
   const { board_id } = data;
   const url = `http://localhost:3002/board/${board_id}`;
   const options = {
-    methode: "GET",
+    method: "GET",
     mode: "cors",
     credentials: "include",
   };

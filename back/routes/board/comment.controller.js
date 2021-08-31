@@ -5,7 +5,6 @@ const { clearDate } = require('../util');
 const createComment = async (req, res) => {
   const { content } = req.body;
   const { board_id, root, target_id } = req.params;
-  console.log(req.params)
   const AccessToken = req.cookies.AccessToken;
   if (AccessToken === undefined) {
     const data = {
@@ -71,16 +70,20 @@ const showComment = async (req, res) => {
   let order = ''
   switch (type) {
     case 'like':
-      order = 'liked DESC'
+      order = 'comment.liked DESC'
       break;
     case 'old':
-      order = 'comment_id ASC'
+
+      order = 'comment.comment_id ASC'
       break;
     case 'new':
-      order = 'comment_id DESC'
+
+      order = 'comment.comment_id DESC'
       break;
-    default:
-      order = 'comment_id ASC'
+
+      default:
+
+      order = 'comment.comment_id ASC'
       break;
   }
 
@@ -94,20 +97,12 @@ const showComment = async (req, res) => {
     connection = await pool.getConnection(async conn => conn);
     try {
       const sql = `SELECT * 
-                  FROM comment 
+                  FROM comment
                   LEFT JOIN (SELECT user_id,nickname as writer_nick, image FROM user) as writer ON writer.user_id = comment.writer
                   LEFT JOIN (SELECT user_id as target_id,nickname as target_nick FROM user) as target ON target.target_id = comment.target
                   LEFT JOIN (SELECT * FROM clike WHERE user_id = ?) as clike ON comment.comment_id = clike.target_id 
-                  WHERE board_id = ? AND root = ?   ORDER BY ${order} LIMIT ?,? ;
+                  WHERE board_id = ? AND root = ? ORDER BY ${order} LIMIT ?,? ;
                   `
-      // const sql = `SELECT id,board_id,writer,nick,createdAt,updatedAt, root, liked,disliked, del,reply,subidx,subnick, type as isLike,content,image
-      // FROM (SELECT * 
-      //         FROM comment
-      //         LEFT JOIN (select idx as user_id, nickname as nick, image from user) AS writer on writer.useridx = comment.writer
-      //         LEFT JOIN (SELECT idx AS subidx, nickname as subnick from user) AS sub on sub.subidx = comment.sub_master
-      //         WHERE board_id = ? AND root = ?   ORDER BY id DESC LIMIT ?,?) AS comment 
-      //      left JOIN (SELECT * FROM clike WHERE user_idx=?) AS clike ON clike.comment_id= comment.id;`
-
       const params = [client, board_id, root, skip, 10];
       const [rows] = await connection.execute(sql, params)
       rows.forEach(v => {
@@ -123,6 +118,8 @@ const showComment = async (req, res) => {
           v.isWriter = false
         }
       })
+
+
       res.json(rows);
     } catch (error) {
       console.log('Query Error');
@@ -248,6 +245,7 @@ const deleteComment = async (req, res) => {
         }
       } catch (error) {
         console.log('DB Error')
+        console.log(error)
         const data = {
           success: false,
           error: error,

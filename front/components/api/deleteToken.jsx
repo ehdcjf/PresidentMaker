@@ -1,8 +1,7 @@
 export const deleteToken = async () => {
-  console.log("xxxxxxxx");
   const url = `http://localhost:3002/user/logout`;
   const options = {
-    methode: "GET",
+    method: "GET",
     mode: "cors",
     credentials: "include",
   };

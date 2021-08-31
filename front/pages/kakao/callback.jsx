@@ -7,8 +7,6 @@ import { UserLoginAction } from "../../reducers/user";
 
 const KakaoLogin = () => {
   const dispatch = useDispatch();
-  const { loadding, IsLogin } = useSelector((state) => state.user);
-
   useEffect(async () => {
     const code = new URL(window.location.href).searchParams.get("code");
     const result = await kakaoCallback(dispatch, code);
