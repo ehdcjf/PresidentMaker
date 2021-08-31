@@ -7,7 +7,7 @@ const initialState = {
 }
 
 
-
+const USER_UPDATE_ACTION = 'USER_UPDATE_ACTION'
 const USER_LOGIN_REQUEST = 'USER_LOGIN_REQUEST'
 const USER_LOGIN_SUCCESS = 'USER_LOGIN_SUCCESS'
 const USER_LOGIN_ERROR = 'USER_LOGIN_ERROR'
@@ -26,6 +26,14 @@ export const UserLoginAction = (data) => {
     }
   }
 }
+
+export const UserUpdateAction = (data) => {
+  return {
+    type:USER_UPDATE_ACTION,
+    data:data,
+  }
+}
+
 
 export const UserLoginRequest = () => {
   return {
@@ -81,6 +89,12 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         ...initialState,
+      }
+    case USER_UPDATE_ACTION:
+      return {
+        ...state,
+        nickname:action.data.nickname,
+        image: action.data.image,
       }
     default:
       return state
