@@ -14,7 +14,7 @@ import Header from "../components/layout/Header";
 const StyledHome = styled.div`
   padding: 0 5vw;
   background-color: #f5f0ec;
-  font-family: "East Sea Dokdo", cursive;
+  
   section {
     padding: 100px 0;
   }
@@ -69,9 +69,9 @@ const Home = () => {
           <div id="main-container" data-scroll-container>
             <NavBar />
             {/* <Header /> */}
-            <Main />
+            {/* <Main /> */}
             {/* <Featuerd /> */}
-            <About />
+            {/* <About /> */}
             <Gallery />
             <Footer />
           </div>

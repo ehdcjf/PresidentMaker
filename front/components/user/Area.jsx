@@ -28,7 +28,7 @@ const Area = ({ value, onComplete, title, prev,next,handleNext,handlePrev }) => 
 
   return (
     <StyledArea>
-      {title === '고향' ? <h2>고향</h2> : <h2>거주지</h2>}
+      <h2>{title}</h2>
       <div>{renderArea()}</div>
       
       <div>

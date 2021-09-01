@@ -16,7 +16,7 @@ const HeaderContainer = Styled.div`
     
 `;
 
-const Gnb = Styled.ul`
+const StyledHeader = Styled.ul`
     //모바일
     display:flex;
     flex-direction:row;
@@ -50,15 +50,16 @@ const LoginComponent = () => {
 };
 
 const LogoutComponent = (props) => {
+  const { user_id } = useSelector((state) => state.user);
+  const userinfo = `/user/${user_id}`
   return (
     <>
       <li>
         <Link href={KAKAO_LOGOUT_URL}>
           <a>로그아웃</a>
         </Link>
-      </li>
-      <li>
-        <Link href="/user/join">
+        <span>/</span>
+        <Link href={userinfo}>
           <a>회원정보</a>
         </Link>
       </li>
@@ -74,25 +75,24 @@ const Header = () => {
   return (
     <HeaderContainer>
       {/* 로고와 메뉴 */}
-      <h1>pRESIDENT MAKER</h1>
-      <Gnb>
+      <div>
+      <Link href="/">
+        <a>PRESIDENT MAKER</a>
+      </Link>
+      </div>
+      <StyledHeader>
         <li>
-          <Link href="/">
-            <a>HOME</a>
-          </Link>
-        </li>
-        <li>
-          <Link href="/">
+          <Link href="/vote">
             <a>투표</a>
           </Link>
         </li>
         <li>
-          <Link href="/board/list?type=all&rows=20&page=1">
+          <Link href="/board/list?type=all&rows=30&page=1">
             <a>게시판</a>
           </Link>
         </li>
         {IsLogin === false ? <LoginComponent /> : <LogoutComponent />}
-      </Gnb>
+      </StyledHeader>
       <NavToggle />
     </HeaderContainer>
   );
