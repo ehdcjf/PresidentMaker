@@ -19,6 +19,43 @@ import { useDispatch } from "react-redux";
 import { deleteUser, updateUser } from "../../components/api/user";
 import { UserUpdateAction } from "../../reducers/user";
 import SwitchToggle from "../../components/user/SwitchToggle";
+import styled from "styled-components";
+import Layout from "../../containers/Layout";
+
+
+
+const StyledUpdateForm = styled.div`
+  width: 60vw;
+  height: auto;
+  margin: 0 auto;
+  overflow: hidden;
+
+`
+
+const StyledInfoContent = styled.div`
+   width: 100vw;
+    height: auto;
+    overflow: hidden;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    margin: 0 auto;
+    transform-origin: ${(props) => (props.rotate ==='true' ? "100vw 50vh;" : "100vw ")};
+    transform:${(props) => (props.rotate==='true' ? "perspective(1000px) translate3d(0,0,0) rotate3d(1,0,0,30deg);" : "none")};
+
+  &>ul{
+    width: 60%;
+    height: 100%;
+    margin: 0 auto;
+  }
+
+  .content{
+    display: flex;
+  }
+`
+
+
+
 
 const Info = () => {
   const dispatch = useDispatch();
@@ -48,6 +85,18 @@ const Info = () => {
   const [isMine, setIsMine] = useState(null);
   const [quit, setQuit] = useState(false);
   const [update, setUpdate] = useState(0);
+
+
+  const handleToggle =(data)=>{
+    if(show&(1<<data)){ 
+      // true면 공개, flase면 비공개  
+      setShow(show^(1<<data))
+    }else{
+      setShow(show|(1<<data))
+    }
+    setTimeout(console.log(show))
+    
+  }
 
   const handleUpdate = (data) => {
     setUpdate(data);
@@ -89,7 +138,6 @@ const Info = () => {
   const handleDelete = async () => {
     if (confirm("회원탈퇴하시겠습니까?")) {
       const result = await deleteUser(id);
-      console.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
       console.log(result);
       if (result.success) {
         alert("회원 탈퇴 처리되었습니다. 그동안 이용해 주셔서 감사합니다.");
@@ -132,7 +180,7 @@ const Info = () => {
   useEffect(async () => {
     if (id !== undefined) {
       const result = await showUser(id);
-
+      console.log(result)
       if (result.success) {
         // 정상적인 경우.
         nickname.onComplete(result.nickname);
@@ -144,6 +192,7 @@ const Info = () => {
         vote19.onComplete(result.vote_19th);
         vote20.onComplete(result.vote_pm);
         setShow(result.show);
+
         setOriginNickname(result.nickname);
         setOriginGender(result.gender);
         setOriginBirth(result.birth);
@@ -171,11 +220,12 @@ const Info = () => {
   else if (quit) return <QuitUser />;
   else
     return (
-      <div>
-        <div>
+      <Layout>
+        <StyledUpdateForm> 
           {update === 1 && (
             <ProfilImage
-              title={"프로필 이미지 수정"}
+              title={
+              "프로필 이미지 수정"}
               {...profil}
               prev={"취소"}
               handlePrev={() => {
@@ -202,23 +252,25 @@ const Info = () => {
             />
           )}
           {update === 3 && (
+            <Gender
+            title={"성별 수정"}
+            {...gender}
+            prev={"취소"}
+            handlePrev={() => {
+              handleCancle(3);
+            }}
+            next={"수정 완료"}
+            handleNext={() => {
+              handleUpdate(0);
+            }}
+          />
+            
+          )}
+          {update === 4 && (
+            
             <Birth
               title={"출생 연도 수정"}
               {...birth}
-              prev={"취소"}
-              handlePrev={() => {
-                handleCancle(3);
-              }}
-              next={"수정 완료"}
-              handleNext={() => {
-                handleUpdate(0);
-              }}
-            />
-          )}
-          {update === 4 && (
-            <Gender
-              title={"성별 수정"}
-              {...gender}
               prev={"취소"}
               handlePrev={() => {
                 handleCancle(4);
@@ -287,12 +339,10 @@ const Info = () => {
               }}
             />
           )}
-        </div>
+        </StyledUpdateForm>
 
-        <div>
-          <h2>회원정보</h2>
-          <SwitchToggle />
-          <ul>
+        <StyledInfoContent rotate={(update>0 ? 'true':'false')}>
+          <ul className='info_list'>
             <li>
               <div>
                 <span>프로필사진</span>
@@ -305,6 +355,11 @@ const Info = () => {
                     <GrUpdate />
                   </button>
                 )}
+                <div className='content'>
+                  <div>
+                    <img src={profil.value} alt="프로필 사진" />
+                  </div>
+                </div>
               </div>
             </li>
             <li>
@@ -318,9 +373,15 @@ const Info = () => {
                   <GrUpdate />
                 </button>
               )}
+              <div className='content'>
+                  <div>
+                    <span>{nickname.value}</span>
+                  </div>
+              </div>
             </li>
+            
             <li>
-              <span>출생 연도</span>
+              <span>성별</span>
               {isMine && (
                 <button
                   onClick={() => {
@@ -330,9 +391,21 @@ const Info = () => {
                   <GrUpdate />
                 </button>
               )}
+              <div className='content'>
+                {gender.value===null 
+                ?<div>비공개 정보입니다.</div>
+                :(
+                <>  
+                <div>
+                  {gender.value===true ?<span>남자</span> : <span>여자</span>}
+                </div>
+                {isMine &&<SwitchToggle isToggled={show&(1<<0)} onToggle={()=>{handleToggle(0)}}/>}
+                </>
+                )}
+              </div>
             </li>
             <li>
-              <span>성별</span>
+              <span>출생 연도</span>
               {isMine && (
                 <button
                   onClick={() => {
@@ -342,6 +415,18 @@ const Info = () => {
                   <GrUpdate />
                 </button>
               )}
+              <div className='content'>
+              {birth.value===null 
+                ?<div>비공개 정보입니다.</div>
+                :(
+                <> 
+                  <div>
+                  <span>{birth.value}</span>
+                  </div>
+                  {isMine &&<SwitchToggle isToggled={show&(1<<1)} onToggle={()=>{handleToggle(1)}}/>}
+                  </>
+                )}
+                </div>
             </li>
             <li>
               <span>고향</span>
@@ -354,6 +439,18 @@ const Info = () => {
                   <GrUpdate />
                 </button>
               )}
+              <div className='content'>
+              {hometown.value===null 
+                ?<div>비공개 정보입니다.</div>
+                :(
+                <> 
+                  <div>
+                  <span>{korea[hometown.value]}</span>
+                  </div>
+                  {isMine &&<SwitchToggle isToggled={show&(1<<2)} onToggle={()=>{handleToggle(2)}}/>}
+                  </>
+                )}
+                </div>
             </li>
             <li>
               <span>거주지</span>
@@ -366,6 +463,18 @@ const Info = () => {
                   <GrUpdate />
                 </button>
               )}
+              <div className='content'>
+              {residence.value===null 
+                ?<div>비공개 정보입니다.</div>
+                :(
+                <> 
+                  <div>
+                  <span>{korea[residence.value]}</span>
+                  </div>
+                  {isMine &&<SwitchToggle  isToggled={show&(1<<3)} onToggle={()=>{handleToggle(3)}}/>}
+                  </>
+                )}
+                </div>
             </li>
             <li>
               <span>19대 대선 지지 후보</span>
@@ -378,7 +487,18 @@ const Info = () => {
                   <GrUpdate />
                 </button>
               )}
+              <div className='content'>
+              {vote19.value===null 
+                ?<div>비공개 정보입니다.</div>
+                :(
+                <> 
+                  <div>
               <MyVote {...vote19} list={list19} />
+                  </div>
+                  {isMine &&<SwitchToggle isToggled={show&(1<<4)} onToggle={()=>{handleToggle(4)}}/>}
+                  </>
+                )}
+                </div>
             </li>
             <li>
               <span>20대 대선 지지 후보</span>
@@ -391,18 +511,33 @@ const Info = () => {
                   <GrUpdate />
                 </button>
               )}
-              <MyVote {...vote20} list={list20} />
+              <div className='content'>
+              {vote20.value===null 
+                ?<div>비공개 정보입니다.</div>
+                :(
+                <> 
+                  <div>
+                  <MyVote {...vote20} list={list20} />
+                  </div>
+                  {isMine &&<SwitchToggle isToggled={show&(1<<5)} onToggle={()=>{handleToggle(5)}}/>}
+                  </>
+                )}
+                </div>
             </li>
-          </ul>
-        </div>
-        {isMine && (
+            {isMine && (
+            <li>
           <div>
             <button onClick={handleDelete}>회원탈퇴</button>
             <button onClick={handleSave}>저장</button>
           </div>
+            </li>
         )}
-      </div>
-    );
+          </ul>
+        </StyledInfoContent>
+        
+      </Layout>
+    );  
 };
 
 export default Info;
+

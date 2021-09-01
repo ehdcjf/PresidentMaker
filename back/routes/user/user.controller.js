@@ -308,27 +308,27 @@ module.exports = {
 
 const hideInfo = (data)=>{
     let temp = {...data};
-    const show = data.state;
+    const show = data.show;
     for(let i =0; i<6; i++){
         if(!(show&(1<<i))){
             switch(i){
                 case 0:
-                    temp.gender=false;
+                    temp.gender=null;
                     break;
                 case 1:
-                    temp.birth=false;
+                    temp.birth=null;
                     break;
                 case 2:
-                    temp.hometown=false;
+                    temp.hometown=null;
                     break;
                 case 3:
-                    temp.residence=false;
+                    temp.residence=null;
                     break;
                 case 4:
-                    temp.vote_19th=false;
+                    temp.vote_19th=null;
                     break;
                 case 5:
-                    temp.vote_pm=false; 
+                    temp.vote_pm=null; 
                     break;
                 default:
                     break;

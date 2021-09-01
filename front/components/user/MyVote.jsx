@@ -1,6 +1,5 @@
 const MyVote = ({value, list}) => {
   const myvote = list[value];
-
   return (
     <div>
       <div style={{ backgroundImage: `url(${myvote.src})` }} />  

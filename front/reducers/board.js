@@ -57,6 +57,7 @@ export const ShowListRequest = () => {
   }
 }
 export const ShowListSuccess = (data) => {
+  console.log(data)
   return {
     type: SHOW_LIST_SUCCESS,
     data: data,
@@ -111,6 +112,7 @@ const reducer = (state = initialState, action) => {
         rows: action.data.rows,
         pageblock: action.data.pageblock,
         endpage: action.data.totalPage,
+        type:action.data.type,
         loadding: false,
       }
     case SHOW_LIST_ERROR:
