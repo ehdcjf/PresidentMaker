@@ -25,8 +25,8 @@ const pool = require('../../config/dbconnection');
 // }
 
 
-const showResult = async(req,res)=>{
-  const {gender,birth,hometown,}
+const showResult = async (req, res) => {
+  const { gender, birth, hometown, residence, vote20, vote19 }
 
 
 

@@ -10,7 +10,7 @@ const createUser = async (req, res) => {
         connection = await pool.getConnection(async conn => conn);
         try {
             const { kakao, nickname, hometown, residence, gender, birth, image, vote20, vote19 } = req.body;
-            const sql = `INSERT INTO USER (kakao_code,nickname,hometown,residence,gender,birth,image,vote_19th,vote_pm) 
+            const sql = `INSERT INTO USER (kakao_code,nickname,hometown,residence,gender,birth,image,vote_19th,vote_20th) 
             values(?,?,?,?,?,?,?,?,?)`
             const params = [kakao, nickname, hometown, residence, gender, birth, image, vote20, vote19]
             const [result] = await connection.execute(sql, params)
@@ -20,7 +20,7 @@ const createUser = async (req, res) => {
                 success: true,
                 nickname: nickname,
                 image: image,
-                user_id:user_id,
+                user_id: user_id,
             }
             res.cookie('AccessToken', access_token, { httpOnly: true, secure: true })
             res.json(data);
@@ -51,44 +51,44 @@ const createUser = async (req, res) => {
 const showUser = async (req, res) => {
     const { id } = req.query;
     const AccessToken = req.cookies.AccessToken;
-    let client= 0; 
-    if(AccessToken!=undefined){
+    let client = 0;
+    if (AccessToken != undefined) {
         client = jwtId(AccessToken)
     }
     let connection;
     try {
         connection = await pool.getConnection(async conn => conn);
         try {
-            const sql = `SELECT image,nickname,gender,birth,hometown,residence,vote_19th,vote_pm,user.show,user.state FROM user WHERE user_id = ?`
+            const sql = `SELECT image,nickname,gender,birth,hometown,residence,vote_19th,vote_20th,user.show,user.state FROM user WHERE user_id = ?`
             const params = [id]
             const result = await connection.execute(sql, params)
-            if(result[0][0].state==1){//탈퇴했을경우
+            if (result[0][0].state == 1) {//탈퇴했을경우
                 const data = {
-                    success:false,
-                    error:'quit',
+                    success: false,
+                    error: 'quit',
                 }
                 res.json(data)
-            }else{
-                let data = {...result[0][0],success:true}
-                if(client==id){ //본인 정보를 조회할 경우
+            } else {
+                let data = { ...result[0][0], success: true }
+                if (client == id) { //본인 정보를 조회할 경우
                     data.isMine = true;
                     res.json(data);
-                }else{//타인의 정보를 조회할 경우 가려줘야함. 
-                    data.isMine=false;
+                } else {//타인의 정보를 조회할 경우 가려줘야함. 
+                    data.isMine = false;
                     res.json(hideInfo(data));
                 }
             }
         } catch (error) {
             console.log('Query Error');
             console.log(error)
-            if(error.errno==1062){
+            if (error.errno == 1062) {
                 const data = {
-                    success:false,
-                    error:"방금 다른 누군가가 닉네임을 가져갔습니다.\n\n닉네임을 다시 설정해 주세요."
+                    success: false,
+                    error: "방금 다른 누군가가 닉네임을 가져갔습니다.\n\n닉네임을 다시 설정해 주세요."
                 }
                 res.json(data)
             }
-            else{
+            else {
                 const data = {
                     success: false,
                     error: error.sqlMessage,
@@ -111,23 +111,23 @@ const showUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
     const { id } = req.query;
-    const { nickname,birth,gender,hometown,residence,image,vote19,vote20,show } = req.body;
+    const { nickname, birth, gender, hometown, residence, image, vote19, vote20, show } = req.body;
     const AccessToken = req.cookies.AccessToken;
-    if(AccessToken==undefined){
+    if (AccessToken == undefined) {
         const data = {
-            success:false,
-            error:'접근권한이 없습니다'
+            success: false,
+            error: '접근권한이 없습니다'
         }
         res.json(data)
-    }else{
+    } else {
         const client = jwtId(AccessToken)
-        if(id!=client){
+        if (id != client) {
             const data = {
-                success:false,
-                error:'접근권한이 없습니다'
+                success: false,
+                error: '접근권한이 없습니다'
             }
             res.json(data)
-        }else{
+        } else {
             let connection;
             try {
                 connection = await pool.getConnection(async conn => conn);
@@ -140,27 +140,27 @@ const updateUser = async (req, res) => {
                                     residence=?,
                                     image=?,
                                     vote_19th=?,
-                                    vote_pm=?,
+                                    vote_20th=?,
                                     user.show = ?
                                     WHERE user_id=? ;`
-                    const params = [nickname,birth,gender,hometown,residence,image,vote19,vote20,show,id]
+                    const params = [nickname, birth, gender, hometown, residence, image, vote19, vote20, show, id]
                     const [result] = await connection.execute(sql, params)
-                    const data ={
-                        success:true,
-                        result:result,
+                    const data = {
+                        success: true,
+                        result: result,
                     }
                     res.json(data);
                 } catch (error) {
                     console.log('Query Error');
                     console.log(error)
-                    if(error.errno==1062){
+                    if (error.errno == 1062) {
                         const data = {
-                            success:false,
-                            error:"방금 다른 누군가가 닉네임을 가져갔습니다.\n\n닉네임을 다시 설정해 주세요."
+                            success: false,
+                            error: "방금 다른 누군가가 닉네임을 가져갔습니다.\n\n닉네임을 다시 설정해 주세요."
                         }
                         res.json(data)
                     }
-                    else{
+                    else {
                         const data = {
                             success: false,
                             error: error.sqlMessage,
@@ -172,8 +172,8 @@ const updateUser = async (req, res) => {
                 console.log('DB Error')
                 console.log(error)
                 const data = {
-                    success:false,
-                    error:error.sqlMessage
+                    success: false,
+                    error: error.sqlMessage
                 }
                 res.json(data)
             } finally {
@@ -186,40 +186,40 @@ const updateUser = async (req, res) => {
 const deleteUser = async (req, res) => {
     const { id } = req.query;
     const AccessToken = req.cookies.AccessToken;
-    if(AccessToken==undefined){
+    if (AccessToken == undefined) {
         const data = {
-            success:false,
-            error:'접근권한이 없습니다'
+            success: false,
+            error: '접근권한이 없습니다'
         }
         res.json(data)
-    }else{
-        
+    } else {
+
         const client = jwtId(AccessToken)
-        if(id!=client){
+        if (id != client) {
             const data = {
-                success:false,
-            error:'접근권한이 없습니다'
+                success: false,
+                error: '접근권한이 없습니다'
             }
             res.json(data)
-        }else{
+        } else {
             let connection;
             try {
                 connection = await pool.getConnection(async conn => conn);
                 try {
                     const sql = `UPDATE user SET state=1,kakao_code=NULL WHERE user_id=? ;`
                     const params = [id]
-                    const [result] = await connection.execute(sql, params) 
-                    const data ={
-                        success:true,
-                        result:result,
+                    const [result] = await connection.execute(sql, params)
+                    const data = {
+                        success: true,
+                        result: result,
                     }
                     res.json(data);
                 } catch (error) {
                     console.log('Query Error');
                     console.log(error)
                     const data = {
-                        success:false,
-                        error:error.sqlMessage
+                        success: false,
+                        error: error.sqlMessage
                     }
                     res.json(data)
                 }
@@ -227,8 +227,8 @@ const deleteUser = async (req, res) => {
                 console.log('DB Error')
                 console.log(error)
                 const data = {
-                    success:false,
-                    error:error.sqlMessage
+                    success: false,
+                    error: error.sqlMessage
                 }
                 res.json(data)
             } finally {
@@ -263,7 +263,7 @@ const nicknameCheck = async (req, res) => {
             let data = {
                 success: false,
             }
-            if (result.count == 0 || result.user_id==client) {
+            if (result.count == 0 || result.user_id == client) {
                 data.success = true;
             }
             res.json(data);
@@ -306,29 +306,29 @@ module.exports = {
 
 
 
-const hideInfo = (data)=>{
-    let temp = {...data};
+const hideInfo = (data) => {
+    let temp = { ...data };
     const show = data.show;
-    for(let i =0; i<6; i++){
-        if(!(show&(1<<i))){
-            switch(i){
+    for (let i = 0; i < 6; i++) {
+        if (!(show & (1 << i))) {
+            switch (i) {
                 case 0:
-                    temp.gender=null;
+                    temp.gender = null;
                     break;
                 case 1:
-                    temp.birth=null;
+                    temp.birth = null;
                     break;
                 case 2:
-                    temp.hometown=null;
+                    temp.hometown = null;
                     break;
                 case 3:
-                    temp.residence=null;
+                    temp.residence = null;
                     break;
                 case 4:
-                    temp.vote_19th=null;
+                    temp.vote_19th = null;
                     break;
                 case 5:
-                    temp.vote_pm=null; 
+                    temp.vote_20th = null;
                     break;
                 default:
                     break;
