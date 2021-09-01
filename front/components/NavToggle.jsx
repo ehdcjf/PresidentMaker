@@ -4,9 +4,9 @@ import Accordion from "./Accordion";
 
 const Toggle = Styled.div`
 
-  /* @media only screen and (min-width:768px) {
+  @media screen and (min-width:768px) {
         display:none;    
-    } */
+    }
 
   background:transparent;
   border-color:transparent;

@@ -9,7 +9,7 @@ import Link from "next/link";
 import Router from "next/router";
 
 import { LikeBtn } from "../../../components/board/LikeBtn";
-import BoardLayout from "../../../components/layout/BoardLayout";
+import Layout from "../../../containers/Layout";
 import Head from "next/head";
 import "react-quill/dist/quill.snow.css";
 
@@ -121,8 +121,8 @@ const View = () => {
         />
         <link rel="stylesheet" href="//cdn.quilljs.com/1.3.6/quill.snow.css" />
       </Head>
-      <BoardLayout>
-        <h2 className="title">{article.subject}</h2>
+      <Layout>
+        <h1 className="title">{article.subject}</h1>
         <div className="article_info">
           <div className="article_info_left">
             <span className="writer">
@@ -160,7 +160,7 @@ const View = () => {
         {/* 댓글영역 */}
         {/* <div>{board_id !== undefined && <Comment board_id={board_id} comment_cnt={article.comment_cnt}/>}</div> */}
         <Comment />
-      </BoardLayout>
+      </Layout>
     </>
   );
 };
