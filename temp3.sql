@@ -19,13 +19,13 @@ USE `president`;
 -- 테이블 president.blike 구조 내보내기
 CREATE TABLE IF NOT EXISTS `blike` (
   `blike_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `board_id` int(11) unsigned NOT NULL,
+  `target_id` int(11) unsigned NOT NULL,
   `user_id` int(11) unsigned NOT NULL,
-  `islike` tinyint(4) NOT NULL,
+  `isLike` tinyint(4) NOT NULL,
   PRIMARY KEY (`blike_id`) USING BTREE,
-  KEY `FK_blike_board` (`board_id`),
-  KEY `FK_blike_user` (`user_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=117 DEFAULT CHARSET=utf8;
+  KEY `FK_blike_user` (`user_id`) USING BTREE,
+  KEY `FK_blike_board` (`target_id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=214 DEFAULT CHARSET=utf8;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -44,20 +44,20 @@ CREATE TABLE IF NOT EXISTS `board` (
   `comment_cnt` smallint(5) unsigned DEFAULT 0,
   PRIMARY KEY (`board_id`) USING BTREE,
   KEY `FK_board_user` (`writer`)
-) ENGINE=InnoDB AUTO_INCREMENT=162 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=182 DEFAULT CHARSET=utf8;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
 -- 테이블 president.clike 구조 내보내기
 CREATE TABLE IF NOT EXISTS `clike` (
-  `clike_id` int(11) unsigned NOT NULL,
-  `comment_id` int(11) unsigned NOT NULL,
+  `clike_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `target_id` int(11) unsigned NOT NULL,
   `user_id` int(11) unsigned NOT NULL,
-  `type` tinyint(4) NOT NULL,
+  `isLike` tinyint(4) DEFAULT NULL,
   PRIMARY KEY (`clike_id`) USING BTREE,
-  KEY `FK_blike_board` (`comment_id`) USING BTREE,
-  KEY `FK_blike_user` (`user_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+  KEY `FK_blike_user` (`user_id`) USING BTREE,
+  KEY `FK_blike_board` (`target_id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=196 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -68,17 +68,17 @@ CREATE TABLE IF NOT EXISTS `comment` (
   `writer` int(11) unsigned DEFAULT NULL,
   `board_id` int(11) unsigned NOT NULL DEFAULT 0,
   `createdAt` datetime DEFAULT current_timestamp(),
-  `update` tinyint(4) DEFAULT 0,
+  `updated` tinyint(4) DEFAULT 0,
   `root` int(11) unsigned NOT NULL DEFAULT 0,
   `target` int(11) unsigned DEFAULT 0,
-  `liked` smallint(5) unsigned DEFAULT 0,
-  `disliked` smallint(5) unsigned DEFAULT 0,
+  `liked` smallint(6) DEFAULT 0,
+  `disliked` smallint(6) DEFAULT 0,
   `del` tinyint(4) DEFAULT 0,
   `reply_cnt` smallint(5) unsigned DEFAULT 0,
   PRIMARY KEY (`comment_id`) USING BTREE,
   KEY `FK_board_user` (`writer`) USING BTREE,
   KEY `FK_comment_board` (`board_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=367 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=678 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -90,7 +90,18 @@ CREATE TABLE IF NOT EXISTS `hit` (
   `date` date NOT NULL,
   PRIMARY KEY (`hit_id`) USING BTREE,
   KEY `FK__board` (`board_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=63 DEFAULT CHARSET=utf8;
+
+-- 내보낼 데이터가 선택되어 있지 않습니다.
+
+-- 테이블 president.politician 구조 내보내기
+CREATE TABLE IF NOT EXISTS `politician` (
+  `politician_id` int(11) NOT NULL AUTO_INCREMENT,
+  `politician_name` varchar(50) DEFAULT NULL,
+  `politician_color` varchar(10) DEFAULT NULL,
+  `politician_image` varchar(500) DEFAULT NULL,
+  PRIMARY KEY (`politician_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -103,14 +114,45 @@ CREATE TABLE IF NOT EXISTS `user` (
   `residence` tinytext NOT NULL,
   `birth` smallint(5) unsigned NOT NULL,
   `gender` tinyint(4) unsigned NOT NULL,
-  `show` tinyint(4) unsigned NOT NULL DEFAULT 0,
+  `show` smallint(5) unsigned NOT NULL DEFAULT 0,
   `state` tinyint(3) unsigned DEFAULT 0,
   `image` varchar(1000) DEFAULT NULL,
   `vote_19th` tinyint(3) unsigned DEFAULT NULL,
-  `vote_pm` tinyint(3) unsigned DEFAULT NULL,
   PRIMARY KEY (`user_id`) USING BTREE,
   UNIQUE KEY `email` (`kakao_code`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8;
+
+-- 내보낼 데이터가 선택되어 있지 않습니다.
+
+-- 테이블 president.vote_info 구조 내보내기
+CREATE TABLE IF NOT EXISTS `vote_info` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `vote_id` int(11) DEFAULT NULL,
+  `politician_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
+
+-- 내보낼 데이터가 선택되어 있지 않습니다.
+
+-- 테이블 president.vote_result 구조 내보내기
+CREATE TABLE IF NOT EXISTS `vote_result` (
+  `vote_result_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
+  `vote_id` int(11) DEFAULT NULL,
+  `politician_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`vote_result_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+
+-- 내보낼 데이터가 선택되어 있지 않습니다.
+
+-- 테이블 president.vote_title 구조 내보내기
+CREATE TABLE IF NOT EXISTS `vote_title` (
+  `vote_id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(50) DEFAULT NULL,
+  `content` varchar(50) DEFAULT NULL,
+  `createdAt` date DEFAULT date_format(current_timestamp(),'%Y-%m-%d'),
+  PRIMARY KEY (`vote_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 -- 내보낼 데이터가 선택되어 있지 않습니다.
 
@@ -120,7 +162,7 @@ DELIMITER //
 CREATE TRIGGER `blike_after_delete` AFTER DELETE ON `blike` FOR EACH ROW BEGIN
 	DECLARE idtemp INT(11);
 	DECLARE result TINYINT(4);
-	SET idtemp = OLD.board_id;
+	SET idtemp = OLD.target_id;
 	SET result = OLD.islike;
 	
 	IF result>0
@@ -141,7 +183,7 @@ DELIMITER //
 CREATE TRIGGER `blike_after_insert` AFTER INSERT ON `blike` FOR EACH ROW BEGIN
 	DECLARE idtemp INT(11);
 	DECLARE result TINYINT(4);
-	SET idtemp = NEW.board_id;
+	SET idtemp = NEW.target_id;
 	SET result = NEW.islike;
 	
 	IF result>0
@@ -162,7 +204,7 @@ DELIMITER //
 CREATE TRIGGER `blike_after_update` AFTER UPDATE ON `blike` FOR EACH ROW BEGIN
 	DECLARE idtemp INT(11);
 	DECLARE result TINYINT(4);
-	SET idtemp = NEW.board_id;
+	SET idtemp = NEW.target_id;
 	SET result = NEW.islike;
 	
 	IF result>0
@@ -179,20 +221,84 @@ END//
 DELIMITER ;
 SET SQL_MODE=@OLDTMP_SQL_MODE;
 
+-- 트리거 president.clike_after_delete 구조 내보내기
+SET @OLDTMP_SQL_MODE=@@SQL_MODE, SQL_MODE='STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION';
+DELIMITER //
+CREATE TRIGGER `clike_after_delete` AFTER DELETE ON `clike` FOR EACH ROW BEGIN
+	DECLARE idtemp INT(11);
+	DECLARE result TINYINT(4);
+	SET idtemp = OLD.target_id;
+	SET result = OLD.islike;
+	
+	IF result>0
+		THEN BEGIN 
+			UPDATE comment SET liked=liked-1 WHERE comment_id=idtemp;
+		END; END IF;
+	IF result=0
+		THEN BEGIN 
+			UPDATE comment SET disliked=disliked-1 WHERE comment_id=idtemp;
+		END; END IF;
+END//
+DELIMITER ;
+SET SQL_MODE=@OLDTMP_SQL_MODE;
+
+-- 트리거 president.clike_after_insert 구조 내보내기
+SET @OLDTMP_SQL_MODE=@@SQL_MODE, SQL_MODE='STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION';
+DELIMITER //
+CREATE TRIGGER `clike_after_insert` BEFORE INSERT ON `clike` FOR EACH ROW BEGIN
+	DECLARE idtemp INT(11);
+	DECLARE result TINYINT(4);
+	SET idtemp = NEW.target_id;
+	SET result = NEW.islike;
+	
+	IF result>0
+		THEN BEGIN 
+			UPDATE comment SET liked=liked+1 WHERE comment_id=idtemp;
+		END; END IF;
+	IF result=0
+		THEN BEGIN 
+			UPDATE comment SET disliked=disliked+1 WHERE comment_id=idtemp;
+		END; END IF;
+END//
+DELIMITER ;
+SET SQL_MODE=@OLDTMP_SQL_MODE;
+
+-- 트리거 president.clike_after_update 구조 내보내기
+SET @OLDTMP_SQL_MODE=@@SQL_MODE, SQL_MODE='STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION';
+DELIMITER //
+CREATE TRIGGER `clike_after_update` AFTER UPDATE ON `clike` FOR EACH ROW BEGIN
+	DECLARE idtemp INT(11);
+	DECLARE result TINYINT(4);
+	SET idtemp = NEW.target_id;
+	SET result = NEW.islike;
+	
+	IF result>0
+		THEN BEGIN 
+			UPDATE comment SET liked=liked+1 WHERE comment_id=idtemp;
+			UPDATE comment SET disliked=disliked-1 WHERE comment_id=idtemp;
+		END; END IF;
+	IF result=0
+		THEN BEGIN 
+			UPDATE comment SET disliked=disliked+1 WHERE comment_id=idtemp;
+			UPDATE comment SET liked=liked-1 WHERE comment_id=idtemp;
+		END; END IF;
+END//
+DELIMITER ;
+SET SQL_MODE=@OLDTMP_SQL_MODE;
+
 -- 트리거 president.comment_after_insert 구조 내보내기
 SET @OLDTMP_SQL_MODE=@@SQL_MODE, SQL_MODE='STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION';
 DELIMITER //
-CREATE TRIGGER `comment_after_insert` BEFORE INSERT ON `comment` FOR EACH ROW BEGIN
-	DECLARE id_temp INT(11);
-	DECLARE board_id_temp INT(11);
-	SET id_temp = NEW.root;
-	SET board_id_temp = NEW.board_id;
+CREATE TRIGGER `comment_after_insert` AFTER INSERT ON `comment` FOR EACH ROW BEGIN
+	DECLARE idtemp INT(11);
+	SET idtemp = NEW.board_id;
+
+
+	UPDATE board SET comment_cnt=comment_cnt+1 WHERE board_id=idtemp;
 	
-	UPDATE board SET comment_cnt=comment_cnt+1 WHERE board_id=board_id_temp;
 	
 
-	
-	
+
 END//
 DELIMITER ;
 SET SQL_MODE=@OLDTMP_SQL_MODE;
