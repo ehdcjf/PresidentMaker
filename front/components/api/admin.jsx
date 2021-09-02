@@ -2,7 +2,7 @@ export const showRequest = async (data) => {
   const { type } = data;
   const url = `http://localhost:3002/admin/election?type=${type}`;
   const options = {
-    methode: "GET",
+    method: "GET",
     mode: "cors",
     credentials: "include",
   };

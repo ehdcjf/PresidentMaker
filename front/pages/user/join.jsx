@@ -1,179 +1,146 @@
-import FormLayout from "../../components/FormLayout";
 import Head from "next/head";
-import useInput from "../../hooks/useInput";
 import { useState, useEffect } from "react";
-import { imageUpload, joinRequest } from "../../components/api/joinRequest";
+
+import useComplete from "../../hooks/useComplete";
+import Nickname from "../../components/user/Nickname";
+import ProfilImage from "../../components/user/ProfilImage";
+import Gender from "../../components/user/Gender";
+import Birth from "../../components/user/Birth";
+import Area from "../../components/user/Area";
+import Vote from "../../components/user/Vote";
+import { list19 } from "../../public/list19";
+import { list20 } from "../../public/list20";
+import Result from "../../components/user/Result";
 import Router from "next/router";
-import { useDispatch } from "react-redux";
-import { UserLoginAction } from "../../reducers/user";
+
 
 const Join = () => {
-  const dispatch = useDispatch();
   const [kakao, setKakao] = useState();
-  const nickname = useInput("");
-  const birth = useInput("");
-  const [gender, setGender] = useState({ male: false, female: false });
-  const [term, setTerm] = useState(false);
-  const [termError, setTermError] = useState(false);
-  const [hometown, setHomtown] = useState();
-  const [residence, setResidence] = useState();
-  const [image, setImage] = useState();
+  const nickname = useComplete("");
+  const gender = useComplete(null);
+  const birth = useComplete(null);
+  const hometown = useComplete(null);
+  const residence = useComplete(null);
+  const vote19 = useComplete(null);
+  const vote20 = useComplete(null);
+  const profil = useComplete("/defaultProfil.png");
+  const [step, setStep] = useState(0);
 
   useEffect(async () => {
     const code = new URL(window.location.href).searchParams.get("id");
     setKakao(code);
   }, []);
 
-  const handleTerm = () => {
-    setTermError(term === true);
-    setTerm(!term);
+  const handleStep = (data) => {
+    setStep(data);
   };
 
-  const handleGender = (e) => {
-    let temp = { male: false, female: false };
-    temp[e.target.value] = e.target.checked;
-    setGender(temp);
-  };
+  const handleCancle = ()=>{
+    Router.push('/')
+  }
 
-  const handleHometown = (e) => {
-    setHomtown(e.target.value);
-  };
 
-  const handleResidence = (e) => {
-    setResidence(e.target.value);
-  };
-
-  const handleImage = (e) => {
-    setImage(e.target.files[0]);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    let imageURI = "http://localhost:3001/defaultProfil";
-    if (image != undefined) {
-      imageURI = await imageUpload(image);
-      imageURI = "http://localhost:3002/" + imageURI;
-    }
-
-    let sex;
-    if (gender.male) {
-      sex = 0;
-    } else {
-      sex = 1;
-    }
-
-    const data = {
-      kakao: kakao,
-      nickname: nickname.value,
-      birth: birth.value,
-      hometown: hometown,
-      residence: residence,
-      gender: sex,
-      image: imageURI,
-      // 투표까지 추가
-    };
-    const result = await joinRequest(data);
-    console.log(result);
-    await dispatch(UserLoginAction(result));
-    Router.push("/");
-  };
 
   return (
     <>
       <Head>
         <title>Join</title>
       </Head>
-      <FormLayout>
-        <h2>회원가입</h2>
-
-        <form onSubmit={handleSubmit}>
-          프로필 이미지: <input type="file" onChange={handleImage} />
-          <br />
-          닉네임:{" "}
-          <input
-            type="text"
-            {...nickname}
-            placeholder="닉네임을 입력해주세요"
+      {step === 0 && (
+        <Nickname 
+        {...nickname}
+        title={'닉네임'}
+        prev={'회원가입 취소'} 
+        next={'다음'}
+        handlePrev={handleCancle} 
+        handleNext={()=>{handleStep(step+1)}} />
+      )}
+      {step === 1 && (
+        <ProfilImage 
+        {...profil}
+        title={"프로필 사진"}
+        prev={'이전'}  
+        next={'다음'}  
+        handlePrev = {()=>{handleStep(step-1)}}
+        handleNext={()=>{handleStep(step+1)}} 
+        />
+      )}
+      {step === 2 
+        && <Gender
+        {...gender} 
+        title={"성별"}
+        prev={'이전'}  
+        next={'다음'}  
+        handlePrev = {()=>{handleStep(step-1)}}
+        handleNext={()=>{handleStep(step+1)}} 
+        />}
+      {step === 3 
+      && <Birth 
+          {...birth} 
+          title={"출생 연도"}
+          prev={'이전'}  
+          next={'다음'}  
+          handlePrev = {()=>{handleStep(step-1)}}
+          handleNext={()=>{handleStep(step+1)}} 
+        />}
+      {step === 4 
+      && <Area 
+      {...hometown}  
+      title={"고향"}
+      prev={'이전'}  
+      next={'다음'}  
+      handlePrev = {()=>{handleStep(step-1)}}
+      handleNext={()=>{handleStep(step+1)}} 
+      />}
+      {step === 5 && (
+        <Area
+        {...residence}
+        title={"거주지"}
+        prev={'이전'}  
+        next={'다음'}  
+        handlePrev = {()=>{handleStep(step-1)}}
+        handleNext={()=>{handleStep(step+1)}} 
           />
-          <br />
-          성별: 남:
-          <input
-            type="radio"
-            name="gender"
-            value="male"
-            checked={gender.male}
-            onChange={handleGender}
-          />
-          여:
-          <input
-            type="radio"
-            name="gender"
-            value="female"
-            checked={gender.female}
-            onChange={handleGender}
-          />
-          <br />
-          출생 연도:{" "}
-          <input type="number" {...birth} placeholder="출생연도 입력해주세요" />
-          <br />
-          고향:{" "}
-          <select name="hometown" onChange={handleHometown}>
-            <option value={null}>고향</option>
-            <option value={1}>서울특별시</option>
-            <option value={2}>부산광역시</option>
-            <option value={3}>대구광역시</option>
-            <option value={4}>인천광역시</option>
-            <option value={5}>광주광역시</option>
-            <option value={6}>대전광역시</option>
-            <option value={7}>울산광역시</option>
-            <option value={8}>세종특별자치시</option>
-            <option value={9}>경기도</option>
-            <option value={10}>강원도</option>
-            <option value={11}>충청북도</option>
-            <option value={12}>충청남도</option>
-            <option value={13}>전라북도</option>
-            <option value={14}>전라남도</option>
-            <option value={15}>경상북도</option>
-            <option value={16}>경상남도</option>
-            <option value={17}>제주특별자치도</option>
-          </select>
-          <br />
-          거주지:{" "}
-          <select name="residence" onChange={handleResidence}>
-            <option value={null}>거주지</option>
-            <option value={1}>서울특별시</option>
-            <option value={2}>부산광역시</option>
-            <option value={3}>대구광역시</option>
-            <option value={4}>인천광역시</option>
-            <option value={5}>광주광역시</option>
-            <option value={6}>대전광역시</option>
-            <option value={7}>울산광역시</option>
-            <option value={8}>세종특별자치시</option>
-            <option value={9}>경기도</option>
-            <option value={10}>강원도</option>
-            <option value={11}>충청북도</option>
-            <option value={12}>충청남도</option>
-            <option value={13}>전라북도</option>
-            <option value={14}>전라남도</option>
-            <option value={15}>경상북도</option>
-            <option value={16}>경상남도</option>
-            <option value={17}>제주특별자치도</option>
-          </select>
-          <br />
-          <input
-            type="checkbox"
-            checked={term}
-            onChange={handleTerm}
-            id="term"
-          />
-          <label htmlFor="term">약관에 동의해주세요.</label>
-          <br />
-          {termError && (
-            <div style={{ color: "red" }}>약관에 동의해주세요.</div>
-          )}
-          <button type="submit">회원가입</button>
-        </form>
-      </FormLayout>
+      )}
+      {step === 6 && (
+        <Vote
+          {...vote19}
+          title={"19대 대선 지지 후보"}
+          list={list19}
+          prev={'이전'}  
+        next={'다음'}  
+        handlePrev = {()=>{handleStep(step-1)}}
+        handleNext={()=>{handleStep(step+1)}} 
+        />
+      )}
+      {step === 7 && (
+        <Vote
+          {...vote20}
+          title={"20대 대선 지지 후보"}
+          list={list20}
+          prev={'이전'}  
+        next={'다음'}  
+        handlePrev = {()=>{handleStep(step-1)}}
+        handleNext={()=>{handleStep(step+1)}} 
+        />
+      )}
+      {step === 8 && (
+        <Result
+          kakao={kakao}
+          list19={list19}
+          list20={list20}
+          nickname={nickname}
+          gender={gender}
+          birth={birth}
+          hometown={hometown}
+          residence={residence}
+          vote19={vote19}
+          vote20={vote20}
+          profil={profil}
+          prev={'이전'}  
+          handlePrev = {()=>{handleStep(step-1)}}
+        />
+      )}
     </>
   );
 };

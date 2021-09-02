@@ -3,11 +3,12 @@ const userController = require('./user.controller');
 
 
 
+router.delete('/', userController.deleteUser);
 router.post('/', userController.createUser);
 router.get('/', userController.showUser);
-router.patch('/', userController.updateUser);
-router.delete('/', userController.deleteUser);
+router.put('/', userController.updateUser);
 router.get('/logout', userController.logoutUser)
+router.get('/join/:nickname', userController.nicknameCheck)
 
 
 module.exports = router;

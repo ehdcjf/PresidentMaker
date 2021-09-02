@@ -50,32 +50,39 @@ const get_code = async (req, res) => {
 
   const kakao_code = user.data.id;
 
-
   let connection;
   try {
     connection = await pool.getConnection(async conn => conn);
     try {
-      const sql = `SELECT nickname,user_id,image FROM user WHERE kakao_code=?`
+      const sql = `SELECT nickname,user_id,image, COUNT(user_id) as count FROM user WHERE kakao_code=?`
       const params = [kakao_code];
 
       const [result] = await connection.execute(sql, params)
-      const access_token = createToken(result[0].user_id)
-      const data = {
-        success: true,
-        nickname: result[0].nickname,
-        image: result[0].image,
+      if(result[0].count==0){
+        const join = {
+          success: false,
+          kakao_code: kakao_code,
+        }
+        res.json(join)
+      }else{
+        const access_token = createToken(result[0].user_id)
+        const data = {
+          success: true,
+          nickname: result[0].nickname,
+          image: result[0].image,
+          user_id:result[0].user_id,
+        }
+        res.cookie('AccessToken', access_token, { httpOnly: true, secure: true })
+        res.json(data);
       }
-      res.cookie('AccessToken', access_token, { httpOnly: true, secure: true })
-      res.json(data);
     } catch (error) {//가입되지 않은 경우
       console.log('Query Error');
-      console.log('비회원. 회원가입진행')
       console.log(error)
-      const join = {
-        success: false,
-        kakao_code: kakao_code,
-      }
-      res.json(join)
+    const data = {
+      success: false,
+      error: error
+    }
+    res.json(data)
     }
   } catch (error) {
     console.log('DB Error')

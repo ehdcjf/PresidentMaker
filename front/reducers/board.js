@@ -38,9 +38,8 @@ export const DeleteArticleAction = (data) => {
   return async (dispatch) => {
     dispatch(DeleteArticleRequest());
     try {
-      const result = data;
-      result.success === true
-        ? dispatch(DeleteArticleSuccess(result))
+      data.success === true
+        ? dispatch(DeleteArticleSuccess(data))
         : dispatch(DeleteArticleError())
     } catch (e) {
       dispatch(DeleteArticleError())
@@ -112,6 +111,7 @@ const reducer = (state = initialState, action) => {
         rows: action.data.rows,
         pageblock: action.data.pageblock,
         endpage: action.data.totalPage,
+        type:action.data.type,
         loadding: false,
       }
     case SHOW_LIST_ERROR:
@@ -135,7 +135,6 @@ const reducer = (state = initialState, action) => {
         }
         return v;
       })
-      console.log(newList);
       return {
         ...state,
         list: [...newList],

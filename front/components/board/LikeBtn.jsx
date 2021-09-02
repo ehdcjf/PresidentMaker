@@ -8,6 +8,10 @@ import {
   InsertBLikeAction,
   DeleteBLikeAction,
   UpdateBLikeAction,
+  InsertCLikeAction,
+  DeleteCLikeAction,
+  UpdateCLikeAction,
+  
 } from "../../reducers/article";
 import {
   AiFillDislike,
@@ -31,7 +35,7 @@ align-items: center;
 `
 
 export const LikeBtn = (props) => {
-  const {type,id,liked,disliked,isLike} = props
+  const {type,id,liked,disliked,isLike,root} = props
   const {IsLogin} = useSelector(state=>state.user)
   
   const dispatch = useDispatch();
@@ -59,9 +63,18 @@ export const LikeBtn = (props) => {
     };
 
     const result = await likeAction(data);
-    console.log(result.isLike)
+    console.log(root)
     if(result.success){
-        dispatch(InsertBLikeAction(result.isLike));
+      if(type=='blike'){
+        dispatch(InsertBLikeAction(value));
+      }else{
+        const data = { 
+          isLike:value,
+          root:root,
+          comment_id:id,
+        }
+        dispatch(InsertCLikeAction(data));
+      }
     }
   };
 
@@ -72,10 +85,20 @@ export const LikeBtn = (props) => {
       action: "DELETE",
     };
     const result = await likeAction(data);
-    console.log(result.isLike)
+    console.log(root)
+
 
     if(result.success){
-      dispatch(DeleteBLikeAction(value));
+      if(type=='blike'){
+        dispatch(DeleteBLikeAction(value));
+      }else{
+        const data = { 
+          isLike:value,
+          root:root,
+          comment_id:id,
+        }
+        dispatch(DeleteCLikeAction(data));
+      }
     };
   }
 
@@ -88,10 +111,21 @@ export const LikeBtn = (props) => {
     };
 
     const result = await likeAction(data);
-    console.log(result.isLike)
+    console.log(root)
+
 
     if(result.success){
+      if(type=='blike'){
         dispatch(UpdateBLikeAction(value));
+      }else{
+        const data = { 
+          isLike:value,
+          root:root,
+          comment_id:id,
+        }
+        dispatch(UpdateCLikeAction(data));
+      }
+        
     }
   };
 

@@ -4,20 +4,17 @@ import { useDispatch, useSelector } from "react-redux";
 import { showArticle, deleteArticle } from "../../../components/api/Article";
 import { ShowArticleAction } from "../../../reducers/article";
 import { DeleteArticleAction } from "../../../reducers/board";
-import Comment from "../../../components/test/Comment";
+import Comment from "../../../components/comment/Comment";
 import Link from "next/link";
 import Router from "next/router";
 
 import { LikeBtn } from "../../../components/board/LikeBtn";
-import BoardLayout from "../../../components/layout/BoardLayout";
+import Layout from "../../../containers/Layout";
 import Head from "next/head";
-import 'react-quill/dist/quill.snow.css'
+import "react-quill/dist/quill.snow.css";
 
 import { RiFileListLine, RiDeleteBin6Line } from "react-icons/ri";
 import { GrUpdate } from "react-icons/gr";
-
-
-
 
 const View = () => {
   const dispatch = useDispatch();
@@ -25,7 +22,7 @@ const View = () => {
   const { type, page, search, keyword, rows } = useSelector(
     (state) => state.board
   );
-  const {IsLogin} = useSelector(state=>state.user)
+  const { IsLogin } = useSelector((state) => state.user);
   const router = useRouter();
   const { board_id } = router.query;
 
@@ -37,28 +34,30 @@ const View = () => {
   };
 
   useEffect(async () => {
+    console.log(article.loadding);
     if (board_id !== undefined) {
       const data = { board_id: board_id };
-      const result = await showArticle(data); //// 정보를 가져올 필요가 없을 때도 가져온다.??
+      const result = await showArticle(data);
       dispatch(ShowArticleAction(result));
+      console.log(article);
     }
   }, [board_id]);
 
   const deleteHandler = async () => {
-    if(confirm('정말 삭제하시겠습니까?')){
+    if (confirm("정말 삭제하시겠습니까?")) {
       const data = {
         board_id,
         writer: article.writer,
       };
-    const result = await deleteArticle(data);
-    if (result.success === true) {
-      dispatch(DeleteArticleAction(result));
-      const href = makeQuery();
-      Router.push(href);
-    } else {
-      alert("당신에게는 이 글에 대한 삭제 권한이 없습니다.");
+      const result = await deleteArticle(data);
+      if (result.success === true) {
+        dispatch(DeleteArticleAction(result));
+        const href = makeQuery();
+        Router.push(href);
+      } else {
+        alert("당신에게는 이 글에 대한 삭제 권한이 없습니다.");
+      }
     }
-  }
   };
 
   // const modifyHandler = () => {
@@ -79,12 +78,12 @@ const View = () => {
   };
 
   const renderArticleAction = () => {
-    if (article.del === 0 && article.isWriter === true &&IsLogin) {
+    if (article.del === 0 && article.isWriter === true && IsLogin) {
       return (
         <>
           <Link
             href="/board/:[editor]"
-            as={`/board/modify?board_id=${board_id}`}
+            as={`/board/modify?board_id=${article.board_id}`}
           >
             <a>
               <GrUpdate />
@@ -108,7 +107,7 @@ const View = () => {
   return (
     <>
       <Head>
-              <link rel="stylesheet" src="../../style/style.css" />
+        <link rel="stylesheet" src="../../style/style.css" />
         <link
           href="//cdn.jsdelivr.net/npm/katex@0.13.3/dist/katex.min.css"
           rel="stylesheet"
@@ -122,8 +121,8 @@ const View = () => {
         />
         <link rel="stylesheet" href="//cdn.quilljs.com/1.3.6/quill.snow.css" />
       </Head>
-      <BoardLayout>
-        <h2 className="title">{article.subject}</h2>
+      <Layout>
+        <h1 className="title">{article.subject}</h1>
         <div className="article_info">
           <div className="article_info_left">
             <span className="writer">
@@ -140,14 +139,15 @@ const View = () => {
             <span className="article-hit">조회수: {article.hit}</span>
           </div>
         </div>
-          <div className="ql-editor"
+        <div
+          className="ql-editor"
           dangerouslySetInnerHTML={{ __html: article.content }}
-          />
+        />
 
         <LikeBtn
           isLike={article.isLike}
-          type={'blike'}
-          id={board_id}
+          type={"blike"}
+          id={article.board_id}
           liked={article.liked}
           disliked={article.disliked}
         />
@@ -158,8 +158,9 @@ const View = () => {
           </span>
         </div>
         {/* 댓글영역 */}
-        <div>{board_id !== undefined && <Comment board_id={board_id} comment_cnt={article.comment_cnt}/>}</div>
-      </BoardLayout>
+        {/* <div>{board_id !== undefined && <Comment board_id={board_id} comment_cnt={article.comment_cnt}/>}</div> */}
+        <Comment />
+      </Layout>
     </>
   );
 };

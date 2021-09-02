@@ -5,10 +5,9 @@ import { showList } from "../../components/api/showList";
 import { ShowListAction } from "../../reducers/board";
 import { Pageblock } from "../../components/board/Pageblock";
 import Router from "next/router";
-import RowBtn from "../../components/board/RowBtn";
 import SearchBox from "../../components/board/SearchBox";
-import BoardType from "../../components/board/BoardType";
-import { KAKAO_AUTH_URL } from "../../components/api/OAuth";
+import Layout from "../../containers/Layout";
+import BoardListController from "../../components/board/BoardListController";
 
 const List = () => {
   const dispatch = useDispatch();
@@ -27,7 +26,7 @@ const List = () => {
 
     const result = await showList(data);
     if(result.success){
-      await dispatch(ShowListAction(result));
+      dispatch(ShowListAction(result));
     }else{
       alert(result.error)
     }
@@ -55,24 +54,16 @@ const List = () => {
       }
   };
 
-  const moveWrite = () =>{
-    if(IsLogin){
-    Router.push(`/board/write`);
-    }else{
-      if(confirm('로그인하시겠습니까?')){
-        Router.push(`${KAKAO_AUTH_URL}`)
-      }
-    }
-  }
+ 
 
 
 
   const renderList = (list) => {
     return list.map((v) => {
       return (
-        <tr key={v.board_id}>
-          <td>{v.board_id}</td>
-          <td>
+        <li key={v.board_id}>
+          <span className='num'>{v.board_id}</span>
+          <span className='subject'>
             <Link
               href="/board/view/:[board_id]"
               as={`/board/view/${v.board_id}`}
@@ -83,50 +74,34 @@ const List = () => {
               </span>}
               </a>
             </Link>
-          </td>
-          <td>{v.nickname}</td>
-          <td>{v.createdAt}</td>
-          <td>{v.hit}</td>
-          <td>{v.liked}</td>
-        </tr>
+          </span>
+          <span className='writer'>{v.nickname}</span>
+          <span className='date'>{v.createdAt}</span>
+          <span className='hit'>{v.hit}</span>
+          <span className='like'>{v.liked}</span>
+        </li>
       );
     });
   };
 
   return (
-    <>
+    <Layout>
+      <h1>자유게시판</h1>
       <div>
-        <div>
-        <BoardType
-          handlePage={handlePage}
-          type={board.type}
-        />
-        </div>
-        <div>
-          <span onClick={moveWrite}>글쓰기</span>
-          {/* <Link href="/board/write">
-            <a>글쓰기</a>
-          </Link> */}
-          <RowBtn
-            rows={board.rows}
-            handlePage={handlePage}
-          />
-
-        </div>
-
-        <table>
-          <thead>
-            <tr>
-              <th>글번호</th>
-              <th>제목</th>
-              <th>닉네임</th>
-              <th>작성일</th>
-              <th>조회수</th>
-              <th>추천수</th>
-            </tr>
-          </thead>
-          <tbody>{renderList(board.list)}</tbody>
-        </table>
+       <BoardListController/>
+        <ul>
+          
+            <li className='head'>
+              <span className='num'>글번호</span>
+              <span className='subject'>제목</span>
+              <span className='writer'>닉네임</span>
+              <span className='date'>작성일</span>
+              <span className='hit'>조회수</span>
+              <span className='like'>추천수</span>
+            </li>
+          
+          {renderList(board.list)}
+        </ul>
       </div>
       <Pageblock
         pageblock={board.pageblock}
@@ -138,7 +113,7 @@ const List = () => {
         keyword={board.keyword}
         handlePage={handlePage}
       />
-    </>
+    </Layout>
   );
 };
 

@@ -1,6 +1,6 @@
 export const createComment = async (data) => {
-  const { board_id, content, root, target = 0 } = data;
-  let url = `http://localhost:3002/board/comment/${board_id}/${root}/${target}`;
+  const { board_id, content, root, target_id = 0 } = data;
+  let url = `http://localhost:3002/board/comment/${board_id}/${root}/${target_id}`;
   let options = {
     method: "POST",
     mode: "cors",
@@ -19,7 +19,7 @@ export const createComment = async (data) => {
 };
 
 export const showComment = async (data) => {
-  const { board_id, root, skip ,type} = data;
+  const { board_id, root, skip, type } = data;
   let url = `http://localhost:3002/board/comment/${board_id}/${root}/${skip}/${type}`;
   let options = {
     method: "GET",

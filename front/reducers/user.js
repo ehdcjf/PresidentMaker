@@ -3,10 +3,11 @@ const initialState = {
   IsLogin: false,
   nickname: null,
   image: '/defaultProfil.png',
+  user_id:null,
 }
 
 
-
+const USER_UPDATE_ACTION = 'USER_UPDATE_ACTION'
 const USER_LOGIN_REQUEST = 'USER_LOGIN_REQUEST'
 const USER_LOGIN_SUCCESS = 'USER_LOGIN_SUCCESS'
 const USER_LOGIN_ERROR = 'USER_LOGIN_ERROR'
@@ -25,6 +26,14 @@ export const UserLoginAction = (data) => {
     }
   }
 }
+
+export const UserUpdateAction = (data) => {
+  return {
+    type:USER_UPDATE_ACTION,
+    data:data,
+  }
+}
+
 
 export const UserLoginRequest = () => {
   return {
@@ -68,6 +77,7 @@ const reducer = (state = initialState, action) => {
         IsLogin: true,
         nickname: action.data.nickname,
         image: action.data.image,
+        user_id:action.data.user_id,
         loadding: false,
       }
     case USER_LOGIN_ERROR:
@@ -79,6 +89,12 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         ...initialState,
+      }
+    case USER_UPDATE_ACTION:
+      return {
+        ...state,
+        nickname:action.data.nickname,
+        image: action.data.image,
       }
     default:
       return state
