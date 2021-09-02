@@ -7,8 +7,6 @@ import Router from "next/router";
 import { useDispatch } from "react-redux";
 import { UserLoginAction } from "../../reducers/user";
 
-
-
 const StyledResult = styled.div`
   width: 60vw;
   height: auto;
@@ -33,33 +31,31 @@ const Result = ({
   vote19,
   vote20,
   profil,
+  voteId,
 }) => {
   const dispatch = useDispatch();
-  const myvote19 = list19[vote19.value];
-  const myvote20 = list20[vote20.value];
+  const myvote19 = list19.filter((v) => v.politician_id == vote19.value);
+  const myvote20 = list20.filter((v) => v.politician_id == vote20.value);
   const myhometown = korea[hometown.value];
   const myresidence = korea[residence.value];
 
   const handleSubmit = async () => {
     const data = {
       kakao,
-      nickname:nickname.value,
-      birth:birth.value,
-      hometown:hometown.value,
-      residence:residence.value,
-      gender:gender.value,
-      image:profil.value,
-      vote19:vote19.value,
-      vote20:vote20.value,
+      nickname: nickname.value,
+      birth: birth.value,
+      hometown: hometown.value,
+      residence: residence.value,
+      gender: gender.value,
+      image: profil.value,
+      vote19: vote19.value,
+      vote20: vote20.value,
+      vote_id: voteId,
     };
     const result = await joinRequest(data);
     dispatch(UserLoginAction(result));
     Router.push("/");
   };
-
-
-
-
 
   return (
     <div>
@@ -103,28 +99,26 @@ const Result = ({
         <li>
           <span>19대 대선 지지 후보</span>
           <div>
-            <div style={{ backgroundImage: `url(${myvote19.src})` }} />
+            <div
+              style={{ backgroundImage: `url(${myvote19.politician_image})` }}
+            />
           </div>
-          <h3>{myvote19.name}</h3>
+          <h3>{myvote19.politician_name}</h3>
         </li>
         <li>
           <span>20대 대선 지지 후보</span>
           <div>
-            <div style={{ backgroundImage: `url(${myvote20.src})` }} />
+            <div
+              style={{ backgroundImage: `url(${myvote20.politician_image})` }}
+            />
           </div>
-          <h3>{myvote20.name}</h3>
+          <h3>{myvote20.politician_name}</h3>
         </li>
       </ul>
-      
 
       <div>
-        <button onClick={handlePrev}>
-          {prev}
-        </button>
-          <button onClick={handleSubmit}>
-            회원가입
-          </button>
-        
+        <button onClick={handlePrev}>{prev}</button>
+        <button onClick={handleSubmit}>회원가입</button>
       </div>
     </div>
   );

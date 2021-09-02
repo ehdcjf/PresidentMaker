@@ -25,18 +25,32 @@ const StyledVote = styled.div`
   }
 `;
 
-const Vote = ({ title=null, value, onComplete, list, prev,next,handleNext,handlePrev }) => {
+const Vote = ({
+  title = null,
+  value,
+  onComplete,
+  list,
+  prev,
+  next,
+  handleNext,
+  handlePrev,
+}) => {
   const renderCandidate = () => {
     return list.map((v, i) => {
       return (
-        <li className={classNames({ isSelected: value == i })} key={i}>
+        <li
+          className={classNames({ isSelected: value == v.politician_id })}
+          key={i}
+        >
           <div
             onClick={() => {
-              onComplete(i);
+              onComplete(v.politician_id);
             }}
           >
-            <div style={{ backgroundImage: `url(${v.src})` }}></div>
-            <h3>{v.name}</h3>
+            <div
+              style={{ backgroundImage: `url(${v.politician_image})` }}
+            ></div>
+            <h3>{v.politician_name}</h3>
           </div>
         </li>
       );
@@ -44,19 +58,14 @@ const Vote = ({ title=null, value, onComplete, list, prev,next,handleNext,handle
   };
   return (
     <StyledVote>
-      {title!=null &&(<h2>{title}</h2>)}
+      {title != null && <h2>{title}</h2>}
       <ul>{renderCandidate()}</ul>
-      {title!=null &&(<div>
-        <button onClick={handlePrev}>
-          {prev}
-        </button>
-        {value !== null && (
-          <button onClick={handleNext}>
-            {next}
-          </button>
-        )}
-      </div>)}
-      
+      {title != null && (
+        <div>
+          <button onClick={handlePrev}>{prev}</button>
+          {value !== null && <button onClick={handleNext}>{next}</button>}
+        </div>
+      )}
     </StyledVote>
   );
 };

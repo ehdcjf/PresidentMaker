@@ -1,5 +1,6 @@
 import Head from "next/head";
 import { useState, useEffect } from "react";
+import { getLatestVote } from "../../components/api/vote";
 
 import useComplete from "../../hooks/useComplete";
 import Nickname from "../../components/user/Nickname";
@@ -9,10 +10,8 @@ import Birth from "../../components/user/Birth";
 import Area from "../../components/user/Area";
 import Vote from "../../components/user/Vote";
 import { list19 } from "../../public/list19";
-import { list20 } from "../../public/list20";
 import Result from "../../components/user/Result";
 import Router from "next/router";
-
 
 const Join = () => {
   const [kakao, setKakao] = useState();
@@ -25,21 +24,33 @@ const Join = () => {
   const vote20 = useComplete(null);
   const profil = useComplete("/defaultProfil.png");
   const [step, setStep] = useState(0);
+  const [voteId, setVoteId] = useState(null);
+  const [voteTitle, setVoteTitle] = useState(null);
+  const [voteContent, setVoteContent] = useState(null);
+  const [voteDate, setVoteDate] = useState(null);
+  const [latestVote, setLatestVote] = useState([]);
 
   useEffect(async () => {
     const code = new URL(window.location.href).searchParams.get("id");
     setKakao(code);
+
+    const result = await getLatestVote();
+    if (result.success) {
+      setVoteId(result.vote_id);
+      setVoteTitle(result.title);
+      setVoteContent(result.content);
+      setVoteDate(result.createdAt);
+      setLatestVote(result.list);
+    }
   }, []);
 
   const handleStep = (data) => {
     setStep(data);
   };
 
-  const handleCancle = ()=>{
-    Router.push('/')
-  }
-
-
+  const handleCancle = () => {
+    Router.push("/");
+  };
 
   return (
     <>
@@ -47,88 +58,122 @@ const Join = () => {
         <title>Join</title>
       </Head>
       {step === 0 && (
-        <Nickname 
-        {...nickname}
-        title={'닉네임'}
-        prev={'회원가입 취소'} 
-        next={'다음'}
-        handlePrev={handleCancle} 
-        handleNext={()=>{handleStep(step+1)}} />
-      )}
-      {step === 1 && (
-        <ProfilImage 
-        {...profil}
-        title={"프로필 사진"}
-        prev={'이전'}  
-        next={'다음'}  
-        handlePrev = {()=>{handleStep(step-1)}}
-        handleNext={()=>{handleStep(step+1)}} 
+        <Nickname
+          {...nickname}
+          title={"닉네임"}
+          prev={"회원가입 취소"}
+          next={"다음"}
+          handlePrev={handleCancle}
+          handleNext={() => {
+            handleStep(step + 1);
+          }}
         />
       )}
-      {step === 2 
-        && <Gender
-        {...gender} 
-        title={"성별"}
-        prev={'이전'}  
-        next={'다음'}  
-        handlePrev = {()=>{handleStep(step-1)}}
-        handleNext={()=>{handleStep(step+1)}} 
-        />}
-      {step === 3 
-      && <Birth 
-          {...birth} 
+      {step === 1 && (
+        <ProfilImage
+          {...profil}
+          title={"프로필 사진"}
+          prev={"이전"}
+          next={"다음"}
+          handlePrev={() => {
+            handleStep(step - 1);
+          }}
+          handleNext={() => {
+            handleStep(step + 1);
+          }}
+        />
+      )}
+      {step === 2 && (
+        <Gender
+          {...gender}
+          title={"성별"}
+          prev={"이전"}
+          next={"다음"}
+          handlePrev={() => {
+            handleStep(step - 1);
+          }}
+          handleNext={() => {
+            handleStep(step + 1);
+          }}
+        />
+      )}
+      {step === 3 && (
+        <Birth
+          {...birth}
           title={"출생 연도"}
-          prev={'이전'}  
-          next={'다음'}  
-          handlePrev = {()=>{handleStep(step-1)}}
-          handleNext={()=>{handleStep(step+1)}} 
-        />}
-      {step === 4 
-      && <Area 
-      {...hometown}  
-      title={"고향"}
-      prev={'이전'}  
-      next={'다음'}  
-      handlePrev = {()=>{handleStep(step-1)}}
-      handleNext={()=>{handleStep(step+1)}} 
-      />}
+          prev={"이전"}
+          next={"다음"}
+          handlePrev={() => {
+            handleStep(step - 1);
+          }}
+          handleNext={() => {
+            handleStep(step + 1);
+          }}
+        />
+      )}
+      {step === 4 && (
+        <Area
+          {...hometown}
+          title={"고향"}
+          prev={"이전"}
+          next={"다음"}
+          handlePrev={() => {
+            handleStep(step - 1);
+          }}
+          handleNext={() => {
+            handleStep(step + 1);
+          }}
+        />
+      )}
       {step === 5 && (
         <Area
-        {...residence}
-        title={"거주지"}
-        prev={'이전'}  
-        next={'다음'}  
-        handlePrev = {()=>{handleStep(step-1)}}
-        handleNext={()=>{handleStep(step+1)}} 
-          />
+          {...residence}
+          title={"거주지"}
+          prev={"이전"}
+          next={"다음"}
+          handlePrev={() => {
+            handleStep(step - 1);
+          }}
+          handleNext={() => {
+            handleStep(step + 1);
+          }}
+        />
       )}
       {step === 6 && (
         <Vote
           {...vote19}
           title={"19대 대선 지지 후보"}
           list={list19}
-          prev={'이전'}  
-        next={'다음'}  
-        handlePrev = {()=>{handleStep(step-1)}}
-        handleNext={()=>{handleStep(step+1)}} 
+          prev={"이전"}
+          next={"다음"}
+          handlePrev={() => {
+            handleStep(step - 1);
+          }}
+          handleNext={() => {
+            handleStep(step + 1);
+          }}
         />
       )}
       {step === 7 && (
         <Vote
           {...vote20}
-          title={"20대 대선 지지 후보"}
-          list={list20}
-          prev={'이전'}  
-        next={'다음'}  
-        handlePrev = {()=>{handleStep(step-1)}}
-        handleNext={()=>{handleStep(step+1)}} 
+          title={voteTitle}
+          list={latestVote}
+          prev={"이전"}
+          next={"다음"}
+          handlePrev={() => {
+            handleStep(step - 1);
+          }}
+          handleNext={() => {
+            handleStep(step + 1);
+          }}
         />
       )}
       {step === 8 && (
         <Result
           kakao={kakao}
           list19={list19}
-          list20={list20}
+          list20={latestVote}
           nickname={nickname}
           gender={gender}
           birth={birth}
@@ -137,8 +182,11 @@ const Join = () => {
           vote19={vote19}
           vote20={vote20}
           profil={profil}
-          prev={'이전'}  
-          handlePrev = {()=>{handleStep(step-1)}}
+          voteId={voteId}
+          prev={"이전"}
+          handlePrev={() => {
+            handleStep(step - 1);
+          }}
         />
       )}
     </>

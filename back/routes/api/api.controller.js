@@ -58,19 +58,19 @@ const get_code = async (req, res) => {
       const params = [kakao_code];
 
       const [result] = await connection.execute(sql, params)
-      if(result[0].count==0){
+      if (result[0].count == 0) {
         const join = {
           success: false,
           kakao_code: kakao_code,
         }
         res.json(join)
-      }else{
+      } else {
         const access_token = createToken(result[0].user_id)
         const data = {
           success: true,
           nickname: result[0].nickname,
           image: result[0].image,
-          user_id:result[0].user_id,
+          user_id: result[0].user_id,
         }
         res.cookie('AccessToken', access_token, { httpOnly: true, secure: true })
         res.json(data);
@@ -78,11 +78,11 @@ const get_code = async (req, res) => {
     } catch (error) {//가입되지 않은 경우
       console.log('Query Error');
       console.log(error)
-    const data = {
-      success: false,
-      error: error
-    }
-    res.json(data)
+      const data = {
+        success: false,
+        error: error
+      }
+      res.json(data)
     }
   } catch (error) {
     console.log('DB Error')

@@ -9,12 +9,17 @@ const createUser = async (req, res) => {
     try {
         connection = await pool.getConnection(async conn => conn);
         try {
-            const { kakao, nickname, hometown, residence, gender, birth, image, vote20, vote19 } = req.body;
-            const sql = `INSERT INTO USER (kakao_code,nickname,hometown,residence,gender,birth,image,vote_19th,vote_20th) 
-            values(?,?,?,?,?,?,?,?,?)`
-            const params = [kakao, nickname, hometown, residence, gender, birth, image, vote20, vote19]
+            const { kakao, nickname, hometown, residence, gender, birth, image, vote19, vote20, vote_id } = req.body;
+            const sql = `INSERT INTO USER (kakao_code,nickname,hometown,residence,gender,birth,image,vote_19th) 
+            values(?,?,?,?,?,?,?,?)`
+            const params = [kakao, nickname, hometown, residence, gender, birth, image, vote19]
             const [result] = await connection.execute(sql, params)
             const user_id = result.insertId;
+
+            const voteSQL = `INSERT INTO vote_result (user_id,vote_id,politician_id) value (?,?,?)`;
+            const voteParams = [user_id, vote_id, vote20]
+            const [vote] = await connection.execute(voteSQL, voteParams)
+
             const access_token = createToken(user_id)
             const data = {
                 success: true,
@@ -29,7 +34,7 @@ const createUser = async (req, res) => {
             console.log(error)
             const data = {
                 success: false,
-                error: error,
+                error: error.sqlMessage,
             }
             res.json(data)
         }
@@ -38,7 +43,7 @@ const createUser = async (req, res) => {
         console.log(error)
         const data = {
             success: false,
-            error: error,
+            error: error.sqlMessage,
         }
         res.json(data)
     } finally {
@@ -59,7 +64,7 @@ const showUser = async (req, res) => {
     try {
         connection = await pool.getConnection(async conn => conn);
         try {
-            const sql = `SELECT image,nickname,gender,birth,hometown,residence,vote_19th,vote_20th,user.show,user.state FROM user WHERE user_id = ?`
+            const sql = `SELECT image,nickname,gender,birth,hometown,residence,vote_19th,user.show,user.state FROM user WHERE user_id = ?`
             const params = [id]
             const result = await connection.execute(sql, params)
             if (result[0][0].state == 1) {//탈퇴했을경우
@@ -111,7 +116,7 @@ const showUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
     const { id } = req.query;
-    const { nickname, birth, gender, hometown, residence, image, vote19, vote20, show } = req.body;
+    const { nickname, residence, image, show } = req.body;
     const AccessToken = req.cookies.AccessToken;
     if (AccessToken == undefined) {
         const data = {
@@ -134,16 +139,11 @@ const updateUser = async (req, res) => {
                 try {
                     const sql = `UPDATE user 
                                     SET nickname=?,
-                                    birth=?,
-                                    gender=?,
-                                    hometown=?,
                                     residence=?,
                                     image=?,
-                                    vote_19th=?,
-                                    vote_20th=?,
                                     user.show = ?
                                     WHERE user_id=? ;`
-                    const params = [nickname, birth, gender, hometown, residence, image, vote19, vote20, show, id]
+                    const params = [nickname, residence, image, show, id]
                     const [result] = await connection.execute(sql, params)
                     const data = {
                         success: true,
@@ -252,7 +252,10 @@ const logoutUser = (req, res) => {
 const nicknameCheck = async (req, res) => {
     const nickname = req.params.nickname;
     const AccessToken = req.cookies.AccessToken;
-    const client = jwtId(AccessToken)
+    let client = null;
+    if (AccessToken != undefined) {
+        client = jwtId(AccessToken)
+    }
     let connection;
     try {
         connection = await pool.getConnection(async conn => conn);
