@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
+const nunjucks = require('nunjucks')
 
 
 const cors = require('cors')
@@ -10,6 +11,10 @@ const cookieParser = require('cookie-parser')
 const axios = require('axios');
 
 
+app.set('view engine', 'html')
+nunjucks.configure('views', {
+  express: app
+})
 
 
 

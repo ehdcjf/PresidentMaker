@@ -6,11 +6,13 @@ import Router from "next/router";
 const Election = () => {
   const [list, setList] = useState([]);
   const [name, setName] = useState("");
+  const [content, setContent] = useState("");
   const [candidate, setCandidate] = useState("");
+  const type = "politician";
 
   useEffect(async () => {
     const data = {
-      type: "politician",
+      type: type,
     };
     const result = await showRequest(data);
     setList(result);
@@ -18,6 +20,9 @@ const Election = () => {
 
   const handleName = (e) => {
     setName(e.target.value);
+  };
+  const handleContent = (e) => {
+    setContent(e.target.value);
   };
   const handleCandidate = (e) => {
     setCandidate(e.target.value);
@@ -28,7 +33,9 @@ const Election = () => {
 
     const data = {
       name: name,
+      content:content,
       candidate: candidate,
+
     };
     const result = await createElection(data);
     console.log(result);
@@ -40,10 +47,10 @@ const Election = () => {
     return list.map((v, i) => {
       return (
         <tr key={i}>
-          <td>{v.idx}</td>
-          <td>{v.name}</td>
+          <td>{v[`${type}_id`]}</td>
+          <td>{v[`${type}_name`]}</td>
           <td>
-            <img src={v.image} style={{ width: 200, height: 150 }} alt="" />
+            <img src={v[`${type}_image`]} style={{ width: 400, height: 300 }} alt="" />
           </td>
         </tr>
       );
@@ -68,11 +75,18 @@ const Election = () => {
       <div> 정치인 인덱스로 투표만들기 </div>
 
       <form onSubmit={handleSubmit}>
-        투표이름:
+        투표 Title:
         <input
           type="text"
           onChange={handleName}
           placeholder="투표제목을 입력해주세요"
+        />
+        <br />
+        투표 갱신내역:
+        <input
+          type="text"
+          onChange={handleContent}
+          placeholder="투표갱신내역을 입력해주세요"
         />
         <br />
         후보: (인덱스로 표현) ex)1,3,5,6,2

@@ -7,7 +7,7 @@ const createPolitician = async (req, res) => {
   try {
     connection = await pool.getConnection(async conn => conn);
     try {
-      const sql = `INSERT INTO politician (name,image) values(?,?)`
+      const sql = `INSERT INTO politician (politician_name,politician_image) values(?,?)`
       const params = [name, image]
       const [rows] = await connection.execute(sql, params)
       console.log(rows);
@@ -55,7 +55,7 @@ const createParty = async (req, res) => {
 }
 
 const createElection = async (req, res) => {
-  const { name, candidate } = req.body;
+  const { name, candidate ,content} = req.body;
 
   const table = candidate.split(',');
 
@@ -63,12 +63,12 @@ const createElection = async (req, res) => {
   try {
     connection = await pool.getConnection(async conn => conn);
     try {
-      const createEelectionSql = `INSERT INTO vote_title (name) values(?)`
-      const params = [name,]
+      const createEelectionSql = `INSERT INTO vote_title (title,content) values(?,?)`
+      const params = [name,content]
       const [rows] = await connection.execute(createEelectionSql, params)
       const tableIndex = rows.insertId
 
-      const maketableSql = `INSERT INTO vote_info (vote_idx,politician_idx) value(?,?)`
+      const maketableSql = `INSERT INTO vote_info (vote_id,politician_id) value(?,?)`
       table.forEach(async (ele) => {
         const man = ele;
         // const party = ele[1];

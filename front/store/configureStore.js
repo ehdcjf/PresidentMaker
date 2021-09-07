@@ -50,12 +50,12 @@ const makeStore = ({ isServer }) => {
     return createStore(reducer, enhancer);
   } else {
     const { persistStore, persistReducer } = require("redux-persist");
-    const storage = require("redux-persist/lib/storage").default;
+    const storage = require("redux-persist/lib/storage/session").default;
 
     const persistConfig = {
       key: "root",
       storage,
-      whitelist: ["article", "board", "user"],
+      whitelist: [ "user"], //"article", "board",
       blacklist:['comment']
     };
 

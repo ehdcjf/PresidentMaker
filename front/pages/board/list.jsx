@@ -25,6 +25,7 @@ const List = () => {
     };
 
     const result = await showList(data);
+    console.log(result)
     if(result.success){
       dispatch(ShowListAction(result));
     }else{

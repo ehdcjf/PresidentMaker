@@ -21,9 +21,9 @@ const list = () => {
         <div key={i}>
           <Link
             href="/admin/create/election/:id"
-            as={`/admin/create/election/${v.idx}`}
+            as={`/admin/create/election/${v.vote_id}`}
           >
-            <h1>{v.name}</h1>
+            <h1>{v.title}</h1>
           </Link>
         </div>
       );

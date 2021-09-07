@@ -22,9 +22,9 @@ const show = () => {
     return list.map((v, i) => {
       return (
         <tr key={i}>
-          <td>{v.name}</td>
+          <td>{v[`${type}_name`]}</td>
           <td>
-            <img src={v.image} style={{ width: 400, height: 300 }} alt="" />
+            <img src={v[`${type}_image`]} style={{ width: 400, height: 300 }} alt="" />
           </td>
         </tr>
       );

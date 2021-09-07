@@ -33,7 +33,7 @@ export const createRequest = async (data) => {
 };
 
 export const createElection = async (data) => {
-  const { name, candidate } = data;
+  const { name, candidate,content } = data;
   let url = `http://localhost:3002/admin/election/table`;
   let options = {
     method: "POST",
@@ -45,6 +45,7 @@ export const createElection = async (data) => {
     body: JSON.stringify({
       name,
       candidate,
+      content,
     }),
   };
 

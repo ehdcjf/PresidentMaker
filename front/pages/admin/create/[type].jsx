@@ -33,7 +33,7 @@ const create = () => {
     };
     const result = await createRequest(data);
     console.log(result);
-    // await dispatch(UserLoginAction(result));
+
     Router.push(`/admin/show/${type}`);
   };
 
