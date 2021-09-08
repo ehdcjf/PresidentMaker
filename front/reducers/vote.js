@@ -1,6 +1,21 @@
 const initialState = {
-  gender:null,
-  
+  gender: 0,
+  minage: 0,
+  maxage: 120,
+  hometown: 0,
+  residence: 0,
+  vote19: 0,
+  voteData: {
+    labels: [],
+    datasets: [
+      {
+        data: [],
+        backgroundColor: [],
+        hoverBackgroundColor: [],
+      }
+    ]
+  }
+
 }
 
 
@@ -26,8 +41,8 @@ export const UserLoginAction = (data) => {
 
 export const UserUpdateAction = (data) => {
   return {
-    type:USER_UPDATE_ACTION,
-    data:data,
+    type: USER_UPDATE_ACTION,
+    data: data,
   }
 }
 
@@ -74,7 +89,7 @@ const reducer = (state = initialState, action) => {
         IsLogin: true,
         nickname: action.data.nickname,
         image: action.data.image,
-        user_id:action.data.user_id,
+        user_id: action.data.user_id,
         loadding: false,
       }
     case USER_LOGIN_ERROR:
@@ -90,7 +105,7 @@ const reducer = (state = initialState, action) => {
     case USER_UPDATE_ACTION:
       return {
         ...state,
-        nickname:action.data.nickname,
+        nickname: action.data.nickname,
         image: action.data.image,
       }
     default:
