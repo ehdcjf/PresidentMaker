@@ -35,6 +35,8 @@ const Vote = ({
   handleNext,
   handlePrev,
 }) => {
+
+  console.log(list)
   const renderCandidate = () => {
     return list.map((v, i) => {
       return (

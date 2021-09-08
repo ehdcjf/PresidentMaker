@@ -2,10 +2,6 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/admin/show/[type]": "pages/admin/show/[type].js",
-  "/admin/create/election": "pages/admin/create/election.js",
-  "/admin/show/election/list": "pages/admin/show/election/list.js",
-  "/next/dist/pages/_error": "pages/next/dist/pages/_error.js",
-  "/": "pages/index.js",
-  "/admin/main": "pages/admin/main.js"
+  "/board/list": "pages/board/list.js",
+  "/vote": "pages/vote.js"
 }

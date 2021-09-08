@@ -127,8 +127,8 @@ const View = () => {
           <div className="article_info_left">
             <span className="writer">
               <Link
-                href="/user/info/:[user_id]"
-                as={`/user/info/${article.user_id}`}
+                href="/user/s:[user_id]"
+                as={`/user/${article.writer}`}
               >
                 <a>{article.nickname}</a>
               </Link>

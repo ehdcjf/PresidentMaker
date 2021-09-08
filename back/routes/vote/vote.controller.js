@@ -27,21 +27,38 @@ const pool = require('../../config/dbconnection');
 
 const showResult = async (req, res) => {
   const where = makeWhereVerse(req.query);
-  const sql = `SELECT vote_20th, COUNT(politician_id) as count 
-              FROM user ${where} 
-              GROUP BY politician_id 
-              ORDER BY count DESC;
-              `
+
+
   let connection;
   try {
     connection = await pool.getConnection(async conn => conn);
     try {
+      const sql = `
+      SELECT politician_id, COUNT(politician_id) AS count,politician.politician_name,politician.politician_color 
+      FROM (SELECT * FROM user ${where} ) as user
+      LEFT JOIN ( SELECT * 
+                  FROM vote_result
+                  WHERE (user_id, vote_id) 
+                  in (SELECT 
+                            user_id, MAX(vote_id) as vote_id 
+                      FROM 
+                            vote_result 
+                      GROUP BY user_id)
+                ) AS vote
+       ON user.user_id = vote.user_id
+       NATURAL JOIN politician
+       GROUP BY politician_id ORDER BY count DESC;
+
+    
+    `
 
       const [result,] = await connection.execute(sql, [])
-      const label = result.map(v => v.vote_20th);
+      console.log(result)
+      const label = result.map(v => v.politician_name);
       const data = result.map(v => v.count);
+      const color =result.map(v => v.politician_color);
       // const sum = data.reduce(reducer)
-      res.json({ success: true, label: label, data: data });
+      res.json({ success: true, label: label, data: data ,color:color});
     } catch (error) {
       console.log('Query Error');
       console.log(error)
@@ -117,26 +134,26 @@ module.exports = {
 
 
 const makeWhereVerse = (query) => {
-  const { gender = null, minage = 0, maxage = 120 } = query;
-  const hometown = parseInt(query.hometown, 16) || null;
-  const residence = parseInt(query.residence, 16) || null;
-  const vote19 = parseInt(query.vote19, 16) || null;
+  const  {gender,hometown,residence,vote19} = query;
+  const minage = (query.minage=='null') ? 0 : parsInt(query.minage);
+  const maxage = (query.maxage=='null') ? 120 : parsInt(query.maxage);
+ 
 
   let cnt = 0;
 
 
   let where = 'WHERE ';
-  if (gender != null) {
+  if (gender != 'null') {
     where += `gender=${gender} `
     cnt++;
   }
-  if (maxage != null && minage != null) {
+  if (maxage != 'null' && minage != 'null') {
     if (cnt > 0) { where += 'AND '; cnt++; }
     const now = Number(new Date().getFullYear() + 1);
-    where += `birth between (${now - maxage} AND ${now - minage}) `
+    where += `birth between ${now - maxage} AND ${now - minage} `
   }
 
-  if (hometown != null) {
+  if (hometown != 'null') {
     if (cnt > 0) { where += 'AND '; cnt++; }
     where += '('
     let homeCnt = 0;
@@ -149,7 +166,7 @@ const makeWhereVerse = (query) => {
     where += ') '
   }
 
-  if (residence != null) {
+  if (residence != 'null') {
     if (cnt > 0) { where += 'AND '; cnt++; }
     where += '('
     let residenceCnt = 0;
@@ -162,7 +179,7 @@ const makeWhereVerse = (query) => {
     where += ') '
   }
 
-  if (vote19 != null) {
+  if (vote19 != 'null') {
     if (cnt > 0) { where += 'AND '; cnt++; }
     where += '('
     let vote19Cnt = 0;
@@ -175,6 +192,6 @@ const makeWhereVerse = (query) => {
     where += ') '
   }
 
-
+  return where;
 
 }

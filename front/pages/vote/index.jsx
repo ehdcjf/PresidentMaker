@@ -4,9 +4,6 @@ import { useEffect, useState } from 'react';
 import { showResult } from '../../components/api/vote';
 import { Doughnut } from 'react-chartjs-2';
 import { list19 } from "../../public/list19";
-import { list20 } from "../../public/list20";
-
-
 
 
 const VotePage = () => {
@@ -51,16 +48,16 @@ const VotePage = () => {
     };
 
     const result = await showResult(query);
-    const newLabel = result.label.map(v=>list20[v].name);
-
     if(result.success){
+
       setData({
         ...data,
-        labels:newLabel,
+        labels:result.label,
         datasets:[
           {
           ...data.datasets[0],
           data:result.data,
+          color:result.color,
           }
         ]
       });

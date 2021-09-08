@@ -75,7 +75,7 @@ const get_code = async (req, res) => {
         res.cookie('AccessToken', access_token, { httpOnly: true, secure: true })
         res.json(data);
       }
-    } catch (error) {//가입되지 않은 경우
+    } catch (error) {
       console.log('Query Error');
       console.log(error)
       const data = {

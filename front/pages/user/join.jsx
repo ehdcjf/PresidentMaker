@@ -183,6 +183,10 @@ const Join = () => {
           vote20={vote20}
           profil={profil}
           voteId={voteId}
+          latestVote={latestVote}
+          voteTitle={voteTitle}
+          voteContent={voteContent}
+          voteDate={voteDate}
           prev={"이전"}
           handlePrev={() => {
             handleStep(step - 1);

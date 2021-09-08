@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { korea } from "../../public/korea";
 import { list19 } from "../../public/list19";
-import { list20 } from "../../public/list20";
+
 import { joinRequest } from "../../components/api/joinRequest";
 import Router from "next/router";
 import { useDispatch } from "react-redux";
@@ -32,10 +32,14 @@ const Result = ({
   vote20,
   profil,
   voteId,
+  latestVote,
+  voteTitle,
+  voteContent,
+  voteDate,
 }) => {
   const dispatch = useDispatch();
-  const myvote19 = list19.filter((v) => v.politician_id == vote19.value);
-  const myvote20 = list20.filter((v) => v.politician_id == vote20.value);
+  const myvote19 = list19.filter((v) => v.politician_id == vote19.value)[0];
+  const myvote20 = latestVote.filter((v) => v.politician_id == vote20.value)[0];
   const myhometown = korea[hometown.value];
   const myresidence = korea[residence.value];
 
@@ -75,7 +79,7 @@ const Result = ({
         <li>
           <span>성별</span>
           <div>
-            <span>{gender.value}</span>
+            {gender.value ? <span>남자</span> :<span>여자</span>}
           </div>
         </li>
         <li>
@@ -106,7 +110,9 @@ const Result = ({
           <h3>{myvote19.politician_name}</h3>
         </li>
         <li>
-          <span>20대 대선 지지 후보</span>
+          <span>{voteTitle}</span>
+          <span>{voteContent}</span>
+          <span>{voteDate}</span>
           <div>
             <div
               style={{ backgroundImage: `url(${myvote20.politician_image})` }}
