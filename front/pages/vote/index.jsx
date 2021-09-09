@@ -1,11 +1,15 @@
-import SearchForm from "../../components/vote/SearchForm";
 import useComplete from "../../hooks/useComplete";
 import { useEffect, useState } from "react";
 import { showResult } from "../../components/api/vote";
 import { Doughnut } from "react-chartjs-2";
 import { list19 } from "../../public/list19";
 import { useDispatch, useSelector } from "react-redux";
-
+import SearchForm from "../../components/vote/SearchForm";
+import GenderSelect from "../../components/vote/GenderSelector";
+import DoubleRangeSlider from '../../components/vote/DoubleRangeSlider'
+import AreaSelector from '../../components/vote/AreaSelector'
+import VoteSelector from '../../components/vote/VoteSelector'
+import {UpdateVote} from '../../reducers/vote'
 const VotePage = () => {
   const dispatch = useDispatch();
   const vote = useSelector((state) => state.vote);
@@ -16,33 +20,23 @@ const VotePage = () => {
   const residence = useComplete(null);
   const vote19 = useComplete(null);
 
-  const [voteData, setData] = useState({
-    labels: ["Red", "Green", "Yellow"],
-    datasets: [
-      {
-        data: [300, 50, 100],
-        backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"],
-        hoverBackgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"],
-      },
-    ],
-  });
+  // const [voteData, setData] = useState({
+  //   labels: ["Red", "Green", "Yellow"],
+  //   datasets: [
+  //     {
+  //       data: [300, 50, 100],
+  //       backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"],
+  //       hoverBackgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"],
+  //     },
+  //   ],
+  // });
 
   useEffect(async () => {
+    console.log('x')
     const data = { ...vote };
     const result = await showResult(data);
     if (result.success) {
-      setData({
-        ...voteData,
-        labels: result.label,
-        datasets: [
-          {
-            ...voteData.datasets[0],
-            data: result.data,
-            backgroundColor: result.color,
-            hoverBackgroundColor: result.color,
-          },
-        ],
-      });
+      dispatch(UpdateVote(result))
     } else {
       alert(result.error);
     }
@@ -55,13 +49,21 @@ const VotePage = () => {
   //   },
   //   position: "top", //label를 넣어주지 않으면 position이 먹히지 않음
   // };
-
+  if(vote.loading) return <div>로딩중</div>
   return (
     <>
       <div>
-        <SearchForm></SearchForm>
+        <SearchForm>
+          <GenderSelect {...gender}/>
+          <DoubleRangeSlider minage={minage.value} maxage={maxage.value} handleMin={minage.onComplete} handleMax={maxage.onComplete}/>
+          <AreaSelector {...hometown}/>
+          <AreaSelector {...residence}/>
+          <VoteSelector {...vote19}/>
+
+          
+        </SearchForm>
         <div style={{ width: "500px", height: "500px" }}>
-          <Doughnut data={voteData} />
+          <Doughnut data={vote.voteData} />
         </div>
       </div>
     </>

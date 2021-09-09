@@ -1,11 +1,10 @@
 
 
 
-
-const SearchForm = () => {
+const SearchForm = ({ children }) => {
   return (
     <div>
-      Enter
+      { children }
     </div>
   );
 }

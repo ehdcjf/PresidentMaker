@@ -7,8 +7,8 @@ import article from './article'
 import comment from './comment'
 import vote from './vote'
 
-// import { persistReuder } from 'redux-persist'
-// import storage from "redux-persist/lib/storage"
+import { persistReuder } from 'redux-persist'
+import storage from "redux-persist/lib/storage"
 
 const reducer = combineReducers({
   index: (state = {}, action) => {

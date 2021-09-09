@@ -1,4 +1,6 @@
 const initialState = {
+  loading:false,
+  error:false,
   gender: 0,
   minage: 0,
   maxage: 120,
@@ -18,96 +20,78 @@ const initialState = {
 
 }
 
+const UPDATE_VOTE_REQUEST = 'UPDATE_VOTE_REQUEST'
+const UPDATE_VOTE_SUCCESS = 'UPDATE_VOTE_SUCCESS'
+const UPDATE_VOTE_ERROR = 'UPDATE_VOTE_ERROR'
 
-const USER_UPDATE_ACTION = 'USER_UPDATE_ACTION'
-const USER_LOGIN_REQUEST = 'USER_LOGIN_REQUEST'
-const USER_LOGIN_SUCCESS = 'USER_LOGIN_SUCCESS'
-const USER_LOGIN_ERROR = 'USER_LOGIN_ERROR'
-const USER_LOGOUT = 'USER_LOGOUT'
-
-export const UserLoginAction = (data) => {
-  return async (dispatch) => {
-    dispatch(UserLoginRequest());
-    try {
-
-      data.success === true
-        ? dispatch(UserLoginSuccess(data))
-        : dispatch(UserLoginError())
-    } catch (e) {
-      dispatch(UserLoginError())
+export const UpdateVote = (data)=>{
+  return (dispatch)=>{
+    dispatch(UpdateVoteRequest());
+    try{
+      data.success == true
+      ? dispatch(UpdateVoteSuccess(data))
+      :dispatch(UpdateVoteError())
+    }catch(e){
+      dispatch(UpdateVoteError())
     }
   }
 }
 
-export const UserUpdateAction = (data) => {
+export const UpdateVoteRequest = () => {
   return {
-    type: USER_UPDATE_ACTION,
+    type: UPDATE_VOTE_REQUEST,
+  }
+}
+export const UpdateVoteSuccess = (data) => {
+
+  return {
+    type: UPDATE_VOTE_SUCCESS,
     data: data,
   }
 }
-
-
-export const UserLoginRequest = () => {
+export const UpdateVoteError = () => {
   return {
-    type: USER_LOGIN_REQUEST,
-
-  }
-}
-export const UserLoginSuccess = (data) => {
-  return {
-    type: USER_LOGIN_SUCCESS,
-    data: data,
-
-  }
-}
-export const UserLoginError = () => {
-  return {
-    type: USER_LOGIN_ERROR,
-
+    type: UPDATE_VOTE_ERROR,
   }
 }
 
 
-export const UserLogoutAction = () => {
-  return {
-    type: USER_LOGOUT,
-  }
-}
+
+
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
-
-    case USER_LOGIN_REQUEST:
+    case UPDATE_VOTE_REQUEST:
       return {
         ...state,
         loadding: true,
 
       }
-    case USER_LOGIN_SUCCESS:
+    case UPDATE_VOTE_SUCCESS:
+      console.log('xxxxxxx')
       return {
         ...state,
-        IsLogin: true,
-        nickname: action.data.nickname,
-        image: action.data.image,
-        user_id: action.data.user_id,
+        voteData:{
+          ...state.voteData,
+          labels: [...action.data.label],
+          datasets: [
+            {
+              ...state.voteData.datasets[0],
+              data: [...action.data.data],
+              backgroundColor: [...action.data.color],
+              hoverBackgroundColor: [...action.data.color],
+            },
+          ],
+        },
         loadding: false,
       }
-    case USER_LOGIN_ERROR:
+    case UPDATE_VOTE_ERROR:
       return {
         ...state,
         loadding: false,
+        error:true
       }
-    case USER_LOGOUT:
-      return {
-        ...state,
-        ...initialState,
-      }
-    case USER_UPDATE_ACTION:
-      return {
-        ...state,
-        nickname: action.data.nickname,
-        image: action.data.image,
-      }
+
     default:
       return state
   }

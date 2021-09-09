@@ -27,6 +27,7 @@ const pool = require('../../config/dbconnection');
 
 const showResult = async (req, res) => {
   const where = makeWhereVerse(req.query);
+  console.log(where);
 
 
   let connection;
@@ -134,28 +135,24 @@ module.exports = {
 
 
 const makeWhereVerse = (query) => {
-  const  {gender,hometown,residence,vote19} = query;
-  const minage = (query.minage=='null') ? 0 : parsInt(query.minage);
-  const maxage = (query.maxage=='null') ? 120 : parsInt(query.maxage);
- 
-
-  let cnt = 0;
-
+  const gender = parseInt(query.gender)
+  const maxage = parseInt(query.maxage)
+  const minage = parseInt(query.minage)
+  const hometown = parseInt(query.hometown)
+  const residence = parseInt(query.residence)
+  const vote19 = parseInt(query.vote19)
 
   let where = 'WHERE ';
-  if (gender != 'null') {
-    where += `gender=${gender} `
-    cnt++;
-  }
-  if (maxage != 'null' && minage != 'null') {
-    if (cnt > 0) { where += 'AND '; cnt++; }
-    const now = Number(new Date().getFullYear() + 1);
-    where += `birth between ${now - maxage} AND ${now - minage} `
+
+  const now = Number(new Date().getFullYear() + 1);
+  where += `birth between ${now - maxage} AND ${now - minage} `
+
+  if (gender ==1 || gender==2) {
+    where += `AND ( gender=${gender}) `
   }
 
-  if (hometown != 'null') {
-    if (cnt > 0) { where += 'AND '; cnt++; }
-    where += '('
+  if (hometown > 0 ) {
+    where += 'AND ('
     let homeCnt = 0;
     for (let i = 0; i < 16; i++) {
       if (hometown & (1 << i)) {
@@ -166,9 +163,8 @@ const makeWhereVerse = (query) => {
     where += ') '
   }
 
-  if (residence != 'null') {
-    if (cnt > 0) { where += 'AND '; cnt++; }
-    where += '('
+  if (residence >0) {
+    where += 'AND ('
     let residenceCnt = 0;
     for (let i = 0; i < 16; i++) {
       if (residence & (1 << i)) {
@@ -179,8 +175,7 @@ const makeWhereVerse = (query) => {
     where += ') '
   }
 
-  if (vote19 != 'null') {
-    if (cnt > 0) { where += 'AND '; cnt++; }
+  if (vote19 >0) {
     where += '('
     let vote19Cnt = 0;
     for (let i = 0; i < 14; i++) {
