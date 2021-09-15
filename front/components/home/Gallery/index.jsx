@@ -77,17 +77,25 @@ const StyledGalleryItem = styled.div`
     transform: translateX(-20%);
     color: #dbd8d6;
 
+    .gallery_order{
+      line-height: 3vw;
+      font-family: '국립박물관문화재단클래식B';
+      font-weight: 600;
+      font-size: 3vw;
+      margin-bottom: 4vh;
+    }
+
     .gallery_title {
       line-height: 6vw;
-      font-family: "Bai Jamjuree";
+      font-family: 'GowunBatang-Bold';
       font-weight: 600;
       font-size: 6vw;
-      margin-bottom: 2vh;
+      margin-bottom: 6vh;
     }
     .gallery_term {
       position: relative;
       line-height: 5vw;
-      font-family: "Bodoni Moda";
+      font-family: 'GowunBatang-Bold';
       color: transparent;
       font-weight: 400;
       font-size: 5vw;
@@ -109,7 +117,7 @@ const StyledGalleryItem = styled.div`
   }
 `;
 
-const GalleryItem = ({ src, title, term, updateActiveImage, index }) => {
+const GalleryItem = ({ src, title, term, updateActiveImage, index,order }) => {
   const ref = useRef(null);
 
   const onScreen = useOnScreen(ref, 0.5);
@@ -127,6 +135,7 @@ const GalleryItem = ({ src, title, term, updateActiveImage, index }) => {
       <div />
       <div className="gallery_item">
         <div className="gallery_info">
+          <h3 className='gallery_order'>{order}</h3>
           <h1 className="gallery_title">{title}</h1>
           <h6 className="gallery_term">{term}</h6>
         </div>

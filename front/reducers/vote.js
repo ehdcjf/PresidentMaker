@@ -68,7 +68,6 @@ const reducer = (state = initialState, action) => {
 
       }
     case UPDATE_VOTE_SUCCESS:
-      console.log('xxxxxxx')
       return {
         ...state,
         voteData:{
@@ -83,6 +82,7 @@ const reducer = (state = initialState, action) => {
             },
           ],
         },
+        error:false,
         loadding: false,
       }
     case UPDATE_VOTE_ERROR:

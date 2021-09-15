@@ -6,45 +6,37 @@ import { list19 } from "../../public/list19";
 import { useDispatch, useSelector } from "react-redux";
 import SearchForm from "../../components/vote/SearchForm";
 import GenderSelect from "../../components/vote/GenderSelector";
-import DoubleRangeSlider from '../../components/vote/DoubleRangeSlider'
+import DoubleRangeSlider2 from '../../components/vote/DoubleRangeSlider2'
 import AreaSelector from '../../components/vote/AreaSelector'
 import VoteSelector from '../../components/vote/VoteSelector'
-import {UpdateVote} from '../../reducers/vote'
+import {UpdateVote, UpdateVoteError} from '../../reducers/vote'
+import useComplete from "../../hooks/useComplete"
+
 const VotePage = () => {
   const dispatch = useDispatch();
   const vote = useSelector((state) => state.vote);
   const gender = useBitControll(0);
-  const minage = useBitControll(0);
-  const maxage = useBitControll(120);
+  const minage = useComplete(0);
+  const maxage = useComplete(120);
   const hometown = useBitControll(0);
   const residence = useBitControll(0);
   const vote19 = useBitControll(0);
-
-  // const [voteData, setData] = useState({
-  //   labels: ["Red", "Green", "Yellow"],
-  //   datasets: [
-  //     {
-  //       data: [300, 50, 100],
-  //       backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"],
-  //       hoverBackgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"],
-  //     },
-  //   ],
-  // });
 
   useEffect(async () => {
     const data = { ...vote };
     const result = await showResult(data);
     if (result.success) {
       dispatch(UpdateVote(result))
-      gender.onBitChange(data.gender);
-      minage.onBitChange(data.minage);
-      maxage.onBitChange(data.maxage);
-      hometown.onBitChange(data.hometown);
-      residence.onBitChange(data.residence);
-      vote19.onBitChange(data.vote19);
+      gender.onInit(data.gender);
+      minage.onComplete(data.minage);
+      maxage.onComplete(data.maxage);
+      hometown.onInit(data.hometown);
+      residence.onInit(data.residence);
+      vote19.onInit(data.vote19);
     } else {
       alert(result.error);
     }
+    console.log(data)
   }, []);
 
   // const legend = {
@@ -69,7 +61,12 @@ const VotePage = () => {
     if (result.success) {
       dispatch(UpdateVote(result))
     } else {
-      alert(result.error);
+      if(result.error=='zero'){
+        dispatch(UpdateVoteError());
+
+      }else{
+        alert(result.error);
+      }
     }
  }
 
@@ -81,15 +78,21 @@ const VotePage = () => {
       <div>
         <SearchForm>
           <GenderSelect {...gender}/>
-          <DoubleRangeSlider minage={minage.value} maxage={maxage.value} handleMin={minage.onComplete} handleMax={maxage.onComplete}/>
+          <DoubleRangeSlider2 left={minage.value} right={maxage.value} handleLeft={minage.onComplete} handleRight={maxage.onComplete} min={0} max={120}/>
           <AreaSelector  title='고향' {...hometown}/>
           <AreaSelector title='거주지' {...residence}/>
           <VoteSelector {...vote19}/>
           <button onClick={handleSubmit}>검색</button>
         </SearchForm>
-        <div style={{ width: "500px", height: "500px" }}>
+        {!vote.error
+        ?<div style={{ width: "500px", height: "500px" }}>
           <Doughnut data={vote.voteData} />
         </div>
+        : <div>
+          조건을 만족하는 결과가 없습니다. 
+        </div>
+        }
+        
       </div>
     </>
   );

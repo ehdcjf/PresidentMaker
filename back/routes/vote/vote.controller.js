@@ -27,8 +27,7 @@ const pool = require('../../config/dbconnection');
 
 const showResult = async (req, res) => {
   const where = makeWhereVerse(req.query);
-  console.log(where);
-
+  console.log(where)
 
   let connection;
   try {
@@ -54,12 +53,14 @@ const showResult = async (req, res) => {
     `
 
       const [result,] = await connection.execute(sql, [])
-      console.log(result)
-      const label = result.map(v => v.politician_name);
-      const data = result.map(v => v.count);
-      const color =result.map(v => v.politician_color);
-      // const sum = data.reduce(reducer)
-      res.json({ success: true, label: label, data: data ,color:color});
+      if(result.length==0){
+        res.json({success:false,error:'zero'})
+      }else{
+        const label = result.map(v => v.politician_name);
+        const data = result.map(v => v.count);
+        const color =result.map(v => v.politician_color);
+        res.json({ success: true, label: label, data: data ,color:color});
+      }
     } catch (error) {
       console.log('Query Error');
       console.log(error)
@@ -135,6 +136,7 @@ module.exports = {
 
 
 const makeWhereVerse = (query) => {
+  console.log(query)
   const gender = parseInt(query.gender)
   const maxage = parseInt(query.maxage)
   const minage = parseInt(query.minage)
@@ -156,8 +158,9 @@ const makeWhereVerse = (query) => {
     let homeCnt = 0;
     for (let i = 0; i < 16; i++) {
       if (hometown & (1 << i)) {
-        if (homeCnt > 0) { where += 'AND '; homeCnt++; }
+        if (homeCnt > 0) { where += 'OR ';  }
         where += `hometown = ${i} `
+        homeCnt++;
       }
     }
     where += ') '
@@ -168,20 +171,22 @@ const makeWhereVerse = (query) => {
     let residenceCnt = 0;
     for (let i = 0; i < 16; i++) {
       if (residence & (1 << i)) {
-        if (residenceCnt > 0) { where += 'AND '; residenceCnt++; }
+        if (residenceCnt > 0) { where += 'OR '; }
         where += `residence = ${i} `
+        residenceCnt++;
       }
     }
     where += ') '
   }
 
   if (vote19 >0) {
-    where += '('
+    where += 'AND ('
     let vote19Cnt = 0;
     for (let i = 0; i < 14; i++) {
       if (vote19 & (1 << i)) {
-        if (vote19Cnt > 0) { where += 'AND '; vote19Cnt++; }
-        where += `vote19 = ${i} `
+        if (vote19Cnt > 0) { where += 'OR ';  }
+        where += `vote_19th = ${i} `
+        vote19Cnt++;
       }
     }
     where += ') '

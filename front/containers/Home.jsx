@@ -68,8 +68,8 @@ const Home = () => {
         <StyledHome>
           <div id="main-container" data-scroll-container>
             <NavBar />
-            {/* <Header /> */}
             {/* <Main /> */}
+            {/* <Header /> */}
             {/* <Featuerd /> */}
             {/* <About /> */}
             <Gallery />

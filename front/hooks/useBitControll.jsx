@@ -8,12 +8,16 @@ const useBitControll = (defaultValue) => {
     }else{
       setValue(value | (1 << data));
     }
-    console.log(value)
   };
+
+  const onInit=(data)=>{
+    setValue(data);
+  }
 
   return {
     value,
     onBitChange,
+    onInit,
   };
 };
 

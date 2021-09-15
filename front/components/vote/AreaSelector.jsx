@@ -2,6 +2,13 @@ import { korea } from "../../public/korea";
 import styled from "styled-components";
 import classNames from "classnames";
 
+const StyledArea = styled.div`
+  & > div > button.isSelected {
+    outline: blue;
+    background-color: cyan;
+  }
+`;
+
 const AreaSelector = ({title,value, onBitChange,}) => {
 
   const renderArea = () => {
@@ -24,12 +31,12 @@ const AreaSelector = ({title,value, onBitChange,}) => {
 
 
   return (
-    <div>
+    <StyledArea>
       <h2>{title}</h2>
       <div>
         {renderArea()}
       </div>
-    </div>
+    </StyledArea>
   );
 }
 

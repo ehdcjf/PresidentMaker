@@ -1,9 +1,18 @@
 import styled from "styled-components";
 import cn from "classnames";
 
+const StyledGender = styled.div`
+  & > .btn_box {
+    & > .isSelected {
+      border: 1px solid blue;
+      background-color: cyan;
+    }
+  }
+`;
+
 const GenderSelect = ({value, onBitChange,}) => {
   return (
-    <div>
+    <StyledGender>
       <h2>성별</h2>
       <div className="btn_box">
         <button
@@ -23,7 +32,7 @@ const GenderSelect = ({value, onBitChange,}) => {
           여자
         </button>
       </div>
-    </div>
+    </StyledGender>
   );
 };
 
