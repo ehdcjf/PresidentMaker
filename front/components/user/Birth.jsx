@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-
+import { StyledJoinItem } from "./joinItem";
 const Birth = ({ value, onComplete, prev,next,handleNext,handlePrev }) => {
   const [full, setFull] = useState(0);
   const [hundred, setHundred] = useState(null);
@@ -81,10 +81,13 @@ const Birth = ({ value, onComplete, prev,next,handleNext,handlePrev }) => {
 
   if (value != null) {
     return (
-      <div>
+      <StyledJoinItem>
+        <h1>출생 연도</h1>
+        <div className='content'>
         <div>{value}</div>
         <button onClick={handleReset}>다시 입력</button>
-        <div>
+        </div>
+        <div className='btn_box'>
         <button onClick={handlePrev}>
           {prev}
         </button>
@@ -94,64 +97,78 @@ const Birth = ({ value, onComplete, prev,next,handleNext,handlePrev }) => {
           </button>
         )}
       </div>
-      </div>
+      </StyledJoinItem>
     );
   } else if (full < 1) {
     return (
-      <div>
-        <div>
+      <StyledJoinItem>
+        <h1>출생 연도</h1>
+        <div className='content'>
+          <div>
+
           <button
             onClick={() => {
               handleHundred("19");
             }}
-          >
+            >
             1900
           </button>
           <button
             onClick={() => {
               handleHundred("20");
             }}
-          >
+            >
             2000
           </button>
+            </div>
         </div>
-        <div>
+        <div className='btn_box'>
         <button onClick={handlePrev}>
           {prev}
         </button>
       </div>
-      </div>
+      </StyledJoinItem>
     );
   } else if (full < 3) {
     return (
-      <div>
+      <StyledJoinItem>
+        <h1>출생 연도</h1>
+        <div className='content'>
         <div>{hundred}</div>
         <div>{renderTen()}</div>
-        <div>
+        </div>
+        <div className='btn_box'>
         <button onClick={handlePrev}>
           {prev}
         </button>
       </div>
-      </div>
+      </StyledJoinItem>
     );
   } else if (full < 7) {
     return (
-      <div>
+      <StyledJoinItem>
+        <h1>출생 연도</h1>
+
+        <div className='content'>
         <div>{hundred + ten}</div>
         <div>{renderOne()}</div>
-        <div>
+        </div>
+        <div className='btn_box'>
         <button onClick={handlePrev}>
           {prev}
         </button>
       </div>
-      </div>
+      </StyledJoinItem>
     );
   } else {
     return (
-      <div>
+      <StyledJoinItem>
+        <h1>출생 연도</h1>
+        <div className='content'>
         <div>{hundred + ten + one}</div>
         <button onClick={handleReset}>다시 입력</button>
-        <div>
+        </div>
+        <div className='btn_box'>
         <button onClick={handlePrev}>
           {prev}
         </button>
@@ -161,7 +178,7 @@ const Birth = ({ value, onComplete, prev,next,handleNext,handlePrev }) => {
           </button>
         )}
       </div>
-      </div>
+      </StyledJoinItem>
     );
   }
 };

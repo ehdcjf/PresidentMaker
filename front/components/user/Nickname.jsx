@@ -1,8 +1,7 @@
 import { useState } from "react";
-import styled from "styled-components";
 import { nicknameCheck } from "../api/joinRequest";
 
-const StyledNickname = styled.div``;
+import { StyledJoinItem } from "./joinItem";
 
 const Nickname = ({
   value,
@@ -39,27 +38,30 @@ const Nickname = ({
   };
 
   return (
-    <StyledNickname>
-      <div>
+    <StyledJoinItem>
+      <h1>닉네임</h1>
+      <div className='content'>
+        <div>
         <input
           type="text"
           value={nickname}
           onChange={handleChange}
           placeholder="닉네임을 입력해주세요"
           maxLength="16"
-        />
+          />
         <button onClick={handleCheck}>중복 확인</button>
-      </div>
+          </div>
       {(available === true || value !== "") && (
         <span>사용가능한 닉네임입니다.</span>
-      )}
+        )}
       {available === false && <span>이미 사용중인 닉네임입니다.</span>}
+        </div>
 
-      <div>
+      <div className="btn_box">
         <button onClick={handlePrev}>{prev}</button>
         {available === true && <button onClick={handleNext}>{next}</button>}
       </div>
-    </StyledNickname>
+    </StyledJoinItem>
   );
 };
 

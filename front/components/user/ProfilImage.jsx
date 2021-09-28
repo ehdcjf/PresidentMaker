@@ -1,13 +1,5 @@
 import { imageUpload } from "../../components/api/joinRequest";
-import styled from "styled-components";
-
-const StyledProfil = styled.div`
-  & > img {
-    width: 200px;
-    height: 200px;
-    border-radius: 100px;
-  }
-`;
+import { StyledJoinItem } from "./joinItem";
 
 const ProfilImage = ({ value, onComplete, prev,next,handleNext,handlePrev }) => {
   const handleImage = async (e) => {
@@ -16,12 +8,14 @@ const ProfilImage = ({ value, onComplete, prev,next,handleNext,handlePrev }) => 
   };
 
   return (
-    <StyledProfil>
-      <h2>프로필사진</h2>
+    <StyledJoinItem>
+      <h1>프로필사진</h1>
+      <div className='content profil_content'>
       <img src={value} alt="프로필 사진" />
       <input type="file" onChange={handleImage} />
+      </div>
 
-      <div>
+      <div className='btn_box'>
         <button onClick={handlePrev}>
           {prev}
         </button>
@@ -30,7 +24,7 @@ const ProfilImage = ({ value, onComplete, prev,next,handleNext,handlePrev }) => 
           </button>
         
       </div>
-    </StyledProfil>
+    </StyledJoinItem>
   );
 };
 
