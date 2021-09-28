@@ -258,9 +258,7 @@ const Info = () => {
                   </button>
                 )}
                 <div className="content">
-                  <div>
                     <img src={profil.value} alt="프로필 사진" />
-                  </div>
                 </div>
               </div>
             </li>
@@ -276,9 +274,7 @@ const Info = () => {
                 </button>
               )}
               <div className="content">
-                <div>
                   <span>{nickname.value}</span>
-                </div>
               </div>
             </li>
 
@@ -297,14 +293,12 @@ const Info = () => {
                 {gender.value === null ? (
                   <div>비공개 정보입니다.</div>
                 ) : (
-                  <>
-                    <div>
+                  <div>
                       {gender.value === true ? (
                         <span>남자</span>
                       ) : (
                         <span>여자</span>
                       )}
-                    </div>
                     {isMine && (
                       <SwitchToggle
                         isToggled={show & (1 << 0)}
@@ -313,7 +307,7 @@ const Info = () => {
                         }}
                       />
                     )}
-                  </>
+                  </div>
                 )}
               </div>
             </li>
@@ -323,10 +317,8 @@ const Info = () => {
                 {birth.value === null ? (
                   <div>비공개 정보입니다.</div>
                 ) : (
-                  <>
-                    <div>
+                  <div>
                       <span>{birth.value}</span>
-                    </div>
                     {isMine && (
                       <SwitchToggle
                         isToggled={show & (1 << 1)}
@@ -335,7 +327,7 @@ const Info = () => {
                         }}
                       />
                     )}
-                  </>
+                  </div>
                 )}
               </div>
             </li>
@@ -345,10 +337,8 @@ const Info = () => {
                 {hometown.value === null ? (
                   <div>비공개 정보입니다.</div>
                 ) : (
-                  <>
-                    <div>
+                  <div>
                       <span>{korea[hometown.value]}</span>
-                    </div>
                     {isMine && (
                       <SwitchToggle
                         isToggled={show & (1 << 2)}
@@ -357,7 +347,7 @@ const Info = () => {
                         }}
                       />
                     )}
-                  </>
+                  </div>
                 )}
               </div>
             </li>
@@ -376,10 +366,8 @@ const Info = () => {
                 {residence.value === null ? (
                   <div>비공개 정보입니다.</div>
                 ) : (
-                  <>
-                    <div>
+                  <div>
                       <span>{korea[residence.value]}</span>
-                    </div>
                     {isMine && (
                       <SwitchToggle
                         isToggled={show & (1 << 3)}
@@ -388,7 +376,7 @@ const Info = () => {
                         }}
                       />
                     )}
-                  </>
+                  </div>
                 )}
               </div>
             </li>
@@ -398,10 +386,8 @@ const Info = () => {
                 {vote19.value === null ? (
                   <div>비공개 정보입니다.</div>
                 ) : (
-                  <>
-                    <div>
+                  <div>
                       <MyVote vote19={vote19.value} vote20={vote_list.value} list={list19} />
-                    </div>
                     {isMine && (
                       <SwitchToggle
                         isToggled={show & (1 << 4)}
@@ -410,7 +396,7 @@ const Info = () => {
                         }}
                       />
                     )}
-                  </>
+                  </div>
                 )}
               </div>
             </li>

@@ -24,15 +24,20 @@
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
     ],
+    "/board/[editor]": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/board/[editor].js"
+    ],
     "/user/[id]": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
       "static/chunks/pages/user/[id].js"
     ],
-    "/user/join": [
+    "/vote": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/user/join.js"
+      "static/chunks/pages/vote.js"
     ]
   },
   "ampFirstPages": []
