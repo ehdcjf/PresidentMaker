@@ -35,13 +35,26 @@ const StyledInfoContent = styled.div`
   justify-content: space-around;
   margin: 0 auto;
   & > ul {
-    width: 60%;
+    width: 90%;
     height: 100%;
     margin: 0 auto;
   }
 
   .content {
-    display: flex;
+    margin: 30px 0 ;
+    font-size: 28px;
+
+    &>div:nth-child(1){
+      margin-bottom :15px;
+    }
+  }
+
+  .profil img{
+    display: block;
+    margin-top: 15px;
+    width: 200px;
+        height: 200px;
+        border-radius: 100px;
   }
 `;
 
@@ -184,6 +197,7 @@ const Info = () => {
   else
     return (
       <Layout>
+        <div>회원정보</div>
         <StyledUpdateForm>
           {update === 1 && (
             <ProfilImage
@@ -243,68 +257,71 @@ const Info = () => {
           )}
         </StyledUpdateForm>
 
-        <StyledInfoContent >
+        <StyledInfoContent > 
+
           <ul className="info_list">
-            <li>
+            <li className="content profil">
               <div>
                 <span>프로필사진</span>
                 {isMine && (
-                  <button
+                  <span
+                  style={{cursor:'pointer', marginLeft:'10px'}}
                     onClick={() => {
                       handleUpdate(1);
                     }}
                   >
-                    <GrUpdate />
-                  </button>
+                    <GrUpdate size={24}/>
+                  </span>
                 )}
-                <div className="content">
-                  <div>
+              <div >
                     <img src={profil.value} alt="프로필 사진" />
-                  </div>
                 </div>
               </div>
             </li>
-            <li>
+            <li className="content nickname">
+              <div>
               <span>닉네임</span>
               {isMine && (
-                <button
-                  onClick={() => {
-                    handleUpdate(2);
-                  }}
+                <span
+                style={{cursor:'pointer', marginLeft:'10px'}}
+                onClick={() => {
+                  handleUpdate(2);
+                }}
                 >
-                  <GrUpdate />
-                </button>
+                  <GrUpdate size={24}/>
+                </span>
               )}
-              <div className="content">
-                <div>
+              </div>
+              <div >
                   <span>{nickname.value}</span>
-                </div>
               </div>
             </li>
 
-            <li>
+            <li className="content gender">
+              <div>
               <span>성별</span>
               {isMine && (
-                <button
-                  onClick={() => {
-                    handleUpdate(3);
-                  }}
+                <span
+                style={{cursor:'pointer', marginLeft:'10px'}}
+                onClick={() => {
+                  handleUpdate(3);
+                }}
                 >
-                  <GrUpdate />
-                </button>
+                  <GrUpdate size={24}/>
+                </span>
               )}
-              <div className="content">
+              </div>
+              
+              <div >
                 {gender.value === null ? (
                   <div>비공개 정보입니다.</div>
                 ) : (
-                  <>
-                    <div>
+                  <div>
                       {gender.value === true ? (
                         <span>남자</span>
                       ) : (
                         <span>여자</span>
                       )}
-                    </div>
                     {isMine && (
                       <SwitchToggle
                         isToggled={show & (1 << 0)}
@@ -313,20 +330,20 @@ const Info = () => {
                         }}
                       />
                     )}
-                  </>
+                  </div>
                 )}
               </div>
             </li>
-            <li>
+            <li className="content birth">
+              <div>
               <span>출생 연도</span>
-              <div className="content">
+              </div>
+              <div >
                 {birth.value === null ? (
                   <div>비공개 정보입니다.</div>
                 ) : (
-                  <>
-                    <div>
+                  <div>
                       <span>{birth.value}</span>
-                    </div>
                     {isMine && (
                       <SwitchToggle
                         isToggled={show & (1 << 1)}
@@ -335,20 +352,20 @@ const Info = () => {
                         }}
                       />
                     )}
-                  </>
+                  </div>
                 )}
               </div>
             </li>
-            <li>
+            <li className="content hometown">
+              <div>
               <span>고향</span>
-              <div className="content">
+              </div>
+              <div >
                 {hometown.value === null ? (
                   <div>비공개 정보입니다.</div>
                 ) : (
-                  <>
-                    <div>
+                  <div>
                       <span>{korea[hometown.value]}</span>
-                    </div>
                     {isMine && (
                       <SwitchToggle
                         isToggled={show & (1 << 2)}
@@ -357,29 +374,30 @@ const Info = () => {
                         }}
                       />
                     )}
-                  </>
+                  </div>
                 )}
               </div>
             </li>
-            <li>
+            <li className="content residence">
+              <div>
               <span>거주지</span>
               {isMine && (
-                <button
-                  onClick={() => {
-                    handleUpdate(6);
-                  }}
+                <span
+                style={{cursor:'pointer', marginLeft:'10px'}}
+                onClick={() => {
+                  handleUpdate(6);
+                }}
                 >
-                  <GrUpdate />
-                </button>
+                  <GrUpdate size={24}/>
+                </span>
               )}
-              <div className="content">
+              </div>
+              <div >
                 {residence.value === null ? (
                   <div>비공개 정보입니다.</div>
                 ) : (
-                  <>
-                    <div>
+                  <div>
                       <span>{korea[residence.value]}</span>
-                    </div>
                     {isMine && (
                       <SwitchToggle
                         isToggled={show & (1 << 3)}
@@ -388,20 +406,20 @@ const Info = () => {
                         }}
                       />
                     )}
-                  </>
+                  </div>
                 )}
               </div>
             </li>
-            <li>
+            <li className="content vote">
+              <div>
               <span>투표이력</span>
-              <div className="content">
+              </div>
+              <div >
                 {vote19.value === null ? (
                   <div>비공개 정보입니다.</div>
                 ) : (
-                  <>
-                    <div>
+                  <div>
                       <MyVote vote19={vote19.value} vote20={vote_list.value} list={list19} />
-                    </div>
                     {isMine && (
                       <SwitchToggle
                         isToggled={show & (1 << 4)}
@@ -410,12 +428,12 @@ const Info = () => {
                         }}
                       />
                     )}
-                  </>
+                  </div>
                 )}
               </div>
             </li>
             {isMine && (
-              <li>
+              <li className="user_action">
                 <div>
                   <button onClick={handleDelete}>회원탈퇴</button>
                   <button onClick={handleSave}>저장</button>

@@ -1,13 +1,8 @@
 import styled from "styled-components";
 import classNames from "classnames";
 import { korea } from "../../public/korea";
+import { StyledJoinItem } from "./joinItem";
 
-const StyledArea = styled.div`
-  & > div > button.isSelected {
-    outline: blue;
-    background-color: cyan;
-  }
-`;
 
 const Area = ({ value, onComplete, title, prev,next,handleNext,handlePrev }) => {
   const renderArea = () => {
@@ -27,13 +22,13 @@ const Area = ({ value, onComplete, title, prev,next,handleNext,handlePrev }) => 
   };
 
   return (
-    <StyledArea>
-      {title!=null &&(<h2>{title}</h2>)}
-      <div>{renderArea()}</div>
+    <StyledJoinItem>
+      {title!=null &&(<h1>{title}</h1>)}
       
-
+      <div className='content area_conetnt'>{renderArea()}</div>
+      
       {title!=null &&(
-        <div>
+        <div className='btn_box'>
         <button onClick={handlePrev}>
           {prev}
         </button>
@@ -45,7 +40,7 @@ const Area = ({ value, onComplete, title, prev,next,handleNext,handlePrev }) => 
       </div>
       )}
       
-    </StyledArea>
+    </StyledJoinItem>
   );
 };
 

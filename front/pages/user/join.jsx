@@ -12,6 +12,25 @@ import Vote from "../../components/user/Vote";
 import { list19 } from "../../public/list19";
 import Result from "../../components/user/Result";
 import Router from "next/router";
+import styled from "styled-components";
+
+const StyledJoinLayout = styled.div`
+  width: 100vw;
+  height: 100vh;
+
+  .title{
+    width: 100vw;
+    height: 10vh;
+    margin-top:5vh ;
+    font-size: 10vh;
+    line-height: 10vh;
+    text-align: center;
+  }
+`
+
+
+
+
 
 const Join = () => {
   const [kakao, setKakao] = useState();
@@ -53,11 +72,16 @@ const Join = () => {
   };
 
   return (
-    <>
+    <StyledJoinLayout>
       <Head>
-        <title>Join</title>
+        <title>회원가입</title>
       </Head>
-      {step === 0 && (
+
+      <div className='title'>회원가입</div>
+      <div className='content_box'>
+
+      
+    {step === 0 && (
         <Nickname
           {...nickname}
           title={"닉네임"}
@@ -193,7 +217,8 @@ const Join = () => {
           }}
         />
       )}
-    </>
+      </div>
+    </StyledJoinLayout>
   );
 };
 

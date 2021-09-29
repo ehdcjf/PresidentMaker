@@ -4,5 +4,9 @@
   "/_document": "pages/_document.js",
   "/": "pages/index.js",
   "/board/list": "pages/board/list.js",
+<<<<<<< HEAD
   "/next/dist/pages/_error": "pages/next/dist/pages/_error.js"
+=======
+  "/user/[id]": "pages/user/[id].js"
+>>>>>>> ed0f7a95b657f47de8fdfae8bcb094b6826f5e71
 }

@@ -1,15 +1,5 @@
-import { useState } from "react";
-import styled from "styled-components";
 import cn from "classnames";
-
-const StyledGender = styled.div`
-  & > .btn_box {
-    & > .isSelected {
-      border: 1px solid blue;
-      background-color: cyan;
-    }
-  }
-`;
+import { StyledJoinItem } from "./joinItem";
 
 const Gender = ({ title=null,value, onComplete, prev,next,handleNext,handlePrev }) => {
   const handleGender = (data) => {
@@ -17,9 +7,9 @@ const Gender = ({ title=null,value, onComplete, prev,next,handleNext,handlePrev 
   };
 
   return (
-    <StyledGender>
-      {title!=null &&(<h2>{title}</h2>)}
-      <div className="btn_box">
+    <StyledJoinItem>
+      <h1>성별</h1>
+      <div className="content gender_content">
         <button
           className={cn({ isSelected: value == true })}
           onClick={() => {
@@ -39,7 +29,7 @@ const Gender = ({ title=null,value, onComplete, prev,next,handleNext,handlePrev 
         </button>
       </div>
       
-      <div>
+      <div className='btn_box'>
         <button onClick={handlePrev}>
           {prev}
         </button>
@@ -49,7 +39,7 @@ const Gender = ({ title=null,value, onComplete, prev,next,handleNext,handlePrev 
           </button>
         )}
       </div>
-    </StyledGender>
+    </StyledJoinItem>
   );
 };
 
