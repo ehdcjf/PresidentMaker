@@ -5,56 +5,62 @@ import SplitText from "../../../utils/Split3.min.js";
 import { useEffect, useState, useRef } from "react";
 import useOnScreen from "../../../hooks/useOnScreen";
 import cn from "classnames";
+import { listMain } from "../../../public/listMain";
+
 const StyledFooter = styled.section`
-  padding-bottom: 100px;
   height: 90vh;
   text-align: center;
   position: relative;
 
-  *{
-    border: none;
-  }
-
-  .silhouette_container{
-    margin:0 auto;
-    width: 100vw;
-    height: 100vh;
-    top:100px;
-    left: 0;
-    right: 0;
-    bottom: 0;
-  }
-  
-
-  .silhouette{
-    background-size: contain;
-    background-position: center;
-    background-repeat: no-repeat;
-    width: 40%;
-    height: 40%;
-  }
-
-  
-
-  
-
-
-
   .location {
-    font-size: 10vw;
-    text-transform: uppercase;
-    font-family: "Bodoni Moda", serif;
+    width: 70vw;
+    display: flex;
+    justify-content: center;
+    margin: 0 auto;
+    font-size: 4vw;
+    text-align: center;
+    color: #755f4d;
     opacity: 0;
 
     &.is-reveal {
       opacity: 1;
     }
   }
+
+  .pinkFont {
+    color: hotpink;
+    text-emphasis-style: dot;
+
+    text-emphasis-position: over left;
+
+    -webkit-text-emphasis-style: dot;
+
+    -webkit-text-emphasis-position: over;
+  }
+  .goBtn {
+    display: inline-block;
+    width: 7vw;
+    height: 7vw;
+    font-size: 4vw;
+    color: white;
+    background-color: hotpink;
+    margin-left: 2vw;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+  }
+
+  .candidate_box {
+    display: flex;
+    width: 70vw;
+    justify-content: center;
+  }
 `;
 const Footer = () => {
   const ref = useRef(null);
   const [reveal, setReveal] = useState(false);
   const onScreen = useOnScreen(ref);
+  const rand = new Date().getDate() % 7;
 
   useEffect(() => {
     if (onScreen) setReveal(onScreen);
@@ -85,30 +91,30 @@ const Footer = () => {
     }
   }, [reveal]);
 
+  const renderCandidate = () => {
+    const candidate = [...listMain];
+    for (let i = 0; i < rand; i++) {
+      candidate.push(candidate.shift());
+    }
+    return candidate.map((v, i) => {
+      return <img src={v.image} key={i} alt="" />;
+    });
+  };
+
   return (
     <StyledFooter data-scroll-section>
-      
-      <div className='silhouette_container'>
-          <SectionHeader className='grid_5' title="Who is Next" />
- 
-          <div className='silhouette posi2'  style={{ backgroundImage: `url(/투명재명.png)` }}></div>
-          <div className='silhouette posi1'  style={{ backgroundImage: `url(/투명석열.png)` }}></div>
-          <div className='silhouette posi3'  style={{ backgroundImage: `url(/투명낙연.png)` }}></div>
-          <div className='silhouette posi4'  style={{ backgroundImage: `url(/투명준표.png)` }}></div>
-
-        <div className='slhouette_second'>
-              당신의 후보에게 투표하세요.
-        </div>
-
-
-      </div>
+      <SectionHeader className="grid_5" title="Who is Next" />
       <h1
         className={cn("location", { "is-reveal": reveal })}
         id="location-text"
         ref={ref}
       >
-        
+        <span>
+          당신의 <b className="pinkFont">후보</b>에게 투표하세요!
+        </span>
+        <button className="goBtn">GO</button>
       </h1>
+      <div className="candidate_box">{renderCandidate()}</div>
     </StyledFooter>
   );
 };

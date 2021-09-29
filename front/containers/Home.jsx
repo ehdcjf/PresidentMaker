@@ -5,6 +5,7 @@ import Footer from "../components/home/Footer";
 import Main from "../components/home/Main/index";
 import Featuerd from "../components/home/Featured/index";
 import About from "../components/home/About/index";
+import Test from "../components/home/Test.jsx";
 import Gallery from "../components/home/Gallery/index";
 import PreLoader from "../components/home/PreLoader";
 import useLocoScroll from "../hooks/useLocoScroll";
@@ -14,7 +15,7 @@ import Header from "../components/layout/Header";
 const StyledHome = styled.div`
   padding: 0 5vw;
   background-color: #f5f0ec;
-  
+
   section {
     padding: 100px 0;
   }
@@ -62,21 +63,22 @@ const Home = () => {
 
   return (
     <>
-      {preloader ? (
+      {/* {preloader ? (
         <PreLoader></PreLoader>
-      ) : (
-        <StyledHome>
-          <div id="main-container" data-scroll-container>
-            <NavBar />
-            {/* <Main /> */}
-            {/* <Header /> */}
-            {/* <Featuerd /> */}
-            {/* <About /> */}
-            <Gallery />
-            <Footer />
-          </div>
-        </StyledHome>
-      )}
+      ) : ( */}
+      <StyledHome>
+        <div id="main-container" data-scroll-container>
+          <NavBar />
+          {/* <Main /> */}
+          {/* <Header /> */}
+          {/* <Featuerd /> */}
+          {/* <About /> */}
+          {/* <Gallery /> */}
+          {/* <Footer /> */}
+          {<Test />}
+        </div>
+      </StyledHome>
+      {/* )} */}
     </>
   );
 };
