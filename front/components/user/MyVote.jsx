@@ -20,7 +20,7 @@ const MyVote = ({vote19,vote20,list}) => {
   return (
     <ul>
       <li>
-      <div>19대 대선 지지 후보</div>
+      <div>19대 대선</div>
       <div style={{ backgroundImage: `url(${vote_19th.president_image})` }} />  
       <h3>{vote_19th.president_name}</h3>
       </li>

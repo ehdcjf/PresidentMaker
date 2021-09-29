@@ -1,7 +1,7 @@
 import styled from "styled-components";
 export const StyledJoinItem = styled.div`
   height: 75vh;
-  padding: 10vh 20vw;
+  padding: 10% 20%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;

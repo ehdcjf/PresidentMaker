@@ -2,7 +2,6 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/board/[editor]": "pages/board/[editor].js",
-  "/vote": "pages/vote.js",
+  "/board/list": "pages/board/list.js",
   "/user/[id]": "pages/user/[id].js"
 }
