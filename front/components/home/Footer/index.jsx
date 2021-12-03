@@ -5,8 +5,9 @@ import SplitText from "../../../utils/Split3.min.js";
 import { useEffect, useState, useRef } from "react";
 import useOnScreen from "../../../hooks/useOnScreen";
 import cn from "classnames";
+import { listMain } from "../../../public/listMain";
+
 const StyledFooter = styled.section`
-  padding-bottom: 100px;
   height: 90vh;
   text-align: center;
   position: relative;
@@ -43,29 +44,52 @@ const StyledFooter = styled.section`
 
   
 
+    text-emphasis-position: over left;
 
+    -webkit-text-emphasis-style: dot;
 
-  .location {
-    font-size: 10vw;
-    text-transform: uppercase;
-    font-family: "Bodoni Moda", serif;
-    opacity: 0;
+    -webkit-text-emphasis-position: over;
+  }
+  .goBtn {
+    display: inline-block;
+    width: 7vw;
+    height: 7vw;
+    font-size: 4vw;
+    color: white;
+    background-color: hotpink;
+    margin-left: 2vw;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+  }
 
-    &.is-reveal {
-      opacity: 1;
-    }
+  .candidate_box {
+    display: flex;
+    width: 70vw;
+    justify-content: center;
   }
 `;
 const Footer = () => {
   const ref = useRef(null);
   const [reveal, setReveal] = useState(false);
   const onScreen = useOnScreen(ref);
+  const rand = new Date().getDate() % 7;
 
   useEffect(() => {
     if (onScreen) setReveal(onScreen);
   }, [onScreen]);
 
   
+
+  const renderCandidate = () => {
+    const candidate = [...listMain];
+    for (let i = 0; i < rand; i++) {
+      candidate.push(candidate.shift());
+    }
+    return candidate.map((v, i) => {
+      return <img src={v.image} key={i} alt="" />;
+    });
+  };
 
   return (
     <StyledFooter data-scroll-section>
